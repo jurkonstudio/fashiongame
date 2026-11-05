@@ -44,7 +44,7 @@ export const demand = (id, price, q = 2, ch = 'store') => {       // 3 segmen pa
   return Math.min(1, d * cf * season(id, ch) * CH[ch].dm * MOD.dem(id, ch)); };
 export const workerSpeed = () => 1 - Math.min(0.5, G.S.wk.reduce((a, k) => a + k, 0) * 0.04);
 export const factoryMult = () => workerSpeed() * 0.9 ** (G.S.b.factory - 1) * (1 + (1 - G.S.cond) * 0.3) * (G.S.sold ? 1 : 0.1);   // produksi pertama 10x lebih cepat (tutorial)
-export const saleSec = () => SALE_HOURS * 3600 * 0.85 ** (G.S.b.store - 1) * (G.S.sold ? 1 : 1 / 60);   // penjualan pertama ~2 menit (tutorial)
+export const saleSec = () => SALE_HOURS * 3600 * 0.85 ** (G.S.b.store - 1) * (1 - EXEC.cmo.spd * xAct('cmo')) * (G.S.sold ? 1 : 1 / 60);   // penjualan pertama ~2 menit (tutorial)
 export const saleCap = () => BASE_CAP * G.S.b.store;
 export const bMax = () => 2 + G.S.level;
 export const upCost = id => Math.round(D.buildings[id].cost * 1.8 ** (G.S.b[id] - 1));

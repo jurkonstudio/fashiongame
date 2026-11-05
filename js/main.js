@@ -35,7 +35,7 @@ const actions = {
   tab: t => { tab = t; menu = false; map.actions.close(); },
   menu: () => { menu = !menu; },
   item: k => { menu = false; map.actions.close(); const [i, o] = k.split('@'); item.actions.pick(i, o); tab = 'item'; },
-  go: k => { menu = false; map.actions.close(); const g = { prof: ['profile', () => {}], set: ['settings', () => {}], enc: ['more', () => more.actions.msub2('enc')], notes: ['more', () => more.actions.msub2('notes')], redeem: ['more', () => more.actions.msub2('redeem')], margin: ['warehouse', () => warehouse.actions.wsub('margin')], ct: ['market', () => market.actions.msub('ct')], rank: ['finance', () => finance.actions.fsub('rank')], goal: ['office', () => office.actions.sub('goal')], ach: ['more', () => more.actions.msub2('ach')], lib: ['more', () => more.actions.msub2('lib')], about: ['more', () => more.actions.msub2('about')] }[k]; tab = g[0]; g[1](); }
+  go: k => { menu = false; map.actions.close(); const g = { prof: ['profile', () => {}], set: ['settings', () => {}], enc: ['more', () => more.actions.msub2('enc')], notes: ['more', () => more.actions.msub2('notes')], redeem: ['more', () => more.actions.msub2('redeem')], margin: ['warehouse', () => warehouse.actions.wsub('margin')], ct: ['market', () => market.actions.msub('ct')], xc: ['market', () => market.actions.msub('xc')], rank: ['finance', () => finance.actions.fsub('rank')], goal: ['office', () => office.actions.sub('goal')], ach: ['more', () => more.actions.msub2('ach')], lib: ['more', () => more.actions.msub2('lib')], about: ['more', () => more.actions.msub2('about')] }[k]; tab = g[0]; g[1](); }
 };
 
 const setHTML = (el, h) => { if (el._h !== h) { el._h = h; el.innerHTML = h; } };   // render hanya jika berubah

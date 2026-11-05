@@ -20,7 +20,7 @@ const grid = () => { const rec = (G.S.rec || []).filter(k => ART[k]);
     + (rec.length ? `<div class="cat">${T('recent')}</div><div class="xg">${rec.map(xt).join('')}</div>` : ''); };
 
 let ms = 'ex';
-export const view = () => (ms === 'ct' ? `<div class="cat">${T('contracts')}${G.S.dp.ct.length ? ' · ' + G.S.dp.ct.length : ''}</div>` + depth.contracts() : ms === 'xc' ? econ.exchPanel() : ticker() + grid()) + subbar(SUBS, ms, 'msub');
+export const view = () => (ms === 'ct' ? `<div class="cat">${T('contracts')}${G.S.dp.ct.length ? ' · ' + G.S.dp.ct.length : ''}</div>` + depth.contracts() : ms === 'xc' ? econ.exchPanel() + econ.orderPanel() : ticker() + grid()) + subbar(SUBS, ms, 'msub');
 export const actions = {
   msub: k => { ms = k; },
   sup: k => { G.sup = k; }

@@ -24,6 +24,6 @@ export const view = () => { const S = G.S, used = whUsed(), cap = whCap(), pc = 
     if (!L.length) return ''; any = true;
     const link = first ? `<span class="wall" data-a="wall" role="button">${all ? '‹ ' : ''}${T('showall')}</span>` : ''; first = false;
     return `<div class="cath"><span class="cat">${T(cat)}</span>${link}</div><div class="wg">${L.map(([id, q, p, lock, q2]) => tile(id, q, p, lock, q2)).join('')}</div>`; }).join('');
-  const head = `<div class="card"><div class="row"><b>${ic('warehouse')}${used}/${cap}</b><span class="mute">${T('stockval')} ${fmt(val)}</span></div><div class="bar"><i style="width:${pc}%"></i></div></div>`;
+  const head = `<div class="card"><div class="row"><b>${ic('warehouse')}${used}/${cap}</b><span class="mute">${T('stockval')} ${fmt(val)}</span></div><div class="bar"><i style="width:${pc}%"></i></div><div class="row"><button class="b" data-a="go:xc">${ic('chart')} ${T('xc_t')}</button><button class="b" data-a="go:ct">${ic('cart')} ${T('contracts')}</button></div></div>`;
   return head + (any ? secs : `<div class="card mute">${T('whempty')}</div><div class="cath"><span></span><span class="wall" data-a="wall" role="button">${T('showall')}</span></div>`) + bar; };
 export const actions = { wsub: k => { sub = k; }, wall: () => { all = !all; } };

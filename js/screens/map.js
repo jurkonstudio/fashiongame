@@ -1,4 +1,5 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
+import * as econ from '../econ.js?v=22';
 import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=22';
 import { T, fmt } from '../i18n.js?v=22';
 import { ic, icu } from '../icons.js?v=22';
@@ -172,6 +173,8 @@ export const actions = {
     if (!s || !s.own || s.t || !NEW_B[t] || S.money < NEW_B[t].cost || S.land.slots.some(x => x.t === t)) return;
     S.money -= NEW_B[t].cost; s.t = t;
     if (BUILD_SEC[t]) { S.b[t] = 0; S.jobs.push({ k: 'up', id: t, st: now(), end: now() + dur(BUILD_SEC[t]) }); } else S.b[t] = S.b[t] || 1; },
+  scrap: () => { const S = G.S, s = S.land.slots[sel]; if (!s || !s.t || s.t === 'office' || econ.scrapBusy(s.t)) return;
+    S.money += econ.scrapValue(s.t); S.b[s.t] = 0; s.t = null; sel = null; },
   pbuy: i => { sel = +i; actions.buyslot(); sel = null; },
   pbuild: a => { const [i, t] = a.split(','); sel = +i; actions.build(t); sel = null; },
   qgrow: () => farm.actions.qgrow(),

@@ -99,6 +99,17 @@ Status: sudah berjalan di prototipe (`js/econ.js`, konstanta di akhir `js/data.j
 | Bursa | harga jual = acuan × 0,96; harga beli = acuan × 1,04; biaya 3% + $0,5/unit | indeks bergeser `±n/150` per transaksi, kembali ke harga fase 30%/jam |
 | Kontrak | harga = acuan × 0,99; biaya 0%; ongkos kirim 50% | butuh Kantor Lv2 |
 | Riset | peluang `[0,9; 0,75; 0,6; 0,45] + 0,15 × CTO` (maks 0,95) | gagal: 50% SP kembali |
-| Eksekutif | rekrut $4.000, gaji $25/jam, masa 40–80 hari, dibajak 0,4%/jam | terbuka level 15 |
+| Eksekutif | rekrut $4.000, gaji $25/jam, masa 40–80 hari, dibajak 0,4%/jam | terbuka level 15. COO: admin −50%; CFO: pajak kas & bunga −50%; CMO: waktu jual −10%; CTO: riset +15 poin |
 
 Untuk versi server: pindahkan undian fase, kejenuhan global (jumlah jual semua pemain), dan `market_orders` (bursa antar pemain sungguhan) ke fungsi Postgres + pg_cron. Pesaing NPC di klien bisa dihapus setelah ada cukup pemain.
+
+## 14. Panel ala Sim Companies (v23, prototipe klien)
+| Mekanik | Rumus | Catatan |
+|---|---|---|
+| Pajak kas | `(kas − 20.000 × lv Kantor) × 0,0005 × jam × (1 − 0,5 × CFO)` | menahan kas menganggur |
+| Order book | volume NPC/jam `V = batch × 4 × dem_fase`; ladder pesaing = acuan × [0,97; 1; 1,03; 1,06; 1,10], total 1,25 V | order diisi dari harga termurah; biaya 3% + $0,5/unit + PPN |
+| Obligasi terbit | nominal k × $5.000, bunga 0,50–0,60%/hari, tunggu `12 → 2 jam` (×1,5 saat resesi) | bunga = nominal × rate × jam/24, dibayar otomatis |
+| Obligasi beli | 4 penerbit NPC, bunga 0,50–0,60%, gagal bayar 0,02–0,4%/hari | jual kembali 98% |
+| Runtuhkan | refund 30% × Σ biaya bangun + upgrade | tidak untuk Kantor |
+
+Server: `market_orders` harus dipakai bersama semua pemain (pencocokan di fungsi Postgres), dan obligasi antar pemain butuh tabel `bonds` + cron bunga harian.

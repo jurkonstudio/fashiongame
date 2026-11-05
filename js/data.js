@@ -88,6 +88,16 @@ export const CONTRACT = { disc: 0.01, shipMul: 0.5 };
 export const QRC = { base: [0.9, 0.75, 0.6, 0.45], refund: 0.5 };
 // 6) Eksekutif (terbuka di level EXEC_LVL). Gaji per jam game, masa kerja acak (hari game), peluang dibajak per jam.
 export const EXEC_LVL = 15;
-export const EXEC = { coo: { hire: 4000, sal: 25, adm: 0.5 }, cfo: { hire: 4000, sal: 25, int: 0.5 }, cmo: { hire: 4000, sal: 25, dem: 0.08 }, cto: { hire: 4000, sal: 25, qr: 0.15 } };
+export const EXEC = { coo: { hire: 4000, sal: 25, adm: 0.5 }, cfo: { hire: 4000, sal: 25, int: 0.5, cash: 0.5 }, cmo: { hire: 4000, sal: 25, spd: 0.1 }, cto: { hire: 4000, sal: 25, qr: 0.15 } };   // COO: admin, CFO: bunga & pajak kas, CMO: waktu jual, CTO: peluang riset
 export const EXEC_LIFE = [40, 80];
 export const POACH = 0.004;
+
+// ===== v23: panel ala Sim Companies =====
+// Pajak kas: kas di atas (free x level Kantor) dikenai rate per jam. CFO memotongnya.
+export const CASH = { free: 20000, rate: 0.0005 };
+// Order book bursa: volume beli NPC per jam = batch x volMul x pengali fase. Pesaing memasang 5 level harga (ladder) dengan total rival x volume.
+export const ORD = { volMul: 4, rival: 1.25, max: 8 };
+// Obligasi: nominal kelipatan step, bunga per "hari obligasi" (dayH jam nyata) antara min-max. Makin tinggi bunga, makin cepat terbeli (waitMax -> waitMin jam).
+export const BOND = { step: 5000, min: 0.005, max: 0.006, dayH: 24, waitMax: 12, waitMin: 2, cap: 20000, lvl: 2, sellback: 0.98 };
+// Runtuhkan bangunan: pengembalian sebagian dari total biaya bangun + upgrade
+export const SCRAP_REFUND = 0.3;

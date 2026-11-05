@@ -1,5 +1,6 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Halaman bangunan (gaya Sim Companies): gambar besar, tombol aksi, riwayat, carousel barang + satu tombol aksi besar.
+import * as econ from '../econ.js?v=22';
 import { D, TAX, WAGE, RENT_HOUR } from '../data.js?v=22';
 import { T, fmt } from '../i18n.js?v=22';
 import { ic } from '../icons.js?v=22';
@@ -68,7 +69,7 @@ export const page = (t, hero) => { cur = t; const S = G.S, lv = S.b[t], top = lv
     ${t === 'office' ? '' : `<button class="sq" data-a="up:${t}" ${top || up || S.money < upCost(t) ? 'disabled' : ''} aria-label="${T('upgrade')}">${ic('upgrade')}</button>`}</div>
     ${!top && !up ? `<div class="upl">${T('upgrade')} · ${fmt(upCost(t))} · ${mm(dur(upSec(t)))}</div>` : up ? `<div class="upl">${ic('timer')}${mm(up.end - now())}</div>` : `<div class="upl">${T('max')}</div>`}
     <button class="enc" data-a="go:lib"><i>?</i>${T('encyc')}</button><div class="hero">${hero}</div><div class="bpt"><h1>${T(t)}</h1><div>${T('level')} ${lv}</div></div></div>
-    <div class="bps">${stats(t)}${nextIdle(t)}</div>${history(t)}${up ? '' : `<div class="bpx">${selector(t)}</div>${running(t)}`}</div>`; };
+    <div class="bps">${stats(t)}${econ.scrapRow(t)}${nextIdle(t)}</div>${history(t)}${up ? '' : `<div class="bpx">${selector(t)}</div>${running(t)}`}</div>`; };
 
 export const actions = {
   pk: d => { const L = itemsOf(cur), i = Math.max(0, L.indexOf(sel(cur))); pick[cur] = L[(i + +d + L.length) % L.length]; }

@@ -1,4 +1,5 @@
 // (c) 2026 FashionGame. Menu samping: Pencapaian, Perpustakaan (resep), Tentang.
+import * as econ from '../econ.js?v=22';
 import { D, REDEEM, SEG, TAX, BTN } from '../data.js?v=22';
 import { T, fmt } from '../i18n.js?v=22';
 import { ic } from '../icons.js?v=22';
@@ -23,7 +24,7 @@ const ENC = [
   ['Poin Sains', 'Science Points', 'Dihasilkan Kantor, produksi, dan penjualan. Dipakai untuk riset kualitas tiap produk.', 'Produced by the Office, production and sales. Spent on per-product quality research.'],
   ['Pajak', 'Tax', `Penjualan dikenai PPN ${TAX * 100}%. Gaji, sewa, dan listrik dibayar otomatis; kas kurang berubah jadi pinjaman.`, `Sales carry ${TAX * 100}% VAT. Wages, rent and power are paid automatically; a cash shortfall becomes a loan.`]];
 const P = {
-  enc: () => `<div class="card mute">${T('encintro')}</div>` + ENC.map(e => `<details class="card enc"><summary>${lg(e[0], e[1])}</summary><div class="mute">${lg(e[2], e[3])}</div></details>`).join(''),
+  enc: () => `<div class="card mute">${T('encintro')}</div>` + econ.calc() + ENC.map(e => `<details class="card enc"><summary>${lg(e[0], e[1])}</summary><div class="mute">${lg(e[2], e[3])}</div></details>`).join(''),
   notes: () => `<div class="card kc"><textarea class="in" rows="14" data-n="notes" maxlength="300" aria-label="${T('notesm')}">${String(G.S.notes || '').replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c])}</textarea></div>`,
   redeem: () => `<div class="card kc"><div class="mute">${T('rc_hint')}</div><input class="in" data-n="rc" value="${esc(G.S.rc)}" placeholder="${T('rc_ph')}" maxlength="24" autocapitalize="characters"><div class="row"><button class="b" data-a="redeemgo">${T('redeem')}</button></div></div>`,
   ach: () => { const S = G.S, n = ACH.filter(a => a[3](S)).length;

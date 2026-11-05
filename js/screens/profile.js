@@ -44,8 +44,8 @@ export const view = () => { const S = G.S, L = rankList(), pos = L.findIndex(r =
   o += econ.execsCard()
     + ks(T('emp'), [[T('workers'), `${S.wk.length}/${cap}`], [T('avgskill'), avg.toFixed(1)], [T('wagetot'), fmt(wages) + T('perh')]])
     + ks(T('bonus'), [[T('prodspd'), pb + '% +0%'], [T('salespd'), sb + '% +0%'], [T('adm_pct'), '+' + Math.round(adminPct() * 100) + '%']])
-    + ks(T('valu'), [[T('cvalue'), fmt(S.money + bval + rval + ival - S.loan)], [T('bvalue'), fmt(bval)], [T('rvalue'), fmt(rval)], [T('ivalue'), fmt(ival)]], `(${T('asof')} ${clk(Date.now())})`)
-    + ks(T('liab'), [[T('loan'), `<span class="${S.loan > 0 ? 'neg' : ''}">${fmt(S.loan)}</span>`], [T('bonds'), T('none')]]);
+    + ks(T('valu'), [[T('cvalue'), fmt(S.money + bval + rval + ival - S.loan + econ.bondsInv() - econ.bondsOut())], [T('bvalue'), fmt(bval)], [T('rvalue'), fmt(rval)], [T('ivalue'), fmt(ival)]], `(${T('asof')} ${clk(Date.now())})`)
+    + ks(T('liab'), [[T('loan'), `<span class="${S.loan > 0 ? 'neg' : ''}">${fmt(S.loan)}</span>`], [T('bonds'), econ.bondsOut() ? fmt(econ.bondsOut()) : T('none')]]);
   // --- etalase pencapaian ---
   const earned = ACH.map((a, i) => ({ a, st: 1 + Math.floor(i / 2) })).filter(x => x.a[3](S)).sort((x, y) => y.st - x.st), open = 2 + (S.dc3 ? 1 : 0);
   const slot = i => earned[i] ? `<div class="dcc"><div class="dct">${lg(earned[i].a[1], earned[i].a[2])}</div>${trophy(earned[i].st > 3 ? '#e0a21a' : '#4a4752')}${stars(earned[i].st)}</div>`

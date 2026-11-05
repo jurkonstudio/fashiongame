@@ -1,7 +1,8 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 import { ic } from './icons.js';
 import { T, fmt, setLang, setCur } from './i18n.js';
-import { init, load, save, serverOffset } from './api.js';
+import { init, load, save, serverOffset, status } from './api.js';
+import { D } from './data.js';
 import { G, fresh, tick, setOffset } from './state.js';
 import * as map from './screens/map.js';
 import * as market from './screens/market.js';
@@ -27,10 +28,14 @@ const actions = {
 
 const setHTML = (el, h) => { if (el._h !== h) { el._h = h; el.innerHTML = h; } };   // render hanya jika berubah
 
+const lvlBar = S => { if (S.level !== 1) return ''; const g = D.goals1, p = (Math.min(S.made, g.made) / g.made + Math.min(S.sold, g.sold) / g.sold + (S.research.includes(g.research) ? 1 : 0)) / 3;
+  return `<div class="lvl"><span>${T('goal')} Lv2</span><div class="bar"><i style="width:${Math.round(p * 100)}%"></i></div><b>${Math.round(p * 100)}%</b></div>`; };
+
 function render() {
   const S = G.S;
-  setHTML($('#hud'), `<div class="hud1"><span class="money">${fmt(S.money)}</span><button data-a="tab:profile" aria-label="${T('profile')}">${ic('profile')}</button></div><div class="hud2"><span class="pill">${ic('star')} Lv${S.level}</span><span class="pill">${ic('worker')} ${S.workers}</span><span class="pill">${ic('timer')} ${S.jobs.length}</span></div>`);
-  setHTML($('#view'), (tab === 'profile' ? `<h2>${ic('profile')}${T('profile')}</h2>` : '') + screens[tab].view());
+  setHTML($('#hud'), `<div class="hud1"><span class="money">${fmt(S.money)}</span><button data-a="tab:profile" aria-label="${T('profile')}">${ic('profile')}</button></div><div class="hud2"><span class="pill">${ic('star')} Lv${S.level}</span><span class="pill">${ic('worker')} ${S.workers}</span><span class="pill">${ic('timer')} ${S.jobs.length}</span><span class="pill ${status.mode === 'cloud' ? 'ok' : status.mode === 'error' ? 'bad' : ''}">● ${status.mode === 'cloud' ? 'Cloud' : status.mode === 'error' ? 'Offline' : status.mode === 'connecting' ? '…' : 'Local'}${status.mode === 'cloud' && !status.clock ? ' · clock?' : ''}</span></div>${lvlBar(S)}`);
+  const warn = status.mode === 'error' ? `<div class="card err"><b>Cloud unavailable, playing offline</b><div class="mute">${String(status.err).replace(/[<>&]/g, '')}</div></div>` : '';
+  setHTML($('#view'), warn + (tab === 'profile' ? `<h2>${ic('profile')}${T('profile')}</h2>` : '') + screens[tab].view());
   const sh = $('#sheet'), st = sh.querySelector('.shb')?.scrollTop || 0, sel = map.selected();
   setHTML(sh, tab === 'map' ? map.sheet() : '');
   const nb = sh.querySelector('.shb'); if (nb && sel === lastSel) nb.scrollTop = st;   // jaga posisi scroll panel saat refresh tiap detik
@@ -43,7 +48,7 @@ document.addEventListener('click', e => {
   const [a, arg] = el.dataset.a.split(/:(.*)/s); actions[a](arg); tick(); render();
 });
 
-(async () => {
+(async () => { try {
   await init();
   setOffset(await serverOffset());                                  // timer ikut jam server
   setInterval(async () => setOffset(await serverOffset()), 300000);   // sinkron ulang tiap 5 menit
@@ -54,4 +59,4 @@ document.addEventListener('click', e => {
   setInterval(() => { tick(); render(); }, 1000);
   setInterval(() => save(G.S), 5000);
   document.addEventListener('visibilitychange', () => document.hidden && save(G.S));
-})();
+} catch (e) { document.querySelector('#view').innerHTML = `<div class="card err"><b>Startup error</b><div class="mute">${String(e && e.message || e).replace(/[<>&]/g, '')}</div></div>`; console.error(e); } })();

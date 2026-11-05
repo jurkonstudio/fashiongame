@@ -49,3 +49,9 @@ h2 img.ic{width:1.3rem;height:1.3rem;margin-right:6px}
 .x{min-width:38px;min-height:38px;border-radius:3px;border:1px solid var(--line);background:#0c0e11;color:var(--ink);font:600 .95rem system-ui}
 .shb{overflow:auto;padding:6px 12px 14px;overscroll-behavior:contain}
 .tabs.w .chip{flex:1 1 28%;min-height:38px}.tile[data-a]{cursor:pointer}
+body{font-variant-numeric:tabular-nums}
+.pill.ok{color:#3ddc84;border-color:#1d5c3a}.pill.bad{color:#ff5a4d;border-color:#6b2a24}
+.lvl{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:.72rem;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}.lvl .bar{flex:1}.lvl b{color:#7fd0ff}
+.card.err{border-left-color:#ff5a4d;background:linear-gradient(#2a1816,#1d1211)}.card.err .mute{word-break:break-word;margin-top:3px}
+.inv{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.ci{display:inline-flex;align-items:center;gap:4px;background:#15181c;border:1px solid var(--line);border-radius:3px;padding:3px 8px;font-size:.85rem}.ci small{color:var(--mute);font-size:.7rem;text-transform:uppercase;letter-spacing:.04em}

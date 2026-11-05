@@ -71,6 +71,9 @@ const skyline = (t, th) => { if (!th.n) return `<path d="M0 160Q70 118 140 142T2
     if (t > 1) for (let j = 0; j < h / 12 - 1; j++) s += `<rect x="${x + 5}" y="${152 - j * 12}" width="3" height="5" fill="${wc}" opacity=".75"/><rect x="${x + w - 9}" y="${152 - j * 12}" width="3" height="5" fill="${wc}" opacity=".75"/>`; }
   return s; };
 
+const inv = () => { const S = G.S, ch = [...Object.keys(D.materials).filter(m => S.mat[m] >= 1).map(m => [D.materials[m].icon, T(m), Math.floor(S.mat[m])]),
+    ...Object.keys(D.products).filter(k => S.stock[k]).map(k => [D.products[k].icon, T(k), S.stock[k]])];
+  return ch.length ? `<div class="inv">${ch.map(([i, n, c]) => `<span class="ci">${ic(i)}<b>${c}</b><small>${n}</small></span>`).join('')}</div>` : ''; };
 const guide = () => { const S = G.S, has = t => S.land.slots.some(x => x.t === t), mk = S.jobs.some(j => j.k === 'make'), sl = S.jobs.some(j => j.k === 'sell'),
     stock = Object.values(S.stock).reduce((a, n) => a + n, 0);
   const cons = S.jobs.some(j => j.k === 'up' && S.b[j.id] === 0);
@@ -102,7 +105,7 @@ export const view = () => { const S = G.S, t = Math.min(4, S.level) - 1, th = TH
     if (sel === e.i) inner += `<polygon points="${dia(e.c, e.r)}" fill="none" stroke="#f2b84b" stroke-width="3.5"/>`;
     g += `<g class="tile"${fixed ? '' : ` data-a="slot:${e.i}" role="button" aria-label="${T(s.t || 'plot')} ${e.i + 1}"`}>${inner}</g>`; }
   return guide() + `<div class="card mapbar"><div class="row"><b>${ic('star')}Lv${S.level} · ${T('map_t' + (t + 1))}</b><span class="mute">${sl.filter(s => s.own).length}/${sl.length} ${T('plot')}</span></div>${sl.some(s => s.t === 'factory') ? `<div class="row mute" style="margin-top:4px"><span>${T('warehouse')} ${whUsed()}/${whCap()}</span><span>${T('machine')} ${Math.round(S.cond * 100)}%</span></div>` : ''}</div>`
-    + `<svg class="mapsvg" viewBox="0 0 360 380" role="group" aria-label="${T('map')}">${bg}${g}${ov}</svg>`; };
+    + `<svg class="mapsvg" viewBox="0 0 360 380" role="group" aria-label="${T('map')}">${bg}${g}${ov}</svg>`+inv(); };
 
 const upCard = id => { const S = G.S, b = D.buildings[id], lv = S.b[id], top = lv >= bMax();
   return `<div class="card"><div class="row"><span>${ic(b.icon)}${T(id)} Lv${lv}/${bMax()}</span><button class="b" data-a="up:${id}" ${top || busy('up', id) || S.money < upCost(id) ? 'disabled' : ''}>${top ? T('max') : `${T('upgrade')} · ${fmt(upCost(id))} · ${mm(dur(upSec(id)))}`}</button></div><div class="mute row"><span>${T(b.fx)}</span></div>${job('up', id)}</div>`; };

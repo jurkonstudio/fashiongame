@@ -1,14 +1,14 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Halaman bangunan (gaya Sim Companies): gambar besar, tombol aksi, riwayat, carousel barang + satu tombol aksi besar.
-import * as econ from '../econ.js?v=26';
-import { D, TAX, WAGE, RENT_HOUR } from '../data.js?v=26';
-import { T, fmt } from '../i18n.js?v=26';
-import { ic } from '../icons.js?v=26';
-import { ART } from '../art.js?v=26';
-import { G, now, dur, mm, busy, count, bMax, upCost, upSec, shortfall, unitCost, factoryMult, whCap, whUsed, fixCost, defectRate, demand, saleCap, CH, bulkPrice, compPrice } from '../state.js?v=26';
-import * as store from './store.js?v=26';
-import * as farm from './farm.js?v=26';
-import * as factory from './factory.js?v=26';
+import * as econ from '../econ.js?v=28';
+import { D, TAX, WAGE, RENT_HOUR } from '../data.js?v=28';
+import { T, fmt } from '../i18n.js?v=28';
+import { ic } from '../icons.js?v=28';
+import { ART } from '../art.js?v=28';
+import { G, now, dur, mm, busy, count, bMax, upCost, upSec, shortfall, unitCost, factoryMult, whCap, whUsed, fixCost, defectRate, demand, saleCap, CH, bulkPrice, compPrice } from '../state.js?v=28';
+import * as store from './store.js?v=28';
+import * as farm from './farm.js?v=28';
+import * as factory from './factory.js?v=28';
 
 let cur = 'factory'; const pick = {};
 const byLvl = o => Object.keys(o).sort((a, b) => o[a].lvl - o[b].lvl);
@@ -58,10 +58,10 @@ const selector = t => { const S = G.S, id = sel(t); if (!id) return '';
   if (t === 'farm') { cost = farm.growCost(id); sec = farm.growSec(id); ok = farm.canGrow(id); act = `grow:${id}`; if (!ok) why = busy('up', 'farm') ? T('building') : count('grow') >= S.b.farm ? `${T('slots')} ${count('grow')}/${S.b.farm}` : T('nomoney'); }
   else { const sf = shortfall(id); cost = sf.cost; sec = d.time * factoryMult(); ok = !locked && factory.canMake(id); act = `make:${id}`;
     if (locked) why = `${T('locked')} ${d.lvl}`; else if (!ok) why = busy('up', 'factory') ? T('building') : count('make') >= S.b.factory ? `${T('slots')} ${count('make')}/${S.b.factory}` : S.cond <= 0.2 ? T('broken') : S.money < sf.cost ? T('nomoney') : `${T('warehouse')} ${whUsed()}/${whCap()}`; }
-  return `<div class="car2">${nav}</div>${dots}<h2 class="pn">${locked ? ic('lock') : ''}${T(id)}</h2>
-    <div class="mute c">×${d.batch} · ${ic('timer')}${mm(dur(sec))}${D.products[id] ? ` · ${T('defect')} ~${Math.round(defectRate(2) * 100)}%` : ''}</div>${ings}
-    ${t === 'farm' ? '' : `<div class="mute c">${T('cost')} ${fmt(unitCost(id))}/${T('unit')}</div>`}
-    ${why ? `<div class="why">${why}</div>` : ''}<button class="b go" data-a="${act}" ${ok ? '' : 'disabled'}>${t === 'farm' ? T('grow') : cost > 0 ? T('buymake') : T('make')}${cost > 0 ? ' · ' + fmt(cost) : ''}</button>`; };
+  if (t === 'factory') return `<div class="car2">${nav}</div>${dots}<h2 class="pn">${locked ? ic('lock') : ''}${T(id)}</h2>${locked ? `<div class="why">${T('locked')} ${d.lvl}</div>` : factory.panel(id)}`;
+  return `<div class="car2">${nav}</div>${dots}<h2 class="pn">${T(id)}</h2>
+    <div class="mute c">×${d.batch} · ${ic('timer')}${mm(dur(farm.growSec(id)))}</div>
+    ${(() => { const ok = farm.canGrow(id), why = ok ? '' : busy('up', 'farm') ? T('building') : count('grow') >= S.b.farm ? `${T('slots')} ${count('grow')}/${S.b.farm}` : T('nomoney'); return `${why ? `<div class="why">${why}</div>` : ''}<button class="b go" data-a="grow:${id}" ${ok ? '' : 'disabled'}>${T('grow')} · ${fmt(farm.growCost(id))}</button>`; })()}`; };
 
 export const page = (t, hero) => { cur = t; const S = G.S, lv = S.b[t], top = lv >= bMax(), up = S.jobs.find(j => j.k === 'up' && j.id === t);
   return `<div class="bp"><div class="bph"><div class="bpb"><button class="sq" data-a="close" aria-label="${T('close')}">✕</button>

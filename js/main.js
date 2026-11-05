@@ -1,29 +1,30 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=26';
-import { T, fmt, setLang, setCur } from './i18n.js?v=26';
-import { init, load, save, serverOffset, status } from './api.js?v=26';
-import { D, xpCum } from './data.js?v=26';
-import { G, fresh, tick, setOffset, toasts, now, mm } from './state.js?v=26';
-import * as map from './screens/map.js?v=26';
-import * as market from './screens/market.js?v=26';
-import * as margin from './screens/margin.js?v=26';
-import * as factory from './screens/factory.js?v=26';
-import * as store from './screens/store.js?v=26';
-import * as farm from './screens/farm.js?v=26';
-import * as bp from './screens/bp.js?v=26';
-import * as office from './screens/office.js?v=26';
-import * as finance from './screens/finance.js?v=26';
-import * as depth from './depth.js?v=26';
-import * as econ from './econ.js?v=26';
-import * as warehouse from './screens/warehouse.js?v=26';
-import { GB } from './art.js?v=26';
-import * as item from './screens/item.js?v=26';
-import * as more from './screens/more.js?v=26';
-import * as profile from './screens/profile.js?v=26';
-import * as settings from './screens/settings.js?v=26';
-import * as btnshop from './screens/btnshop.js?v=26';
-import * as chat from './screens/chat.js?v=26';
-import * as search from './screens/search.js?v=26';
+import { ic } from './icons.js?v=28';
+import { T, fmt, setLang, setCur } from './i18n.js?v=28';
+import { init, load, save, serverOffset, status } from './api.js?v=28';
+import { D, xpCum } from './data.js?v=28';
+import { G, fresh, tick, setOffset, toasts, now, mm } from './state.js?v=28';
+import * as map from './screens/map.js?v=28';
+import * as market from './screens/market.js?v=28';
+import * as margin from './screens/margin.js?v=28';
+import * as factory from './screens/factory.js?v=28';
+import * as store from './screens/store.js?v=28';
+import * as farm from './screens/farm.js?v=28';
+import * as bp from './screens/bp.js?v=28';
+import * as office from './screens/office.js?v=28';
+import * as finance from './screens/finance.js?v=28';
+import * as depth from './depth.js?v=28';
+import * as econ from './econ.js?v=28';
+import * as warehouse from './screens/warehouse.js?v=28';
+import { GB } from './art.js?v=28';
+import * as item from './screens/item.js?v=28';
+import * as more from './screens/more.js?v=28';
+import * as profile from './screens/profile.js?v=28';
+import * as settings from './screens/settings.js?v=28';
+import * as btnshop from './screens/btnshop.js?v=28';
+import * as chat from './screens/chat.js?v=28';
+import * as search from './screens/search.js?v=28';
+import { loading, boot } from './loading.js?v=28';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, item, more, warehouse, market, margin, office, finance, profile, settings, btnshop, chat, search };   // tambah layar baru di sini
@@ -105,20 +106,36 @@ document.addEventListener('click', e => {
   const [a, arg] = el.dataset.a.split(/:(.*)/s); actions[a](arg); tick(); depth.tick(); econ.tick(); render();
 });
 
+// Kerangka shell saat G.S belum ada: header & nav tanpa aksi, konten = "Memuat data ...".
+function skeleton() {
+  setHTML($('#hud'), `<div class="hud1"><button class="hb" disabled aria-label="${T('menu')}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 6h18M3 12h18M3 18h18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></button>`
+    + `<button class="av ring" disabled aria-label="${T('profile')}" style="--p:0deg"><img class="logo" src="assets/logo.svg" alt=""></button>`
+    + `<div class="who"><span class="nm">&nbsp;</span><span class="xb"><i style="width:0"></i></span></div><span class="sp"></span>`
+    + `<span class="cash"><small>${T('cash')}</small><b class="money">—</b></span></div><div class="hud2"></div>`);
+  setHTML($('#nav'), NAV.map(t => `<button disabled>${ic(ICON[t])}${T(t)}</button>`).join(''));
+  setHTML($('#view'), loading());
+  const rs = document.documentElement.style; rs.setProperty('--hudh', $('#hud').offsetHeight + 'px'); rs.setProperty('--navh', $('#nav').offsetHeight + 'px');
+}
+
 (async () => { try {
-  await init();
-  setOffset(await serverOffset());                                  // timer ikut jam server
+  setLang(boot.lang()); skeleton(); boot.set(5);   // modul termuat; shell kerangka sudah di belakang splash
+  let off = false;
+  const step = async (p, f, fb) => { try { return await f(); } catch (e) { off = true; console.error(e); return fb; } finally { boot.set(p); if (off || status.mode === 'error') boot.msg(T('boot_offline')); } };   // gagal -> lanjut offline
+  await step(20, init);
+  setOffset(await step(40, serverOffset, 0));                        // timer ikut jam server
   setInterval(async () => setOffset(await serverOffset()), 300000);   // sinkron ulang tiap 5 menit
-  G.S = Object.assign(fresh(), (await load()) || {});   // migrasi save lama
+  const saved = await step(65, load, null);
+  G.S = Object.assign(fresh(), saved || {});   // migrasi save lama
   G.S.b.farm = G.S.b.farm || 0;
   for (const m in D.materials) G.S.mk.idx[m] = G.S.mk.idx[m] ?? 1;   // bahan mentah baru (migrasi save lama)
   if (G.S.xp == null) G.S.xp = xpCum(G.S.level);   // migrasi: level lama -> XP setara
   G.S.inbox = G.S.inbox || [];   // migrasi v25
   G.S.sp = G.S.sp || 0; G.S.rq = G.S.rq || {}; G.S.rqSpent = G.S.rqSpent || 0;   // migrasi v16
   if (G.S.wk.length !== G.S.workers) G.S.wk = Array(G.S.workers).fill(1);
-  setLang(G.S.lang); setCur(G.S.cur);
+  setLang(G.S.lang); setCur(G.S.cur); document.documentElement.lang = G.S.lang; boot.set(80);
   tick(); depth.tick(); econ.tick(); render();
   setInterval(() => { tick(); depth.tick(); econ.tick(); render(); }, 1000);
   setInterval(() => save(G.S), 5000);
   document.addEventListener('visibilitychange', () => document.hidden && save(G.S));
-} catch (e) { document.querySelector('#view').innerHTML = `<div class="card err"><b>Startup error</b><div class="mute">${String(e && e.message || e).replace(/[<>&]/g, '')}</div></div>`; console.error(e); } })();
+  boot.set(100); await boot.done();
+} catch (e) { document.querySelector('#view').innerHTML = `<div class="card err"><b>Startup error</b><div class="mute">${String(e && e.message || e).replace(/[<>&]/g, '')}</div></div>`; console.error(e); boot.done(); } })();

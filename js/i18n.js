@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { RATE } from './data.js?v=26';
-import { L2 } from './lang2.js?v=26';
-import { L3 } from './lang3.js?v=26';
+import { RATE } from './data.js?v=28';
+import { L2 } from './lang2.js?v=28';
+import { L3 } from './lang3.js?v=28';
 let lang = 'id', cur = 'idr';
 export const getLang = () => lang;
 export const setLang = l => (lang = l);

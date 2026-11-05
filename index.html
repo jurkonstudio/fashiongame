@@ -7,9 +7,45 @@
 <meta name="theme-color" content="#f6f3f8">
 <link rel="icon" href="assets/logo.svg">
 <title>FashionGame</title>
-<link rel="stylesheet" href="css/style.css?v=26">
+<link rel="stylesheet" href="css/style.css?v=28">
+<style>
+#boot{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(60% 45% at 15% 0,#ffd6e6 0,transparent 70%),radial-gradient(60% 45% at 100% 100%,#d9ddff 0,transparent 70%),linear-gradient(160deg,#fde8f1,#ebe4fa);color:#1d1726;font:600 .95rem system-ui,sans-serif;opacity:1;transition:opacity .25s ease}
+#boot.out{opacity:0;pointer-events:none}
+#boot .bt-c{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:0 24px}
+#boot img{width:96px;height:96px;border-radius:22px;box-shadow:0 10px 30px rgba(70,30,100,.28)}
+#boot p{margin:0;letter-spacing:.02em}
+#boot #bt-m{font-size:.78rem;font-weight:500;color:#6f6779}
+#boot .bt-bar{position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom,0px);height:4px;background:rgba(232,70,124,.16)}
+#boot .bt-bar i{display:block;height:100%;width:100%;background:#e8467c;transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+@media (prefers-reduced-motion:reduce){#boot,#boot .bt-bar i{transition:none}}
+</style>
 </head>
 <body>
+<div id="boot"><div class="bt-c" role="status" aria-live="polite"><img src="assets/logo.svg" alt="" width="96" height="96"><p id="bt-t"></p><p id="bt-m" hidden></p></div><div class="bt-bar" aria-hidden="true"><i id="bt-i"></i></div></div>
+<script>
+/* Splash: berjalan sebelum module JS. Bahasa dari localStorage/navigator karena G.S belum ada. */
+(function () {
+  var nav = (navigator.language || '').slice(0, 2) === 'id' ? 'id' : 'en', lang = nav;
+  try { var s = JSON.parse(localStorage.getItem('fg')); if (s && (s.lang === 'id' || s.lang === 'en')) lang = s.lang; } catch (e) {}
+  var TX = { id: ['Menyiapkan game ...', 'Mode offline'], en: ['Preparing the game ...', 'Offline mode'] };
+  var el = document.getElementById('boot'), bar = document.getElementById('bt-i'), msg = document.getElementById('bt-m');
+  document.getElementById('bt-t').textContent = TX[lang][0];
+  var t0 = Date.now(), tm = 0, reduce = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+  window.__boot = {
+    lang: lang,
+    set: function (p) { bar.style.transform = 'scaleX(' + Math.max(0, Math.min(100, p)) / 100 + ')'; },
+    msg: function (t) { if (!tm) tm = Date.now(); msg.textContent = t || TX[lang][1]; msg.hidden = false; },
+    done: function () {
+      var wait = Math.max(0, 500 - (Date.now() - t0), tm ? 1200 - (Date.now() - tm) : 0);
+      return new Promise(function (ok) { setTimeout(function () {
+        el.classList.add('out');
+        setTimeout(function () { el.remove(); delete window.__boot; ok(); }, reduce ? 0 : 250);
+      }, wait); });
+    }
+  };
+  window.__boot.set(0);
+})();
+</script>
 <header id="hud"></header>
 <section id="city" hidden></section>
 <main id="view"></main>
@@ -17,6 +53,6 @@
 <div id="sheet"></div>
 <div id="drawer"></div>
 <div id="toast" aria-live="polite"></div>
-<script type="module" src="js/main.js?v=26"></script>
+<script type="module" src="js/main.js?v=28"></script>
 </body>
 </html>

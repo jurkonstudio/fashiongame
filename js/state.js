@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=26';
-import { T, fmt } from './i18n.js?v=26';
-import { D, XP, BTN, QR, SCI, SUP, SEG, SEASONS, ADMIN, SAT, EXCH, CONTRACT, QRC, EXEC, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, CASH_SETTLE, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=26';
+import { ic } from './icons.js?v=28';
+import { T, fmt } from './i18n.js?v=28';
+import { D, XP, BTN, QR, SCI, SUP, SEG, SEASONS, ADMIN, SAT, EXCH, CONTRACT, QRC, EXEC, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, CASH_SETTLE, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=28';
 export const MOD = { dem: () => 1, mat: () => 1, px: () => 1 };   // diisi depth.js (peristiwa, pemasaran)
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 export const toasts = [];
@@ -26,12 +26,12 @@ export const matPrice = (m, sup = G.sup) => D.materials[m].price * (G.S.mk.idx[m
 export const buyMat = (m, n, sup = G.sup) => { const S = G.S, c = matPrice(m, sup) * n; if (n <= 0 || S.money < c) return false;
   S.money -= c; const o = S.mat[m] || 0, t = o + n;
   S.mc[m] = ((S.mc[m] || 0) * o + c) / t; S.mq[m] = ((S.mq[m] || 0) * o + SUP[sup].q * n) / t; S.mat[m] = t; return true; };
-export const shortfall = id => { let cost = 0; const miss = {};
-  for (const [m, n] of Object.entries(itemDef(id).recipe)) { const k = Math.max(0, n - (G.S.mat[m] || 0)); if (k) { miss[m] = k; cost += k * matPrice(m); } }
+export const shortfall = (id, b = 1) => { let cost = 0; const miss = {};   // b = jumlah batch
+  for (const [m, n] of Object.entries(itemDef(id).recipe)) { const k = Math.max(0, n * b - (G.S.mat[m] || 0)); if (k) { miss[m] = k; cost += k * matPrice(m); } }
   return { cost, miss }; };
 export const qBonus = id => D.products[id] ? ((G.S.rq || {})[id] || 0) * QR.bonus : 0;   // bonus kualitas dari riset
-export const useBatch = id => { const S = G.S; let cost = 0, q = 0, u = 0;       // pakai bahan stok, hitung HPP + kualitas
-  for (const [m, n] of Object.entries(itemDef(id).recipe)) { cost += n * (S.mc[m] || 0); q += n * (S.mq[m] || 1); u += n; S.mat[m] -= n; }
+export const useBatch = (id, b = 1) => { const S = G.S; let cost = 0, q = 0, u = 0;       // pakai bahan stok, hitung HPP + kualitas (b batch)
+  for (const [m, n0] of Object.entries(itemDef(id).recipe)) { const n = n0 * b; cost += n * (S.mc[m] || 0); q += n * (S.mq[m] || 1); u += n; S.mat[m] -= n; }
   S.led.mat += cost; return { cost, q: Math.min(5, q / u + qBonus(id)) }; };
 
 // --- rumus ---

@@ -266,3 +266,34 @@ body:has(.subbar){padding-bottom:calc(126px + env(safe-area-inset-bottom))}
 #hud .who{cursor:pointer}.who .nm,.who .xb,.who small{cursor:pointer}
 input.srch{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font:600 1rem system-ui}
 .srh{display:flex;align-items:center;gap:8px;width:100%;text-align:left;margin:4px 0}
+
+
+/* v27: panel produksi */
+.pm{margin-top:4px}
+.pm-ings{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
+.pm-ings .ing{flex-direction:column;align-items:center;gap:0;padding:6px 10px 4px;min-width:62px;border-radius:14px;box-shadow:var(--sh1),var(--bev)}
+.pm-ings .ing .art{width:40px;height:40px}.pm-ings .ing b{font-size:1.05rem;color:var(--acc)}.pm-ings .ing small{font-size:.68rem;color:var(--mute)}
+.pm-ings .ing.bad b{color:#c4391b}.pm-ings .ing small::before{content:'ada '}
+.pm-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.pm-sum>div{background:linear-gradient(180deg,#fff,#f3eaf7);border:1px solid var(--line);border-top:3px solid var(--hot);border-radius:12px;padding:6px 8px;text-align:center;box-shadow:var(--bev)}
+.pm-sum small{display:block;font:700 .62rem system-ui;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.pm-sum b{display:block;font-size:1.02rem;margin:1px 0}.pm-sum em{display:block;font-style:normal;font-size:.7rem;color:var(--mute)}
+.pm-g{margin:8px 0}.pm-g h4{margin:0 0 5px;font:700 .72rem system-ui;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+.pm-r{display:flex;gap:6px}.pm-r .chip{min-height:40px;padding:0 4px}
+.pm-q{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0}.pm-q small{font-size:.66rem;color:var(--mute);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.stars2{color:#f5a623;font-size:1.35rem;letter-spacing:-1px;text-shadow:0 1px 0 #b36b00;line-height:1.1}
+.pm .qp h4{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+.pm-warn{margin-top:10px;background:#fff3d6;border:1px solid #f2d089;border-left:4px solid var(--gold);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:8px}
+.pm-wl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-weight:600;font-size:.86rem}
+.pm-wl .ing{padding:1px 8px 1px 2px}.pm-wl .ing .art{width:22px;height:22px}
+.pm-warn .b{align-self:flex-start}
+
+/* v28: layar memuat (shell + "Memuat data ...") */
+.ld{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:50vh;color:var(--mute);font:600 .9rem system-ui}
+.ld-dots{display:flex;gap:7px}
+.ld-dots i{width:10px;height:10px;border-radius:50%;background:var(--hot);animation:ldp 1s ease-in-out infinite}
+.ld-dots i:nth-child(2){animation-delay:.15s}.ld-dots i:nth-child(3){animation-delay:.3s}
+@keyframes ldp{0%,80%,100%{opacity:.25;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.ld-dots i{animation:none;opacity:.7}}
+#hud .nm.sk,#hud .money{min-width:40px}
+#nav button:disabled{opacity:.6}

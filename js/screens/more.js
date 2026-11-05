@@ -1,10 +1,10 @@
 // (c) 2026 FashionGame. Menu samping: Pencapaian, Perpustakaan (resep), Tentang.
-import * as econ from '../econ.js?v=26';
-import { D, REDEEM, SEG, TAX, BTN } from '../data.js?v=26';
-import { T, fmt } from '../i18n.js?v=26';
-import { ic } from '../icons.js?v=26';
-import { ART } from '../art.js?v=26';
-import { G, now, toasts } from '../state.js?v=26';
+import * as econ from '../econ.js?v=28';
+import { D, REDEEM, SEG, TAX, BTN } from '../data.js?v=28';
+import { T, fmt } from '../i18n.js?v=28';
+import { ic } from '../icons.js?v=28';
+import { ART } from '../art.js?v=28';
+import { G, now, toasts } from '../state.js?v=28';
 
 let sub = 'ach';
 export const ACH = [['first', 'Penjualan pertama', 'First sale', S => S.sold >= 1], ['s100', '100 unit terjual', '100 units sold', S => S.sold >= 100], ['s500', '500 unit terjual', '500 units sold', S => S.sold >= 500],

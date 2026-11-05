@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. Toko Kancing Emas.
-import { T } from '../i18n.js?v=26';
-import { ic } from '../icons.js?v=26';
-import { GB } from '../art.js?v=26';
-import { G } from '../state.js?v=26';
+import { T } from '../i18n.js?v=28';
+import { ic } from '../icons.js?v=28';
+import { GB } from '../art.js?v=28';
+import { G } from '../state.js?v=28';
 const soon = (ico, n) => `<div class="card mute"><div class="row"><b>${ic(ico)}${T(n)}</b><span>${T('bs_soon')}</span></div></div>`;
 export const view = () => { const S = G.S;
   return `<h2>${GB} ${T('btnshop')}</h2><div class="card"><div class="row"><span>${T('btn')}</span><b>${Math.floor(S.btn)} ${GB}</b></div></div>`

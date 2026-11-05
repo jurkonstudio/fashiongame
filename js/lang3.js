@@ -28,3 +28,9 @@ Object.assign(L3.en, { chat:'Chat', search:'Search', hd_contest:'Contest', hd_ms
 
 Object.assign(L3.id, { xq_t:'Kualitas', st_t:'Statistik ritel', st_dem:'Permintaan', st_sat:'Jenuh', st_hint:'Harga acuan menurut filter kualitas. Jenuh = pasar penuh oleh jualanmu dan pesaing; makin tinggi, harga jual makin turun.', csv:'Ekspor CSV' });
 Object.assign(L3.en, { xq_t:'Quality', st_t:'Retail stats', st_dem:'Demand', st_sat:'Saturation', st_hint:'Reference price by quality filter. Saturation = market filled by your sales and rivals; higher means lower sell prices.', csv:'Export CSV' });
+
+Object.assign(L3.id, { pm_fin:'Selesai pukul', pm_by:'Berdasarkan waktu', pm_qual:'Kualitas bahan', pm_ops:'Biaya operasional', pm_out:'Hasil', pm_miss:'Bahan kurang', pm_buy:'Beli kurang', pm_max:'MAKS', pm_wh:'Gudang penuh' });
+Object.assign(L3.en, { pm_fin:'Finish at', pm_by:'By time', pm_qual:'Input quality', pm_ops:'Operating cost', pm_out:'Output', pm_miss:'Missing materials', pm_buy:'Buy missing', pm_max:'MAX', pm_wh:'Warehouse full' });
+
+Object.assign(L3.id, { boot_init:'Menyiapkan game ...', boot_load:'Memuat data ...', boot_offline:'Mode offline' });
+Object.assign(L3.en, { boot_init:'Preparing the game ...', boot_load:'Loading data ...', boot_offline:'Offline mode' });

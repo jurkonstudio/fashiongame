@@ -1,0 +1,19 @@
+FashionGame - Hak Cipta & Lisensi / Copyright & License
+
+Copyright (c) 2026 FashionGame. All rights reserved. / Semua hak dilindungi.
+(Ganti "FashionGame" dengan nama pemilik/penerbit resmi bila perlu.)
+
+1. Kepemilikan. Seluruh kode (js/, css/, index.html), data game, teks, ikon SVG (assets/icons/),
+   ilustrasi peta, dan nama tokoh fiktif adalah karya orisinal pemilik. Tidak ada aset gambar, font,
+   suara, atau kode pihak ketiga yang disalin ke dalam proyek ini. Font memakai font bawaan sistem.
+2. Izin. Tanpa izin tertulis dari pemilik, dilarang menyalin, memodifikasi, menjual, menerbitkan ulang,
+   atau membuat karya turunan dari proyek ini, seluruhnya maupun sebagian.
+3. Pengecualian. Pemilik boleh memberi lisensi terpisah secara tertulis kepada pihak tertentu.
+4. Merek. Nama, istilah, dan tokoh dalam game ini fiktif. Kemiripan dengan orang atau produk lain
+   adalah kebetulan; proyek ini tidak berafiliasi dengan game atau perusahaan lain mana pun.
+5. Tanpa jaminan. Perangkat lunak disediakan "apa adanya", tanpa jaminan apa pun.
+6. Layanan pihak ketiga (opsional): Supabase memakai pustaka @supabase/supabase-js (lisensi MIT milik
+   pembuatnya), dimuat dari CDN hanya bila js/config.js diisi. Tidak disertakan dalam repositori ini.
+
+Dokumen ini ringkasan praktis, bukan nasihat hukum. Untuk perlindungan resmi, daftarkan hak cipta
+dan konsultasikan dengan penasihat hukum.

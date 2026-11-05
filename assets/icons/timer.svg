@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img">
+<title>timer</title><desc>FashionGame icon "timer". Copyright (c) 2026 FashionGame. All rights reserved.</desc>
+<!-- Copyright (c) 2026 FashionGame. All rights reserved. Not for copying or redistribution without written permission. -->
+<rect x="2" y="2" width="60" height="60" rx="14" fill="#1d5c4e"/>
+<rect x="6.5" y="6.5" width="51" height="51" rx="10.5" fill="none" stroke="#fffaf2" stroke-opacity=".45" stroke-width="1.5" stroke-dasharray="3 3"/>
+<g fill="#fffaf2" stroke="#fffaf2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><circle cx="32" cy="34" r="15" fill="none" stroke-width="4"/><path d="M32 34V25M32 34l7 4" fill="none" stroke-width="3.5"/><path d="M27 13h10" stroke-width="4"/></g>
+</svg>

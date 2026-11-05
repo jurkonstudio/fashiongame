@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img">
+<title>warehouse</title><desc>FashionGame icon "warehouse". Copyright (c) 2026 FashionGame. All rights reserved.</desc>
+<!-- Copyright (c) 2026 FashionGame. All rights reserved. Not for copying or redistribution without written permission. -->
+<rect x="2" y="2" width="60" height="60" rx="14" fill="#12443a"/>
+<rect x="6.5" y="6.5" width="51" height="51" rx="10.5" fill="none" stroke="#fffaf2" stroke-opacity=".45" stroke-width="1.5" stroke-dasharray="3 3"/>
+<g fill="#fffaf2" stroke="#fffaf2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 29l20-14 20 14v21H12z"/><rect x="21" y="34" width="22" height="16" fill="#12443a" stroke="none"/><path d="M21 40h22M21 45h22" stroke="#fffaf2" stroke-width="1.5" fill="none"/></g>
+</svg>

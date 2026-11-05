@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img">
+<title>bag</title><desc>FashionGame icon "bag". Copyright (c) 2026 FashionGame. All rights reserved.</desc>
+<!-- Copyright (c) 2026 FashionGame. All rights reserved. Not for copying or redistribution without written permission. -->
+<rect x="2" y="2" width="60" height="60" rx="14" fill="#e4572e"/>
+<rect x="6.5" y="6.5" width="51" height="51" rx="10.5" fill="none" stroke="#fffaf2" stroke-opacity=".45" stroke-width="1.5" stroke-dasharray="3 3"/>
+<g fill="#fffaf2" stroke="#fffaf2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><rect x="15" y="26" width="34" height="23" rx="5"/><path d="M24 26v-4q0-8 8-8t8 8v4" fill="none" stroke-width="3"/><g fill="#f2b84b" stroke="none"><rect x="28" y="34" width="8" height="5" rx="2"/></g></g>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img">
+<title>shirt</title><desc>FashionGame icon "shirt". Copyright (c) 2026 FashionGame. All rights reserved.</desc>
+<!-- Copyright (c) 2026 FashionGame. All rights reserved. Not for copying or redistribution without written permission. -->
+<rect x="2" y="2" width="60" height="60" rx="14" fill="#e4572e"/>
+<rect x="6.5" y="6.5" width="51" height="51" rx="10.5" fill="none" stroke="#fffaf2" stroke-opacity=".45" stroke-width="1.5" stroke-dasharray="3 3"/>
+<g fill="#fffaf2" stroke="#fffaf2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M24 14l8 5 8-5 12 9-6 8-4-3v19H22V28l-4 3-6-8z"/></g>
+</svg>

@@ -1,17 +1,17 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js';
-import { T, fmt, setLang, setCur } from './i18n.js';
-import { init, load, save, serverOffset, status } from './api.js';
-import { D } from './data.js';
-import { G, fresh, tick, setOffset } from './state.js';
-import * as map from './screens/map.js';
-import * as market from './screens/market.js';
-import * as margin from './screens/margin.js';
-import * as factory from './screens/factory.js';
-import * as store from './screens/store.js';
-import * as office from './screens/office.js';
-import * as finance from './screens/finance.js';
-import * as profile from './screens/profile.js';
+import { ic } from './icons.js?v=3';
+import { T, fmt, setLang, setCur } from './i18n.js?v=3';
+import { init, load, save, serverOffset, status } from './api.js?v=3';
+import { D } from './data.js?v=3';
+import { G, fresh, tick, setOffset } from './state.js?v=3';
+import * as map from './screens/map.js?v=3';
+import * as market from './screens/market.js?v=3';
+import * as margin from './screens/margin.js?v=3';
+import * as factory from './screens/factory.js?v=3';
+import * as store from './screens/store.js?v=3';
+import * as office from './screens/office.js?v=3';
+import * as finance from './screens/finance.js?v=3';
+import * as profile from './screens/profile.js?v=3';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, market, margin, office, finance, profile };   // tambah layar baru di sini

@@ -1,10 +1,10 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js';
-import { T, fmt } from '../i18n.js';
-import { ic, icu } from '../icons.js';
-import { G, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js';
-import * as factory from './factory.js';
-import * as store from './store.js';
+import { D, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=3';
+import { T, fmt } from '../i18n.js?v=3';
+import { ic, icu } from '../icons.js?v=3';
+import { G, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=3';
+import * as factory from './factory.js?v=3';
+import * as store from './store.js?v=3';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.

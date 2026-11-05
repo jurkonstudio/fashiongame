@@ -1,9 +1,9 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, WAGE, SLOT_COST } from '../data.js';
-import { T, fmt, setLang, setCur } from '../i18n.js';
-import { SUPABASE_URL } from '../config.js';
-import { ic } from '../icons.js';
-import { G, fresh, unitCost, factoryMult } from '../state.js';
+import { D, WAGE, SLOT_COST } from '../data.js?v=3';
+import { T, fmt, setLang, setCur } from '../i18n.js?v=3';
+import { SUPABASE_URL } from '../config.js?v=3';
+import { ic } from '../icons.js?v=3';
+import { G, fresh, unitCost, factoryMult } from '../state.js?v=3';
 
 // Profil & pengaturan (teks/logika). Nama eksekutif adalah tokoh fiktif buatan sendiri.
 let sub = 'company', arm = false;

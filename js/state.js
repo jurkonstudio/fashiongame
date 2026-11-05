@@ -1,6 +1,6 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js';
-import { D, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js';
+import { ic } from './icons.js?v=3';
+import { D, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=3';
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 let OFF = 0;                                   // selisih jam server Supabase - jam perangkat
 export const setOffset = o => { OFF = o; };

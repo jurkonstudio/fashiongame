@@ -141,3 +141,13 @@ body{background:radial-gradient(1200px 600px at 80% -10%,#ffe9f2 0,transparent 6
 .why{text-align:center;color:#c4391b;font-size:.85rem;margin:4px 0}.b.go{display:block;width:100%;margin-top:8px;min-height:50px;font-size:1rem}.pr{justify-content:center;gap:16px}.bigp{font-size:1.5rem}
 .rj{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:8px 10px;margin-top:8px}.rj .art{width:34px;height:34px}.rj>div{flex:1}.rj .bar{margin-top:4px}
 .bp .art>rect:last-child{display:none}
+
+/* grid bangunan (v17) */
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+.gt{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.gt .gh{display:flex;align-items:center;gap:6px;cursor:pointer}.gt .gh b{flex:1;font-size:.88rem}.gt .gm{color:var(--mute);font-size:1.2rem}
+.gt .b{width:100%;min-height:40px}.gt .b.sm{min-height:34px;font-size:.78rem}
+.gt .b.go2{background:var(--hot);color:#fff;border-color:var(--hot);font-weight:700}
+.gbtn{display:flex;flex-direction:column;gap:5px;margin-top:auto}
+.gfx{font-size:.78rem;font-weight:700;color:#1d8f4e}
+.gt .mute{font-size:.74rem}

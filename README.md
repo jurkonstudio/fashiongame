@@ -138,3 +138,9 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - Riset kualitas per produk (Kantor > Riset): 4 bintang, tiap bintang +0.5 kualitas, butuh SP + uang + waktu (data.js: `QR`). Kualitas akhir = rata-rata kualitas bahan + bonus riset, maks Q5.
 - Harga acuan kini `0.6 + 0.2 x Q` (Q1 = 0.8x, Q2 = 1x, Q5 = 1.6x). Kontrak bisa meminta Q lebih tinggi.
 - Rencana: sesi 2 pasar penawaran/permintaan, sesi 3 nilai perusahaan lengkap, sesi 4 polesan & balancing.
+
+## Update v17 (sesi 1b: tab utama jadi grid bangunan ala Sim Companies)
+- Tab "Peta" diganti **Bangunan**: grid kartu per slot lahan (js/screens/map.js, fungsi `view`). Peta isometrik lama tetap ada sebagai `mapView` (tidak dipakai).
+- Tiap kartu: status, progress bar + timer, hasil terakhir (+n barang / +uang), tombol aksi langsung (PRODUCE / SELL n / HARVEST) dan Upgrade. Ketuk judul kartu = halaman detail bangunan (bp.js) seperti sebelumnya.
+- Beli lahan (`pbuy`) dan bangun (`pbuild`) langsung dari kartu, tanpa panel perantara. Kantor membuka tab Kantor.
+- Toast notifikasi kini juga tampil di tab Bangunan. Cache ?v=17.

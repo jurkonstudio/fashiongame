@@ -1,9 +1,9 @@
 // (c) 2026 FashionGame. Menu samping: Pencapaian, Perpustakaan (resep), Tentang.
-import { D } from '../data.js?v=16';
-import { T, fmt } from '../i18n.js?v=16';
-import { ic } from '../icons.js?v=16';
-import { ART } from '../art.js?v=16';
-import { G } from '../state.js?v=16';
+import { D } from '../data.js?v=17';
+import { T, fmt } from '../i18n.js?v=17';
+import { ic } from '../icons.js?v=17';
+import { ART } from '../art.js?v=17';
+import { G } from '../state.js?v=17';
 
 let sub = 'ach';
 const ACH = [['first', 'Penjualan pertama', 'First sale', S => S.sold >= 1], ['s100', '100 unit terjual', '100 units sold', S => S.sold >= 100], ['s500', '500 unit terjual', '500 units sold', S => S.sold >= 500],

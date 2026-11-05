@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SUP } from '../data.js?v=16';
-import { T, fmt } from '../i18n.js?v=16';
-import { ic } from '../icons.js?v=16';
-import { G, itemDef, now, dur, mm, unitCost, factoryMult, busy, count, shortfall, buyMat, useBatch, whCap, whUsed, defectRate, fixCost } from '../state.js?v=16';
+import { D, SUP } from '../data.js?v=17';
+import { T, fmt } from '../i18n.js?v=17';
+import { ic } from '../icons.js?v=17';
+import { G, itemDef, now, dur, mm, unitCost, factoryMult, busy, count, shortfall, buyMat, useBatch, whCap, whUsed, defectRate, fixCost } from '../state.js?v=17';
 
 const blocked = id => { const S = G.S;
   return busy('up', 'factory') || count('make') >= S.b.factory || S.cond <= 0.2 || (D.products[id] && whUsed() + D.products[id].batch > whCap()); };

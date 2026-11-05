@@ -1,13 +1,13 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=16';
-import { T, fmt } from '../i18n.js?v=16';
-import { ic, icu } from '../icons.js?v=16';
-import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=16';
-import * as factory from './factory.js?v=16';
-import * as depth from '../depth.js?v=16';
-import * as store from './store.js?v=16';
-import * as farm from './farm.js?v=16';
-import * as bp from './bp.js?v=16';
+import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=17';
+import { T, fmt } from '../i18n.js?v=17';
+import { ic, icu } from '../icons.js?v=17';
+import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=17';
+import * as factory from './factory.js?v=17';
+import * as depth from '../depth.js?v=17';
+import * as store from './store.js?v=17';
+import * as farm from './farm.js?v=17';
+import * as bp from './bp.js?v=17';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -104,7 +104,7 @@ const guide = () => { const S = G.S, has = t => S.land.slots.some(x => x.t === t
   const c = k === 1 ? ' · ' + fmt(NEW_B.factory.cost) : k === 4 ? ' · ' + fmt(NEW_B.store.cost) : '';
   return k ? `<div class="card guide"><b>${T('step')}${k < 7 ? ` ${k}/6` : ''}</b><div>${T('g' + k)}${c}</div></div>` : ''; };
 
-export const view = () => { const S = G.S, hr = new Date(now()).getHours(), night = hr >= 18 || hr < 5, t = Math.min(4, S.level) - 1, th = TH[t], sl = S.land.slots;
+export const mapView = () => { const S = G.S, hr = new Date(now()).getHours(), night = hr >= 18 || hr < 5, t = Math.min(4, S.level) - 1, th = TH[t], sl = S.land.slots;
   const A = P(0, 0), B = P(4, 0), C = P(4, 3), D2 = P(0, 3), ap = [[A[0], A[1] - 9], [B[0] + 13, B[1]], [C[0], C[1] + 9], [D2[0] - 13, D2[1]]];
   const lp = (p, q, k) => [p[0] + (q[0] - p[0]) * k, p[1] + (q[1] - p[1]) * k], Z = [A, B, C, D2], nx = i => (i + 1) % 4,
     bk = ap.map((p, i) => [p[0] + [0, 36, 0, -36][i], p[1] + [-20, 0, 20, 0][i]]), mid = ap.map((p, i) => lp(p, Z[i], .5)),
@@ -171,7 +171,38 @@ export const actions = {
     if (!s || !s.own || s.t || !NEW_B[t] || S.money < NEW_B[t].cost || S.land.slots.some(x => x.t === t)) return;
     S.money -= NEW_B[t].cost; s.t = t;
     if (BUILD_SEC[t]) { S.b[t] = 0; S.jobs.push({ k: 'up', id: t, st: now(), end: now() + dur(BUILD_SEC[t]) }); } else S.b[t] = S.b[t] || 1; },
+  pbuy: i => { sel = +i; actions.buyslot(); sel = null; },
+  pbuild: a => { const [i, t] = a.split(','); sel = +i; actions.build(t); sel = null; },
   qgrow: () => farm.actions.qgrow(),
   qmake: () => factory.actions.make('shoes'),
   qsell: () => { const id = Object.keys(D.products).find(k => (G.S.stock[k] || 0) > 0); if (id) store.actions.sell(id); }
 };
+
+// ===== Grid bangunan (menggantikan peta isometrik sebagai tampilan utama; mapView lama tetap ada) =====
+const upProg = j => { const tot = j.st ? j.end - j.st : dur(upSec(j.id)); return Math.max(0, Math.min(1, 1 - (j.end - now()) / tot)); };
+const gfx = b => { const t = now(), e = (G.S.fx || []).filter(e => e.b === b && t - e.t < 12000).slice(-1)[0];
+  return e ? `<div class="gfx">+${e.n} ${T(e.id)}${e.m ? ' · +' + fmt(e.m) : ''}</div>` : ''; };
+const freeBuild = () => { const S = G.S, has = t => S.land.slots.some(x => x.t === t), core = has('factory') && has('store');
+  return Object.entries(NEW_B).filter(([t]) => !has(t) && (t === 'factory' || t === 'store' || core)); };
+const gAct = (t, i) => { const S = G.S;       // [label, aksi, gaya, progres 0-1, sisa ms]
+  if (t === 'farm') { const j = S.jobs.find(j => j.k === 'grow'), id = Object.keys(D.grow).find(k => (S.mat[k] || 0) < 20) || 'cotton';
+    if (j) return [T('grow'), null, 'run', prog(j), j.end - now()]; return [T('grow').toUpperCase(), farm.canGrow(id) ? 'qgrow' : 'slot:' + i, farm.canGrow(id) ? 'go' : 'off', null, 0]; }
+  const p = pillD(t, i); if (!p) return null; const j = S.jobs.find(j => j.k === (t === 'factory' ? 'make' : 'sell'));
+  return [p[0], p[1], p[2], p[3], j ? j.end - now() : 0]; };
+const gTile = (s, i) => { const S = G.S, tn = `<span class="gn">${i + 1}</span>`;
+  if (!s.own) { const ok = S.btn >= BTN.plot;
+    return `<div class="card gt mute"><div class="gh">${ic('lock')}<b>${T('plot')} ${i + 1}</b></div><button class="b" data-a="pbuy:${i}" ${ok ? '' : 'disabled'}>${T('buyslot')} · ${BTN.plot} ${T('btn')}</button></div>`; }
+  if (!s.t) { const L = freeBuild();
+    return `<div class="card gt"><div class="gh">${ic('map')}<b>${T('empty')}</b></div>${L.map(([t, b]) => `<button class="b" data-a="pbuild:${i},${t}" ${S.money < b.cost ? 'disabled' : ''}>${ic(b.icon)} ${T(t)} · ${fmt(b.cost)}</button>`).join('') || `<div class="mute">${T('allbuilt')}</div>`}</div>`; }
+  const t = s.t, lv = S.b[t], up = S.jobs.find(j => j.k === 'up' && j.id === t), top = lv >= bMax();
+  if (t === 'office') return `<div class="card gt" data-a="tab:office"><div class="gh">${ic('office')}<b>${T('office')} Lv${lv}</b></div><div class="mute">${ic('worker')} ${S.wk.length}/${lv * 5}</div><div class="mute">${T(D.buildings.office.fx)}</div></div>`;
+  let mid = '', btn = '';
+  if (up) mid = `<div class="bar"><i style="width:${upProg(up) * 100}%"></i></div><div class="mute">${ic('timer')}${lv ? T('upgrade') : T('buildhere')} · ${mm(up.end - now())}</div>`;
+  else { const a = gAct(t, i);
+    if (t === 'warehouse') mid = `<div class="bar"><i style="width:${Math.min(100, whUsed() / whCap() * 100)}%"></i></div><div class="mute">${whUsed()}/${whCap()}</div>`;
+    else if (a) { mid = a[2] === 'run' ? `<div class="bar"><i style="width:${(a[3] || 0) * 100}%"></i></div><div class="mute">${ic('timer')}${mm(a[4])}</div>` : '';
+      btn = a[2] === 'run' ? '' : `<button class="b ${a[2] === 'go' || a[2] === 'sell' ? 'go2' : ''}" data-a="${a[1]}" ${a[2] === 'off' ? 'disabled' : ''}>${a[0]}</button>`; } }
+  const upb = up ? '' : `<button class="b sm" data-a="up:${t}" ${top || S.money < upCost(t) ? 'disabled' : ''}>${ic('upgrade')} ${top ? T('max') : fmt(upCost(t))}</button>`;
+  return `<div class="card gt"><div class="gh" data-a="slot:${i}">${ic(IC[t])}<b>${T(t)} Lv${lv || 1}</b><span class="gm">›</span></div>${mid}${gfx(t)}<div class="gbtn">${btn}${upb}</div></div>`; };
+export const view = () => { const S = G.S;
+  return guide() + inv() + `<div class="ggrid">${S.land.slots.map(gTile).join('')}</div>`; };

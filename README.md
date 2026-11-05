@@ -128,3 +128,7 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - Rantai penuh: Kebun > bahan mentah > Pabrik (benang/kain/kulit/karet) > Pabrik (produk) > Toko.
 - Produk baru: **Gaun** (Lv3) dan **Jaket** (Lv4). Resep ada di data.js (D.products).
 - Peta: bangunan Kebun dengan semak kapas, gelembung panen. Save lama kompatibel (S.b.farm ditambahkan otomatis). Cache ?v=14.
+
+## Update v15 (sesi 4: halaman bangunan ala Sim Companies)
+- Ketuk Pabrik/Toko/Kebun/Gudang di peta membuka **halaman penuh** (js/screens/bp.js): gambar bangunan besar, tombol tutup & upgrade, statistik, riwayat hasil terakhir (kartu hijau, S.lg), lalu carousel barang besar (‹ ›) dengan bahan (merah bila kurang), waktu, dan satu tombol aksi besar (Produksi / Panen / Jual). Toko punya tab kanal + atur harga.
+- Panel bawah lama tetap dipakai untuk lahan terkunci/kosong. Riwayat (S.lg) dicatat otomatis di state.fx(). Cache ?v=15.

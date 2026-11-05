@@ -1,12 +1,13 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=14';
-import { T, fmt } from '../i18n.js?v=14';
-import { ic, icu } from '../icons.js?v=14';
-import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=14';
-import * as factory from './factory.js?v=14';
-import * as depth from '../depth.js?v=14';
-import * as store from './store.js?v=14';
-import * as farm from './farm.js?v=14';
+import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=15';
+import { T, fmt } from '../i18n.js?v=15';
+import { ic, icu } from '../icons.js?v=15';
+import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=15';
+import * as factory from './factory.js?v=15';
+import * as depth from '../depth.js?v=15';
+import * as store from './store.js?v=15';
+import * as farm from './farm.js?v=15';
+import * as bp from './bp.js?v=15';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -148,8 +149,10 @@ const upCard = id => { const S = G.S, b = D.buildings[id], lv = S.b[id], top = l
 const PANEL = { farm: () => upCard('farm') + farm.view(), factory: () => upCard('factory') + factory.view(), store: () => upCard('store') + store.view() + depth.salesPanel(),
   warehouse: () => upCard('warehouse') + `<div class="card"><div class="row"><span>${T('warehouse')}</span><b>${whUsed()}/${whCap()}</b></div></div>` };
 
+const heroSvg = t => `<svg viewBox="-62 -96 124 130" aria-hidden="true"><polygon points="-52,2 0,28 52,2 0,-24" fill="#efe3c6"/><polygon points="-52,2 0,28 0,36 -52,10" fill="#b99f78"/><polygon points="0,28 52,2 52,10 0,36" fill="#a08660"/>${bld(t, G.S.b[t] || 1, 0, 6)}</svg>`;
 export const sheet = () => { if (sel === null) return '';
   const S = G.S, s = S.land.slots[sel]; let ti, body;
+  if (s.own && s.t && s.t !== 'office') return bp.page(s.t, heroSvg(s.t));
   if (!s.own) { const c = BTN.plot; ti = `${ic('lock')}${T('plot')} ${sel + 1}`;
     body = `<div class="card"><div class="row"><span>${T('buyslot')}</span><b>${c} ${T('btn')}</b></div><div class="row"><button class="b" data-a="buyslot" ${S.btn < c ? 'disabled' : ''}>${T('buyslot')} · ${c} ${T('btn')}</button></div></div>`; }
   else if (!s.t) { ti = `${ic('map')}${T('plot')} ${sel + 1}`;

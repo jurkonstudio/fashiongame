@@ -1,12 +1,13 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SEASONS, TAX } from '../data.js?v=14';
-import { T, fmt } from '../i18n.js?v=14';
-import { ic } from '../icons.js?v=14';
-import { G, now, dur, mm, unitCost, demand, saleCap, busy, count, CH, bulkPrice, month, compPrice } from '../state.js?v=14';
+import { D, SEASONS, TAX } from '../data.js?v=15';
+import { T, fmt } from '../i18n.js?v=15';
+import { ic } from '../icons.js?v=15';
+import { G, now, dur, mm, unitCost, demand, saleCap, busy, count, CH, bulkPrice, month, compPrice } from '../state.js?v=15';
 
 let ch = 'store';
 const pr = id => ch === 'bulk' ? bulkPrice(id, G.S.sq[id] || 2) : (G.S.price[id] || D.products[id].base);
 
+export const curCh = () => ch;
 export const view = () => {
   const S = G.S, C = CH[ch], up = busy('up', 'store'), full = up || count('sell') >= S.b.store, ev = SEASONS.filter(s => s.m === month());
   return `<div class="tabs">${Object.entries(CH).map(([k, c]) => `<button class="chip ${k === ch ? 'on' : ''}" data-a="ch:${k}" ${c.ok() ? '' : 'disabled'}>${ic(c.icon)}<span>${T('ch_' + k)}</span></button>`).join('')}</div>

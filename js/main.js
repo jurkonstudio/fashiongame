@@ -1,23 +1,24 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=14';
-import { T, fmt, setLang, setCur } from './i18n.js?v=14';
-import { init, load, save, serverOffset, status } from './api.js?v=14';
-import { D } from './data.js?v=14';
-import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=14';
-import * as map from './screens/map.js?v=14';
-import * as market from './screens/market.js?v=14';
-import * as margin from './screens/margin.js?v=14';
-import * as factory from './screens/factory.js?v=14';
-import * as store from './screens/store.js?v=14';
-import * as farm from './screens/farm.js?v=14';
-import * as office from './screens/office.js?v=14';
-import * as finance from './screens/finance.js?v=14';
-import * as depth from './depth.js?v=14';
-import * as warehouse from './screens/warehouse.js?v=14';
-import { GB } from './art.js?v=14';
-import * as item from './screens/item.js?v=14';
-import * as more from './screens/more.js?v=14';
-import * as profile from './screens/profile.js?v=14';
+import { ic } from './icons.js?v=15';
+import { T, fmt, setLang, setCur } from './i18n.js?v=15';
+import { init, load, save, serverOffset, status } from './api.js?v=15';
+import { D } from './data.js?v=15';
+import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=15';
+import * as map from './screens/map.js?v=15';
+import * as market from './screens/market.js?v=15';
+import * as margin from './screens/margin.js?v=15';
+import * as factory from './screens/factory.js?v=15';
+import * as store from './screens/store.js?v=15';
+import * as farm from './screens/farm.js?v=15';
+import * as bp from './screens/bp.js?v=15';
+import * as office from './screens/office.js?v=15';
+import * as finance from './screens/finance.js?v=15';
+import * as depth from './depth.js?v=15';
+import * as warehouse from './screens/warehouse.js?v=15';
+import { GB } from './art.js?v=15';
+import * as item from './screens/item.js?v=15';
+import * as more from './screens/more.js?v=15';
+import * as profile from './screens/profile.js?v=15';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, item, more, warehouse, market, margin, office, finance, profile };   // tambah layar baru di sini
@@ -27,7 +28,7 @@ const $ = s => document.querySelector(s);
 let tab = 'map', lastSel = null, menu = false;
 
 const actions = {
-  ...Object.assign({}, ...[map, item, more, warehouse, market, margin, factory, store, farm, office, finance, profile, depth].map(s => s.actions)),
+  ...Object.assign({}, ...[map, item, more, warehouse, market, margin, factory, store, farm, bp, office, finance, profile, depth].map(s => s.actions)),
   lang: () => { setLang(G.S.lang = G.S.lang === 'id' ? 'en' : 'id'); document.documentElement.lang = G.S.lang; },
   tab: t => { tab = t; menu = false; map.actions.close(); },
   menu: () => { menu = !menu; },
@@ -46,9 +47,9 @@ function render() {
   setHTML($('#toast'), tab === 'map' ? '' : toasts.filter(x => now() - x.t < 6000).slice(-3).map(x => `<div>${x.txt}</div>`).join(''));
   const warn = status.mode === 'error' ? `<div class="card err"><b>Cloud unavailable, playing offline</b><div class="mute">${String(status.err).replace(/[<>&]/g, '')}</div></div>` : '';
   if (!document.activeElement?.dataset?.n) setHTML($('#view'), warn + (tab === 'profile' ? `<h2>${ic('profile')}${T('profile')}</h2>` : '') + screens[tab].view());
-  const sh = $('#sheet'), st = sh.querySelector('.shb')?.scrollTop || 0, sel = map.selected();
+  const sh = $('#sheet'), st = sh.querySelector('.shb, .bp')?.scrollTop || 0, sel = map.selected();
   setHTML(sh, tab === 'map' ? map.sheet() : '');
-  const nb = sh.querySelector('.shb'); if (nb && sel === lastSel) nb.scrollTop = st;   // jaga posisi scroll panel saat refresh tiap detik
+  const nb = sh.querySelector('.shb, .bp'); if (nb && sel === lastSel) nb.scrollTop = st;   // jaga posisi scroll panel saat refresh tiap detik
   lastSel = sel;
   setHTML($('#drawer'), menu ? `<div class="shbg" data-a="menu"></div><aside class="dw"><div class="dh"><img class="logo" src="assets/logo.svg" alt=""><div><b>${String(S.name).replace(/[<>&]/g, '')}</b><small>Lv${S.level}</small></div></div>${DR.map(([k, l, i]) => `<button data-a="go:${k}">${ic(i)}${T(l)}</button>`).join('')}</aside>` : '');
   setHTML($('#nav'), NAV.map(t => `<button data-a="tab:${t}" class="${t === tab || (tab === 'item' && t === 'warehouse') ? 'on' : ''}">${ic(ICON[t])}${T(t)}</button>`).join(''));

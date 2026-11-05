@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=14';
-import { T, fmt } from './i18n.js?v=14';
-import { D, BTN, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=14';
+import { ic } from './icons.js?v=15';
+import { T, fmt } from './i18n.js?v=15';
+import { D, BTN, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=15';
 export const MOD = { dem: () => 1, mat: () => 1 };   // diisi depth.js (peristiwa, pemasaran)
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 export const toasts = [];
@@ -53,7 +53,7 @@ export const count = k => G.S.jobs.filter(j => j.k === k).length;
 export const job = (k, id) => { const j = G.S.jobs.find(j => j.k === k && j.id === id); return j ? `<div class="mute">${ic('timer')}${mm(j.end - now())}</div>` : ''; };
 
 const pay = (c, k) => { const S = G.S; if (S.money >= c) S.money -= c; else { S.loan += c - S.money; S.money = 0; } S.led[k] += c; };   // kurang kas -> jadi pinjaman
-export const fx = o => { const S = G.S, t = now(); S.fx = (S.fx || []).filter(e => t - e.t < 30000); S.fx.push({ ...o, t }); };
+export const fx = o => { const S = G.S, t = now(); S.fx = (S.fx || []).filter(e => t - e.t < 30000); S.fx.push({ ...o, t }); (S.lg = S.lg || []).unshift({ ...o, t }); S.lg.length = Math.min(S.lg.length, 40); };
 const rnd = a => (Math.random() * 2 - 1) * a;
 function stepMarket() { const k = G.S.mk;
   for (const m in D.materials) { const v = k.idx[m] ?? 1; k.idx[m] = Math.min(1.5, Math.max(0.7, v + 0.3 * (1 - v) + rnd(0.08))); }

@@ -1,12 +1,12 @@
 // (c) 2026 FashionGame. Detail barang: biaya, aksi, bursa NPC, grafik 7 hari. Dibuka dari Gudang/Perpustakaan.
-import { D, WAGE, TAX, POWER_HOUR, RENT_HOUR } from '../data.js?v=8';
-import { T, fmt } from '../i18n.js?v=8';
-import { ic } from '../icons.js?v=8';
-import { ART } from '../art.js?v=8';
-import { G, matPrice, buyMat, unitCost, qm, demand, factoryMult, day } from '../state.js?v=8';
-import { hist } from '../depth.js?v=8';
-import * as store from './store.js?v=8';
-import * as factory from './factory.js?v=8';
+import { D, WAGE, TAX, POWER_HOUR, RENT_HOUR } from '../data.js?v=9';
+import { T, fmt } from '../i18n.js?v=9';
+import { ic } from '../icons.js?v=9';
+import { ART } from '../art.js?v=9';
+import { G, matPrice, buyMat, unitCost, qm, demand, factoryMult, day } from '../state.js?v=9';
+import { hist } from '../depth.js?v=9';
+import * as store from './store.js?v=9';
+import * as factory from './factory.js?v=9';
 
 const ORDER = [...Object.keys(D.materials), ...Object.keys(D.products)], NPC = ['Benang Emas', 'Kain Nusantara', 'Sepatu Jaya', 'Mode Kita', 'Batik Modern'];
 let id = 'leather', side = 'sell';

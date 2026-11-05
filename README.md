@@ -98,3 +98,8 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - Toko di peta: panel kini menampilkan Riwayat penjualan (30 terakhir, saluran, laku dari total, pendapatan bersih) + permintaan & stok per produk. Log disimpan di S.dp.log.
 - Menu samping: Pencapaian (10), Perpustakaan (resep & dipakai di), Tentang (js/screens/more.js).
 - Riwayat harga bahan disimpan di S.dp.hist (sampel per hari game). Cache ?v=8.
+
+## Update v9 (Kancing Emas & peta 2D baru)
+- Mata uang kedua **Kancing Emas** (S.btn). Atur di js/data.js: `BTN = { login: 5, make: 10, sell: 10, plot: 500 }`. Bonus login 1x per hari (jam server), +10 tiap batch produksi selesai, +10 tiap penjualan selesai (jika ada yang laku). Ganti nama di js/lang2.js (kunci `btn`) dan ikon `GB` di js/art.js.
+- Petak/slot lahan kini dibeli dengan Kancing Emas (500), bukan uang. Saldo tampil di HUD (pill emas).
+- Peta 2D: pulau berlapis (air beranimasi, tepi tanah, jalan ber-marka), mobil berjalan, lampu jalan, pohon di tepi, awan bergerak, label nama bangunan, siang/malam mengikuti jam perangkat (langit gelap, bintang, lampu menyala). Cache ?v=9.

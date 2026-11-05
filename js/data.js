@@ -44,3 +44,4 @@ export const D = {
   research: { basic:{cost:500,time:1800,lvl:1} },
   goals1: { made:10, sold:10, research:'basic' }
 };
+export const BTN = { login: 5, make: 10, sell: 10, plot: 500 };   // Kancing Emas: bonus login / produksi / penjualan, harga petak lahan

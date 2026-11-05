@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=8';
-import { T, fmt } from '../i18n.js?v=8';
-import { ic, icu } from '../icons.js?v=8';
-import { G, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=8';
-import * as factory from './factory.js?v=8';
-import * as depth from '../depth.js?v=8';
-import * as store from './store.js?v=8';
+import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=9';
+import { T, fmt } from '../i18n.js?v=9';
+import { ic, icu } from '../icons.js?v=9';
+import { G, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=9';
+import * as factory from './factory.js?v=9';
+import * as depth from '../depth.js?v=9';
+import * as store from './store.js?v=9';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -85,31 +85,45 @@ const guide = () => { const S = G.S, has = t => S.land.slots.some(x => x.t === t
   const c = k === 1 ? ' · ' + fmt(NEW_B.factory.cost) : k === 4 ? ' · ' + fmt(NEW_B.store.cost) : '';
   return k ? `<div class="card guide"><b>${T('step')}${k < 7 ? ` ${k}/6` : ''}</b><div>${T('g' + k)}${c}</div></div>` : ''; };
 
-export const view = () => { const S = G.S, t = Math.min(4, S.level) - 1, th = TH[t], sl = S.land.slots;
+export const view = () => { const S = G.S, hr = new Date(now()).getHours(), night = hr >= 18 || hr < 5, t = Math.min(4, S.level) - 1, th = TH[t], sl = S.land.slots;
   const A = P(0, 0), B = P(4, 0), C = P(4, 3), D2 = P(0, 3), ap = [[A[0], A[1] - 9], [B[0] + 13, B[1]], [C[0], C[1] + 9], [D2[0] - 13, D2[1]]];
-  let bg = `<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${th.sky[0]}"/><stop offset="1" stop-color="${th.sky[1]}"/></linearGradient><pattern id="gp" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="1.6" fill="${th.g2}"/><circle cx="18" cy="17" r="1.6" fill="${th.g2}"/></pattern></defs>`
-    + `<rect width="360" height="380" fill="${th.g}"/><rect width="360" height="380" fill="url(#gp)"/><rect width="360" height="162" fill="url(#sk)"/>`
-    + `<circle cx="304" cy="${t < 3 ? 40 : 76}" r="${t < 3 ? 16 : 22}" fill="${t < 3 ? '#fff2b8' : '#ffb36b'}" opacity=".9"/>` + skyline(t, th)
-    + (t < 2 ? [[20, 196], [338, 196], [14, 336], [346, 350], [74, 352], [292, 362]].slice(0, t ? 3 : 6).map(p => tree(...p)).join('') : '')
+  const lp = (p, q, k) => [p[0] + (q[0] - p[0]) * k, p[1] + (q[1] - p[1]) * k], Z = [A, B, C, D2], nx = i => (i + 1) % 4,
+    bk = ap.map((p, i) => [p[0] + [0, 36, 0, -36][i], p[1] + [-20, 0, 20, 0][i]]), mid = ap.map((p, i) => lp(p, Z[i], .5)),
+    path = 'M' + mid.map(p => p.join(',')).join('L') + 'Z', rpath = 'M' + [mid[0], mid[3], mid[2], mid[1]].map(p => p.join(',')).join('L') + 'Z',
+    slab = `<polygon points="${pts([bk[3], bk[2], [bk[2][0], bk[2][1] + 16], [bk[3][0], bk[3][1] + 16]])}" fill="#7a6a54"/><polygon points="${pts([bk[2], bk[1], [bk[1][0], bk[1][1] + 16], [bk[2][0], bk[2][1] + 16]])}" fill="#5f5240"/><polygon points="${pts(bk)}" fill="${th.g}"/><polygon points="${pts(bk)}" fill="url(#gp)"/>`,
+    trees = [[1, .3], [1, .7], [2, .2], [2, .5], [2, .8], [3, .3], [3, .7], [0, .35], [0, .7]].slice(0, t > 1 ? 6 : 9).map(([i, k]) => { const q = lp(lp(bk[i], bk[nx(i)], k), lp(ap[i], ap[nx(i)], k), .5); return tree(q[0], q[1] - 2); }).join(''),
+    lamps = [0, 1, 2, 3].flatMap(i => [.3, .7].map(k => lp(mid[i], mid[nx(i)], k))),
+    lampSvg = lamps.map(p => `<g transform="translate(${p[0]} ${p[1]})"><rect x="-.8" y="-12" width="1.6" height="12" fill="#4b4452"/><circle cy="-13" r="2.6" fill="#ffe9a8"/></g>`).join(''),
+    glow = night ? lamps.map(p => `<circle cx="${p[0]}" cy="${p[1] - 13}" r="11" fill="#ffe9a8" opacity=".38"/>`).join('') : '',
+    car = (c, pa, d, b) => `<g><rect x="-6" y="-3" width="12" height="6" rx="2" fill="${c}"/><rect x="-2" y="-5" width="6" height="3" rx="1" fill="#fff" opacity=".75"/><animateMotion dur="${d}s" begin="-${b}s" repeatCount="indefinite" path="${pa}"/></g>`,
+    cars = ['#e8467c', '#2ec4b6', '#f2b84b', '#5b8def'].slice(0, 1 + t).map((c, i) => car(c, i % 2 ? rpath : path, 24 + i * 6, i * 7)).join(''),
+    cloud = (y, d, b) => `<g opacity=".9" fill="${night ? '#8d97c4' : '#fff'}"><ellipse rx="22" ry="7"/><ellipse cx="12" cy="-4" rx="14" ry="6"/><animateTransform attributeName="transform" type="translate" from="-60 ${y}" to="420 ${y}" dur="${d}s" begin="-${b}s" repeatCount="indefinite"/></g>`,
+    wave = x => `<path d="M${x} 330q6-4 12 0t12 0" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="1.5"><animateTransform attributeName="transform" type="translate" values="0 0;8 0;0 0" dur="${4 + x % 3}s" repeatCount="indefinite"/></path>`,
+    stars = night ? [[30, 20], [80, 42], [140, 14], [210, 34], [260, 18], [330, 50], [60, 72]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="1.2" fill="#fff"/>`).join('') : '',
+    tint = night ? `<rect width="360" height="380" fill="#1a2250" opacity=".28" pointer-events="none"/>` + glow : '';
+  let bg = `<defs><linearGradient id="wt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${night ? '#27406b' : '#6fb8d6'}"/><stop offset="1" stop-color="${night ? '#142544' : '#3d83ab'}"/></linearGradient><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${night ? '#111a3d' : th.sky[0]}"/><stop offset="1" stop-color="${night ? '#3b3f78' : th.sky[1]}"/></linearGradient><pattern id="gp" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="1.6" fill="${th.g2}"/><circle cx="18" cy="17" r="1.6" fill="${th.g2}"/></pattern></defs>`
+    + `<rect width="360" height="380" fill="url(#wt)"/><rect width="360" height="162" fill="url(#sk)"/>${stars}${cloud(28, 80, 10)}${cloud(62, 115, 60)}${[20, 70, 250, 300, 40, 280].map(wave).join('')}`
+    + `<circle cx="304" cy="${t < 3 ? 40 : 76}" r="${t < 3 ? 16 : 22}" fill="${night ? '#e8edff' : t < 3 ? '#fff2b8' : '#ffb36b'}" opacity=".9"/>` + skyline(t, th)
+    + slab + trees
     + `<polygon points="${pts([ap[3], ap[2], [ap[2][0], ap[2][1] + 8], [ap[3][0], ap[3][1] + 8]])}" fill="#0002"/><polygon points="${pts([ap[2], ap[1], [ap[1][0], ap[1][1] + 8], [ap[2][0], ap[2][1] + 8]])}" fill="#0003"/>`
-    + `<polygon points="${pts(ap)}" fill="${th.ap}"/><polygon points="${pts([A, B, C, D2])}" fill="${th.pad}"/>`;
+    + `<polygon points="${pts(ap)}" fill="${th.ap}"/><polygon points="${pts(mid)}" fill="none" stroke="#fff" stroke-opacity=".55" stroke-dasharray="7 6"/><polygon points="${pts([A, B, C, D2])}" fill="${th.pad}"/>` + lampSvg + cars;
   const all = [...CELLS.map(([c, r], i) => ({ c, r, i })), ...DECOR.map(([c, r, k]) => ({ c, r, k }))].sort((x, y) => x.c + x.r - y.c - y.r || x.c - y.c);
   let g = '', ov = '';
   for (const e of all) { const [cx, cy] = cen(e.c, e.r), fill = (e.c + e.r) % 2 ? th.alt : th.pad;
     if (e.k) { g += `<polygon points="${dia(e.c, e.r)}" fill="${fill}"/>` + deco(e.k, cx, cy, t); continue; }
-    const s = sl[e.i], aff = !s.own && S.money >= SLOT_COST[e.i], fixed = s.own && s.t === 'office';
+    const s = sl[e.i], aff = !s.own && S.btn >= BTN.plot, fixed = s.own && s.t === 'office';
     let inner = `<polygon points="${dia(e.c, e.r)}" fill="${fill}"/>`;
     if (!s.own) { inner += `<polygon points="${dia(e.c, e.r)}" fill="#1c1917" opacity=".16" stroke="${aff ? '#f2b84b' : '#6b6259'}" stroke-width="2" stroke-dasharray="6 5"/>`;
-      ov += `<g pointer-events="none"><image href="${icu('lock')}" x="${cx - 10}" y="${cy - 22}" width="20" height="20"/><text x="${cx}" y="${cy + 10}" text-anchor="middle" fill="#2b2420">${fmt(SLOT_COST[e.i])}</text></g>`; }
+      ov += `<g pointer-events="none"><image href="${icu('lock')}" x="${cx - 10}" y="${cy - 22}" width="20" height="20"/><circle cx="${cx - 15}" cy="${cy + 7}" r="6" fill="#f2b84b" stroke="#b9770e"/><text x="${cx + 3}" y="${cy + 10}" text-anchor="middle" fill="#2b2420">${BTN.plot}</text></g>`; }
     else if (!s.t) { inner += `<polygon points="${dia(e.c, e.r)}" fill="none" stroke="#b3285b" stroke-width="2" stroke-dasharray="6 5"/>`;
       ov += `<g pointer-events="none"><circle cx="${cx}" cy="${cy - 4}" r="12" fill="#b3285b"/><path d="M${cx - 6} ${cy - 4}h12M${cx} ${cy - 10}v12" stroke="#fff" stroke-width="3" stroke-linecap="round"/><text x="${cx}" y="${cy + 20}" text-anchor="middle" fill="#b3285b">${T('buildhere')}</text></g>`; }
     else { const lv = S.b[s.t]; inner += bld(s.t, lv, cx, cy);
       const hh = COL[s.t].h + 7 * Math.min(lv, 5);
-      ov += `<g pointer-events="none"><rect x="${cx + 18}" y="${cy - hh - 10}" width="26" height="13" rx="3" fill="#0c0e11" stroke="#2c3239"/><text x="${cx + 31}" y="${cy - hh}" text-anchor="middle" fill="#ff9ec0" style="font-size:8px">Lv${Math.max(1, lv)}</text></g>` + quick(s.t, e.i, cx, cy - hh - 52); }
+      ov += `<g pointer-events="none"><rect x="${cx + 18}" y="${cy - hh - 10}" width="26" height="13" rx="3" fill="#0c0e11" stroke="#2c3239"/><text x="${cx + 31}" y="${cy - hh}" text-anchor="middle" fill="#ff9ec0" style="font-size:8px">Lv${Math.max(1, lv)}</text></g>` + quick(s.t, e.i, cx, cy - hh - 52) + `<g pointer-events="none"><rect x="${cx - 27}" y="${cy + 19}" width="54" height="12" rx="6" fill="#17141d" opacity=".85"/><text x="${cx}" y="${cy + 28}" text-anchor="middle" fill="#fff" style="font-size:7px;letter-spacing:.7px">${T(s.t).toUpperCase()}</text></g>`; }
     if (sel === e.i) inner += `<polygon points="${dia(e.c, e.r)}" fill="none" stroke="#f2b84b" stroke-width="3.5"/>`;
     g += `<g class="tile"${fixed ? '' : ` data-a="slot:${e.i}" role="button" aria-label="${T(s.t || 'plot')} ${e.i + 1}"`}>${inner}</g>`; }
   return guide() + `<div class="card mapbar"><div class="row"><b>${ic('star')}Lv${S.level} · ${T('map_t' + (t + 1))}</b><span class="mute">${sl.filter(s => s.own).length}/${sl.length} ${T('plot')}</span></div>${sl.some(s => s.t === 'factory') ? `<div class="row mute" style="margin-top:4px"><span>${T('warehouse')} ${whUsed()}/${whCap()}</span><span>${T('machine')} ${Math.round(S.cond * 100)}%</span></div>` : ''}</div>`
-    + `<svg class="mapsvg" viewBox="0 0 360 380" role="group" aria-label="${T('map')}">${bg}${g}${ov}</svg>`+inv(); };
+    + `<svg class="mapsvg" viewBox="0 0 360 380" role="group" aria-label="${T('map')}">${bg}${g}${tint}${ov}</svg>`+inv(); };
 
 const upCard = id => { const S = G.S, b = D.buildings[id], lv = S.b[id], top = lv >= bMax();
   return `<div class="card"><div class="row"><span>${ic(b.icon)}${T(id)} Lv${lv}/${bMax()}</span><button class="b" data-a="up:${id}" ${top || busy('up', id) || S.money < upCost(id) ? 'disabled' : ''}>${top ? T('max') : `${T('upgrade')} · ${fmt(upCost(id))} · ${mm(dur(upSec(id)))}`}</button></div><div class="mute row"><span>${T(b.fx)}</span></div>${job('up', id)}</div>`; };
@@ -118,8 +132,8 @@ const PANEL = { factory: () => upCard('factory') + factory.view(), store: () => 
 
 export const sheet = () => { if (sel === null) return '';
   const S = G.S, s = S.land.slots[sel]; let ti, body;
-  if (!s.own) { const c = SLOT_COST[sel]; ti = `${ic('lock')}${T('plot')} ${sel + 1}`;
-    body = `<div class="card"><div class="row"><span>${T('buyslot')}</span><b>${fmt(c)}</b></div><div class="row"><button class="b" data-a="buyslot" ${S.money < c ? 'disabled' : ''}>${T('buyslot')} · ${fmt(c)}</button></div></div>`; }
+  if (!s.own) { const c = BTN.plot; ti = `${ic('lock')}${T('plot')} ${sel + 1}`;
+    body = `<div class="card"><div class="row"><span>${T('buyslot')}</span><b>${c} ${T('btn')}</b></div><div class="row"><button class="b" data-a="buyslot" ${S.btn < c ? 'disabled' : ''}>${T('buyslot')} · ${c} ${T('btn')}</button></div></div>`; }
   else if (!s.t) { ti = `${ic('map')}${T('plot')} ${sel + 1}`;
     const has = t => S.land.slots.some(x => x.t === t), core = S.land.slots.some(x => x.t === 'factory') && has('store');
     const free = Object.entries(NEW_B).filter(([t]) => !has(t) && (t === 'factory' || t === 'store' || core));
@@ -131,7 +145,7 @@ export const sheet = () => { if (sel === null) return '';
 export const actions = {
   slot: i => { sel = +i; },
   close: () => { sel = null; },
-  buyslot: () => { const S = G.S, s = S.land.slots[sel]; if (!s || s.own || S.money < SLOT_COST[sel]) return; S.money -= SLOT_COST[sel]; s.own = true; },
+  buyslot: () => { const S = G.S, s = S.land.slots[sel]; if (!s || s.own || S.btn < BTN.plot) return; S.btn -= BTN.plot; s.own = true; },
   build: t => { const S = G.S, s = S.land.slots[sel];
     if (!s || !s.own || s.t || !NEW_B[t] || S.money < NEW_B[t].cost || S.land.slots.some(x => x.t === t)) return;
     S.money -= NEW_B[t].cost; s.t = t;

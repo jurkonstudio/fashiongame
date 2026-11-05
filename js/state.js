@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=9';
-import { T, fmt } from './i18n.js?v=9';
-import { D, BTN, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=9';
+import { ic } from './icons.js?v=11';
+import { T, fmt } from './i18n.js?v=11';
+import { D, BTN, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=11';
 export const MOD = { dem: () => 1, mat: () => 1 };   // diisi depth.js (peristiwa, pemasaran)
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 export const toasts = [];

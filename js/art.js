@@ -1,5 +1,5 @@
 // (c) 2026 FashionGame. Ilustrasi barang & thumbnail kota (SVG buatan sendiri).
-const W = b => `<svg viewBox="0 0 64 64" class="art" aria-hidden="true">${b}</svg>`;
+const W = b => `<svg viewBox="0 0 64 64" class="art" aria-hidden="true"><defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient><filter id="as" x="-20%" y="-20%" width="150%" height="150%"><feDropShadow dx="0" dy="2" stdDeviation="1.6" flood-opacity=".45"/></filter></defs><ellipse cx="32" cy="58" rx="22" ry="4" fill="#000" opacity=".25"/><g filter="url(#as)">${b}</g><rect x="0" y="0" width="64" height="64" fill="url(#ag)" style="mix-blend-mode:soft-light"/></svg>`;
 export const ART = {
   leather: W('<path d="M8 24l12-9 12 4 14-7 9 13-7 10 4 13-15 4-10-6-13 4-6-15z" fill="#a8643a"/><path d="M14 26l8-6 10 3 12-5 5 9-5 9 3 10-11 3-9-5-10 3-4-11z" fill="none" stroke="#e2a36b" stroke-width="1.6" stroke-dasharray="3 2.5"/>'),
   rubber: W('<ellipse cx="32" cy="42" rx="24" ry="10" fill="#1f2328"/><path d="M8 42v-9a24 10 0 0 1 48 0v9a24 10 0 0 1-48 0z" fill="#3a4048"/><ellipse cx="32" cy="33" rx="24" ry="10" fill="#59616b"/><ellipse cx="32" cy="33" rx="12" ry="4.5" fill="#2a2f35"/>'),

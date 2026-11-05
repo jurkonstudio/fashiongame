@@ -1,22 +1,23 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=9';
-import { T, fmt, setLang, setCur } from './i18n.js?v=9';
-import { init, load, save, serverOffset, status } from './api.js?v=9';
-import { D } from './data.js?v=9';
-import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=9';
-import * as map from './screens/map.js?v=9';
-import * as market from './screens/market.js?v=9';
-import * as margin from './screens/margin.js?v=9';
-import * as factory from './screens/factory.js?v=9';
-import * as store from './screens/store.js?v=9';
-import * as office from './screens/office.js?v=9';
-import * as finance from './screens/finance.js?v=9';
-import * as depth from './depth.js?v=9';
-import * as warehouse from './screens/warehouse.js?v=9';
-import { GB } from './art.js?v=9';
-import * as item from './screens/item.js?v=9';
-import * as more from './screens/more.js?v=9';
-import * as profile from './screens/profile.js?v=9';
+import { ic } from './icons.js?v=11';
+import { T, fmt, setLang, setCur } from './i18n.js?v=11';
+import { init, load, save, serverOffset, status } from './api.js?v=11';
+import { D } from './data.js?v=11';
+import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=11';
+import * as map from './screens/map.js?v=11';
+import * as market from './screens/market.js?v=11';
+import * as margin from './screens/margin.js?v=11';
+import * as factory from './screens/factory.js?v=11';
+import * as store from './screens/store.js?v=11';
+import * as office from './screens/office.js?v=11';
+import * as finance from './screens/finance.js?v=11';
+import * as depth from './depth.js?v=11';
+import * as warehouse from './screens/warehouse.js?v=11';
+import { GB } from './art.js?v=11';
+import * as item from './screens/item.js?v=11';
+import * as more from './screens/more.js?v=11';
+import * as profile from './screens/profile.js?v=11';
+import * as m3 from './screens/map3d.js?v=11';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, item, more, warehouse, market, margin, office, finance, profile };   // tambah layar baru di sini
@@ -45,6 +46,7 @@ function render() {
   setHTML($('#toast'), toasts.filter(x => now() - x.t < 6000).slice(-3).map(x => `<div>${x.txt}</div>`).join(''));
   const warn = status.mode === 'error' ? `<div class="card err"><b>Cloud unavailable, playing offline</b><div class="mute">${String(status.err).replace(/[<>&]/g, '')}</div></div>` : '';
   if (!document.activeElement?.dataset?.n) setHTML($('#view'), warn + (tab === 'profile' ? `<h2>${ic('profile')}${T('profile')}</h2>` : '') + screens[tab].view());
+  m3.attach($('#mapslot'));   // kanvas 3D dipertahankan antar render (tidak ikut innerHTML)
   const sh = $('#sheet'), st = sh.querySelector('.shb')?.scrollTop || 0, sel = map.selected();
   setHTML(sh, tab === 'map' ? map.sheet() : '');
   const nb = sh.querySelector('.shb'); if (nb && sel === lastSel) nb.scrollTop = st;   // jaga posisi scroll panel saat refresh tiap detik
@@ -59,6 +61,7 @@ document.addEventListener('click', e => {
   const [a, arg] = el.dataset.a.split(/:(.*)/s); actions[a](arg); tick(); depth.tick(); render();
 });
 
+m3.hooks.pick = i => { actions.slot(i); tick(); depth.tick(); render(); };
 (async () => { try {
   await init();
   setOffset(await serverOffset());                                  // timer ikut jam server

@@ -103,3 +103,8 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - Mata uang kedua **Kancing Emas** (S.btn). Atur di js/data.js: `BTN = { login: 5, make: 10, sell: 10, plot: 500 }`. Bonus login 1x per hari (jam server), +10 tiap batch produksi selesai, +10 tiap penjualan selesai (jika ada yang laku). Ganti nama di js/lang2.js (kunci `btn`) dan ikon `GB` di js/art.js.
 - Petak/slot lahan kini dibeli dengan Kancing Emas (500), bukan uang. Saldo tampil di HUD (pill emas).
 - Peta 2D: pulau berlapis (air beranimasi, tepi tanah, jalan ber-marka), mobil berjalan, lampu jalan, pohon di tepi, awan bergerak, label nama bangunan, siang/malam mengikuti jam perangkat (langit gelap, bintang, lampu menyala). Cache ?v=9.
+
+## Update v11 (peta 3D WebGL)
+- js/screens/map3d.js: peta 3D sungguhan (Three.js r160, dimuat dari CDN jsdelivr, versi dipin). Model low-poly (Kantor, Pabrik bergerigi + cerobong berasap, Toko ber-awning, Gudang bergelombang), tekstur prosedural dari canvas (tanpa file gambar), bayangan real-time (PCF soft), tone mapping ACES, air facet beranimasi, awan, mobil, lampu jalan dengan PointLight saat malam, jendela menyala di malam hari.
+- Interaksi: ketuk petak/bangunan (sama seperti peta SVG), geser horizontal untuk memutar kamera. Tombol PRODUCE/SELL, timer, dan label muncul sebagai overlay HTML yang mengikuti posisi 3D.
+- Fallback otomatis ke peta SVG bila CDN/WebGL tidak tersedia (mode offline penuh tetap memakai peta SVG). Catatan: ini satu-satunya dependensi eksternal; untuk offline penuh, unduh three.module.js ke folder lib/ dan ubah URL3 di map3d.js.

@@ -10,12 +10,12 @@ export const BASE_CAP = 10;       // unit per penjualan di Toko Lv1 (x level tok
 // Tahap A: ekonomi. imp=1 -> harga ikut kurs impor. Supplier: harga x mult, kualitas q (1-3)
 export const SUP = { cheap:{mult:0.8,q:1}, std:{mult:1,q:2}, prem:{mult:1.3,q:3} };
 export const TAX = 0.11;          // pajak (PPN) atas penjualan
-export const RENT_HOUR = 4;       // sewa per jam per level bangunan
-export const POWER_HOUR = 3;      // listrik per jam per level pabrik saat produksi (idle = 1/6)
+export const RENT_HOUR = 12;       // sewa per jam per level bangunan
+export const POWER_HOUR = 9;      // listrik per jam per level pabrik saat produksi (idle = 1/6)
 export const LOAN_STEP = 1000;    // pinjaman per tap
 export const LOAN_RATE = 0.001;   // bunga 0,1% per jam game
 // Tahap B: produksi & penjualan
-export const WAGE = { 1:1.5, 2:2.5, 3:4 };      // gaji/jam menurut skill (Junior/Menengah/Senior)
+export const WAGE = { 1:4.5, 2:7.5, 3:12 };      // gaji/jam menurut skill (Junior/Menengah/Senior)
 export const HIRE = { 1:80, 2:200, 3:450 };     // biaya rekrut
 export const DAY_SEC = 600;                     // 10 menit nyata = 1 hari game (30 hari = 1 bulan)
 export const WH_BASE = 40, WH_PER = 20;         // kapasitas gudang = 40 + 20 x level pabrik
@@ -27,9 +27,9 @@ export const SLOT_COST = [0, 0, 0, 100, 150, 250, 400, 650, 1000, 1500];
 export const BUILD_SEC = { factory: 60, store: 60, farm: 60 };   // waktu konstruksi (detik, memakai jam server)
 export const NEW_B = { factory:{cost:200,icon:'factory',fx:'fx_factory'}, store:{cost:150,icon:'store',fx:'fx_store'}, warehouse:{cost:300,icon:'warehouse',fx:'fx_warehouse'}, farm:{cost:250,icon:'farm',fx:'fx_farm'} };
 export const D = {
-  materials: { leather:{icon:'leather',price:9.2,imp:1}, rubber:{icon:'rubber',price:4.6,imp:1}, thread:{icon:'thread',price:1.2}, fabric:{icon:'fabric',price:6.6},
+  materials: { leather:{icon:'leather',price:13.8,imp:1}, rubber:{icon:'rubber',price:6.9,imp:1}, thread:{icon:'thread',price:1.8}, fabric:{icon:'fabric',price:9.9},
     // bahan mentah (sumber untuk produksi bahan baku di Pabrik)
-    cotton:{icon:'cotton',price:0.9}, hide:{icon:'hide',price:7,imp:1}, latex:{icon:'latex',price:3.25,imp:1}, dye:{icon:'dye',price:3.6} },
+    cotton:{icon:'cotton',price:1.35}, hide:{icon:'hide',price:10.5,imp:1}, latex:{icon:'latex',price:4.875,imp:1}, dye:{icon:'dye',price:5.4} },
   // Pabrik juga bisa membuat bahan baku sendiri (hemat dibanding beli jadi di Pasar, tapi butuh waktu)
   craft: {
     thread:{icon:'thread',lvl:1,time:300,batch:20,recipe:{cotton:10}},

@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. Kedalaman game v6: peristiwa pasar, kontrak, pemasaran, target level, peringkat.
 import { ic } from './icons.js?v=21';
 import { T, fmt } from './i18n.js?v=21';
-import { D, TAX, BTN } from './data.js?v=21';
+import { D, TAX, BTN, XP, xpNeed, xpCum, levelFor } from './data.js?v=21';
 import { G, now, dur, mm, MOD, qm, day, toasts, matPrice, demand } from './state.js?v=21';
 
 const EV = { strike:{ h:6, mat:{ leather:1.3, rubber:1.3 } }, sale:{ h:6, mat:{ fabric:.75, thread:.8 } }, viral:{ h:4, dem:1.4 }, slump:{ h:6, dem:.75 }, tariff:{ h:8, mat:{ leather:1.2, rubber:1.2, fabric:1.15 } } };
@@ -27,21 +27,22 @@ export function tick() { const S = G.S, d = S.dp, t = now(), today = new Date(t)
   if (d.hd !== day()) { d.hd = day(); const h = d.hist = d.hist || {}; for (const m in D.materials) { const a = h[m] = h[m] || Array.from({ length: 7 }, () => matPrice(m, 'std') * (.95 + Math.random() * .1)); a.push(matPrice(m, 'std')); if (a.length > 7) a.shift(); } }
   if (!d.ctAt) d.ctAt = t;
   if (S.sold >= 1 && d.ct.length < 3 && t >= d.ctAt) { newContract(); d.ctAt = t + hr(.5 + Math.random() * .5); }
-  const p = prog(); if (p && p.p >= 1) { S.level++; toasts.push({ txt: '★ Level ' + S.level, t }); } }
+  const lv = levelFor(S.xp || 0); while (S.level < lv) { S.level++; toasts.push({ txt: '★ Level ' + S.level, t }); } }
 
 const chk = g => { const S = G.S;
   return [['made', S.made], ['sold', S.sold], ['rev', S.led.rev], ['rep', S.rep], ['store', S.b.store, 'storelv'], ['office', S.b.office, 'officelv']]
     .filter(x => g[x[0]]).map(x => ['gl_' + (x[2] || x[0]), Math.min(x[1], g[x[0]]), g[x[0]]]).concat(g.res ? [['gl_res', +S.research.includes(g.res), 1]] : []); };
-export const prog = () => { const g = GOALS[G.S.level]; if (!g) return null; const r = chk(g); return { r, p: r.reduce((a, [, c, t]) => a + c / t, 0) / r.length }; };
+export const prog = () => { const S = G.S, need = xpNeed(S.level), cur = Math.max(0, (S.xp || 0) - xpCum(S.level)); return { p: Math.min(1, cur / need), cur, need }; };   // progres XP ke level berikutnya
 const bar = n => `<div class="bar"><i style="width:${Math.min(100, Math.round(n))}%"></i></div>`;
-export const lvlBar = () => { const p = prog(); return p ? `<div class="lvl"><span>${T('goal')} Lv${G.S.level + 1}</span>${bar(p.p * 100)}<b>${Math.round(p.p * 100)}%</b></div>` : ''; };
+export const lvlBar = () => { const p = prog(); return `<div class="lvl"><span>Lv${G.S.level + 1}</span>${bar(p.p * 100)}<b>${Math.floor(p.cur)}/${p.need} XP</b></div>`; };
 export const banner = () => { const d = G.S.dp, t = now(), c = [];
   if (d.ev) c.push(`<span class="tag ${EV[d.ev.id].dem < 1 || EV[d.ev.id].mat && !EV[d.ev.id].mat.fabric || d.ev.id === 'strike' || d.ev.id === 'tariff' ? 'bad' : 'ok'}">${ic('chart')}${T('ev_' + d.ev.id)} · ${mm(d.ev.end - t)}</span>`);
   if (d.camp) c.push(`<span class="tag ok">${ic('star')}${T('camp_' + d.camp.id)} · ${mm(d.camp.end - t)}</span>`);
   return c.length ? `<div class="evbar">${c.join('')}</div>` : ''; };
-export const goalPanel = () => { const p = prog();
-  return p ? `<div class="card"><h2>${ic('target')}${T('goal')} ${G.S.level + 1}</h2>${p.r.map(([k, c, t]) => `<div class="row"><span>${T(k)}</span><span>${Math.floor(c)}/${t}</span></div>${bar(c / t * 100)}`).join('')}<div class="mute">${T('reward')}</div></div>`
-    : `<div class="card"><h2>${ic('star')}Lv${G.S.level}</h2><div class="mute">${T('maxlv')}</div></div>`; };
+export const goalPanel = () => { const S = G.S, p = prog(), act = [['make', 'factory'], ['sell', 'store'], ['grow', 'farm']].filter(([k]) => S.jobs.some(j => j.k === k)).length;
+  return `<div class="card"><h2>${ic('star')}${T('goal')} ${S.level + 1}</h2><div class="row"><span>${T('xp_tot')}</span><b>${Math.floor(S.xp || 0)} XP</b></div><div class="row"><span>${T('xptonext')} ${S.level + 1}</span><b>${Math.floor(p.cur)}/${p.need}</b></div>${bar(p.p * 100)}<div class="row mute"><span>${T('xph')}</span><b>${(act * XP.active)} XP${T('perh')}</b></div><div class="mute">${T('reward')}</div></div>`
+    + `<div class="card"><h2>${ic('chart')}${T('xpsrc')}</h2><div class="row"><span>${T('xp_s1')}</span><b>${XP.active} XP${T('perh')}</b></div><div class="row"><span>${T('xp_s2')}</span><b>${XP.build} XP${T('perh')}</b></div><div class="row"><span>${T('xp_s3')}</span><b>${XP.up} XP${T('perh')}</b></div><div class="mute">${T('xp_idle')}</div></div>`
+    + `<div class="card"><h2>${ic('target')}${T('xpnext')}</h2>${Array.from({ length: 6 }, (_, i) => S.level + i).map(l => `<div class="row ${l === S.level ? '' : 'mute'}"><span>Lv${l} → Lv${l + 1}</span><b>${xpNeed(l)} XP</b></div>`).join('')}</div>`; };
 export const mktPanel = () => { const S = G.S, d = S.dp;
   return Object.entries(CAMP).map(([id, c]) => `<div class="card"><div class="row"><span>${ic('chart')}${T('camp_' + id)}</span><b>+${Math.round((c.x - 1) * 100)}% ${T('campx')}</b></div>
     <div class="row mute"><span>${mm(dur(c.h * 3600))}${c.rep ? ' · +' + c.rep + ' ' + T('rep') : ''}</span><button class="b" data-a="camp:${id}" ${d.camp || S.money < c.cost ? 'disabled' : ''}>${d.camp && d.camp.id === id ? T('active') : fmt(c.cost)}</button></div></div>`).join(''); };

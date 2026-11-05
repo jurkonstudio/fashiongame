@@ -2,7 +2,7 @@
 import { ic } from './icons.js?v=21';
 import { T, fmt, setLang, setCur } from './i18n.js?v=21';
 import { init, load, save, serverOffset, status } from './api.js?v=21';
-import { D } from './data.js?v=21';
+import { D, xpCum } from './data.js?v=21';
 import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=21';
 import * as map from './screens/map.js?v=21';
 import * as market from './screens/market.js?v=21';
@@ -43,7 +43,7 @@ const lvlBar = depth.lvlBar;
 
 const DR = [['prof', 'p_card'], ['goal', 'goal'], ['ct', 'contracts'], ['rank', 'rank'], ['ach', 'ach'], ['lib', 'lib'], ['enc', 'enc'], ['notes', 'notesm'], ['redeem', 'redeem'], ['margin', 'margin'], ['set', 'settings'], ['about', 'about']];   // menu samping ala Sim Companies
 function render() {
-  const S = G.S, pr = depth.prog(), xp = pr ? Math.round(pr.p * 100) : 100;
+  const S = G.S, pr = depth.prog(), xp = Math.floor(pr.p * 100);
   setHTML($('#hud'), `<div class="hud1"><button class="hb" data-a="menu" aria-label="${T('menu')}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 6h18M3 12h18M3 18h18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></button><button class="av" data-a="go:prof" aria-label="${T('profile')}"><img class="logo" src="assets/logo.svg" alt=""></button><span class="sp"></span><button data-a="go:rank" aria-label="${T('rank')}">${ic('star')}</button><span class="money">${fmt(S.money)}</span><span class="lvp">★ ${S.level}<small>${xp}%</small></span></div><div class="hud2"><span class="pill gb">${GB}${Math.floor(S.btn)}</span><span class="pill">${ic('star')} Lv${S.level}</span><span class="pill">${ic('worker')} ${S.workers}</span><span class="pill">${ic('timer')} ${S.jobs.length}</span><span class="pill ${status.mode === 'cloud' ? 'ok' : status.mode === 'error' ? 'bad' : ''}">● ${status.mode === 'cloud' ? 'Cloud' : status.mode === 'error' ? 'Offline' : status.mode === 'connecting' ? '…' : 'Local'}${status.mode === 'cloud' && !status.clock ? ' · clock?' : ''}</span></div>${depth.banner()}`);
   setHTML($('#toast'), toasts.filter(x => now() - x.t < 6000).slice(-3).map(x => `<div>${x.txt}</div>`).join(''));
   const warn = status.mode === 'error' ? `<div class="card err"><b>Cloud unavailable, playing offline</b><div class="mute">${String(status.err).replace(/[<>&]/g, '')}</div></div>` : '';
@@ -75,6 +75,7 @@ document.addEventListener('click', e => {
   G.S = Object.assign(fresh(), (await load()) || {});   // migrasi save lama
   G.S.b.farm = G.S.b.farm || 0;
   for (const m in D.materials) G.S.mk.idx[m] = G.S.mk.idx[m] ?? 1;   // bahan mentah baru (migrasi save lama)
+  if (G.S.xp == null) G.S.xp = xpCum(G.S.level);   // migrasi: level lama -> XP setara
   G.S.sp = G.S.sp || 0; G.S.rq = G.S.rq || {}; G.S.rqSpent = G.S.rqSpent || 0;   // migrasi v16
   if (G.S.wk.length !== G.S.workers) G.S.wk = Array(G.S.workers).fill(1);
   setLang(G.S.lang); setCur(G.S.cur);

@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 import { ic } from './icons.js?v=21';
 import { T, fmt } from './i18n.js?v=21';
-import { D, BTN, QR, SCI, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=21';
+import { D, XP, BTN, QR, SCI, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=21';
 export const MOD = { dem: () => 1, mat: () => 1 };   // diisi depth.js (peristiwa, pemasaran)
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 export const toasts = [];
@@ -10,7 +10,7 @@ let OFF = 0;                                   // selisih jam server Supabase - 
 export const setOffset = o => { OFF = o; };
 export const now = () => Date.now() + OFF;     // semua timer pakai waktu server
 export const dur = sec => sec * 1000 / TIME_SCALE;
-export const fresh = () => ({ money: START_MONEY, level: 1, mat: {}, stock: {}, made: 0, sold: 0,
+export const fresh = () => ({ money: START_MONEY, level: 1, xp: 0, mat: {}, stock: {}, made: 0, sold: 0,
   b: { factory: 0, office: 1, store: 0, farm: 0 }, jobs: [], workers: 1, research: [], price: { shoes: 40 }, last: now(), lang: 'en',
   mk: { t: now(), fx: 1, idx: { leather: 1, rubber: 1, thread: 1, fabric: 1, cotton: 1, hide: 1, latex: 1, dye: 1 } }, mc: {}, mq: {}, sq: {}, loan: 0,
   led: { rev: 0, tax: 0, mat: 0, wage: 0, power: 0, rent: 0, int: 0, fee: 0, maint: 0 },
@@ -61,13 +61,17 @@ function stepMarket() { const k = G.S.mk;
   k.fx = Math.min(1.2, Math.max(0.9, k.fx + 0.2 * (1 - k.fx) + rnd(0.03))); }
 
 export function tick() {
-  const S = G.S, t = now(), h = Math.max(0, (t - S.last) / 1000 * TIME_SCALE / 3600); S.last = t;
+  const S = G.S, t = now(), t0 = S.last, h = Math.max(0, (t - S.last) / 1000 * TIME_SCALE / 3600); S.last = t;
   let n = 0; while (t - S.mk.t >= dur(3600)) { S.mk.t += dur(3600); if (n++ < 48) stepMarket(); }
   S.workers = S.wk.length; pay(S.b.factory ? S.wk.reduce((a, k) => a + WAGE[k], 0) * h : 0, 'wage');
   pay(RENT_HOUR * Object.values(S.b).reduce((a, n) => a + n, 0) * h, 'rent');
   pay((count('make') ? POWER_HOUR : POWER_HOUR / 6) * S.b.factory * h, 'power');
   S.sp = (S.sp || 0) + SCI.office * S.b.office * h;
   const i = S.loan * LOAN_RATE * h; S.loan += i; S.led.int += i;
+  // XP: 12/jam untuk tiap bangunan yang sedang bekerja (Pabrik: produksi, Toko: jual, Kebun: panen). Dihitung dari tumpang-tindih waktu job dengan selang tick, jadi tetap adil saat game ditinggal.
+  for (const k of ['make', 'sell', 'grow']) { let ov = 0;
+    for (const j of S.jobs) if (j.k === k) ov = Math.max(ov, Math.min(t, j.end) - Math.max(t0, j.st || t0));
+    if (ov > 0) S.xp = (S.xp || 0) + XP.active * ov / 1000 * TIME_SCALE / 3600; }
   S.jobs = S.jobs.filter(j => {
     if (j.end > t) return true;
     if (j.k === 'grow') { const o = S.mat[j.id] || 0, t2 = o + j.n;   // panen Kebun masuk stok bahan
@@ -87,7 +91,7 @@ export function tick() {
       S.sold += s; S.sp += s * SCI.sell; if (s > 0) { S.btn += BTN.sell; toast(`+${BTN.sell} ◉ ${T('btn')}`); } toast(`${T('sold')} ${s} ${T(j.id)} · +${fmt(rev - tx - fee)}`); S.money += rev - tx - fee; S.led.rev += rev; S.led.tax += tx; S.led.fee = (S.led.fee || 0) + fee;
       if (s > 0) fx({ b: 'store', id: j.id, n: s, m: rev - tx - fee });
       S.rep = Math.min(100, Math.max(0, S.rep + s * (0.05 + (j.q - 2) * 0.15))); S.stock[j.id] = (S.stock[j.id] || 0) + j.n - s; }
-    if (j.k === 'up') { S.b[j.id]++; toast(`${T('done')}: ${T(j.id)} Lv${S.b[j.id]}`); }
+    if (j.k === 'up') { const hh = (j.st ? (j.end - j.st) / 1000 * TIME_SCALE : upSec(j.id)) / 3600; S.xp = (S.xp || 0) + hh * (S.b[j.id] === 0 ? XP.build : XP.up); S.b[j.id]++; toast(`${T('done')}: ${T(j.id)} Lv${S.b[j.id]}`); }
     if (j.k === 'res') S.research.push(j.id);
     if (j.k === 'qr') { S.rq[j.id] = (S.rq[j.id] || 0) + 1; toast(`${T('done')}: ${T(j.id)} ★${S.rq[j.id]}`); }
     return false;

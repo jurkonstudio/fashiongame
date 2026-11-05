@@ -42,7 +42,7 @@ export const view = () => `<div class="tabs">${SUBS.map(([k, i, l]) => `<button 
 
 export const actions = {
   sub: k => { sub = k; },
-  up: id => { const S = G.S; if (busy('up', id) || S.b[id] >= bMax() || S.money < upCost(id)) return; S.money -= upCost(id); S.jobs.push({ k: 'up', id, end: now() + dur(upSec(id)) }); },
+  up: id => { const S = G.S; if (busy('up', id) || S.b[id] >= bMax() || S.money < upCost(id)) return; S.money -= upCost(id); S.jobs.push({ k: 'up', id, st: now(), end: now() + dur(upSec(id)) }); },
   res: id => { const S = G.S, r = D.research[id]; if (busy('res', id) || S.research.includes(id) || S.money < r.cost) return; S.money -= r.cost; S.jobs.push({ k: 'res', id, end: now() + dur(r.time) }); },
   qres: id => { const S = G.S, p = D.products[id], n = S.rq[id] || 0; if (!p || n >= QR.max || busy('qr', id)) return; const sp = QR.sp[n], c = Math.round(p.base * QR.mul[n]);
     if ((S.sp || 0) < sp || S.money < c) return; S.sp -= sp; S.money -= c; S.rqSpent += c; S.jobs.push({ k: 'qr', id, end: now() + dur(QR.time[n]) }); },

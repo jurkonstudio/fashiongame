@@ -65,3 +65,9 @@ export const BTN = { login: 5, make: 10, sell: 10, plot: 500 };   // Kancing Ema
 
 // Kode tukar (menu Tukar kode). Hadiah Kancing Emas, sekali pakai per kode. Ubah/tambah sesuka hati.
 export const REDEEM = { WELCOME: { btn: 10 }, FASHION: { btn: 25 }, DESAINER: { btn: 50 } };
+
+// Level berbasis XP (mengikuti riset Sim Companies). XP per jam game. Level 1->2 = 5, 2->3 = 10, selanjutnya 10 x Fibonacci: 20, 30, 50, 80, 130, 210, 340, 550, 890, ...
+export const XP = { active: 12, build: 36.5, up: 36 };   // bangunan aktif (produksi/jual/panen) | konstruksi baru | upgrade, semuanya per jam durasi
+export const xpNeed = lv => { if (lv <= 1) return 5; if (lv === 2) return 10; let a = 1, b = 1; for (let i = 2; i < lv; i++) [a, b] = [b, a + b]; return 10 * b; };   // XP untuk naik dari lv ke lv+1
+export const xpCum = lv => { let s = 0; for (let l = 1; l < lv; l++) s += xpNeed(l); return s; };   // total XP saat mencapai level lv
+export const levelFor = xp => { let l = 1; while (xp >= xpCum(l + 1)) l++; return l; };

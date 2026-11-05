@@ -2,8 +2,8 @@
 insert into game_config values ('start_cash',500),('tax',0.11),('market_depth',40),('loan_rate',0.001),('btn_login',5),('btn_make',10),('btn_sell',10),('btn_speed_sec',1800);
 
 insert into item_types (id, kind, name_id, name_en, base_price, unlock_level) values
- ('cotton','raw','Kapas','Cotton',0.6,1),('hide','raw','Kulit mentah','Raw hide',5,1),('latex','raw','Lateks','Latex',2.5,1),('dye','raw','Pewarna','Dye',3,1),
- ('thread','material','Benang','Thread',1,1),('rubber','material','Karet','Rubber',4,1),('leather','material','Kulit','Leather',8,1),('fabric','material','Kain','Fabric',6,2),
+ ('cotton','raw','Kapas','Cotton',0.9,1),('hide','raw','Kulit mentah','Raw hide',7,1),('latex','raw','Lateks','Latex',3.25,1),('dye','raw','Pewarna','Dye',3.6,1),
+ ('thread','material','Benang','Thread',1.2,1),('rubber','material','Karet','Rubber',4.6,1),('leather','material','Kulit','Leather',9.2,1),('fabric','material','Kain','Fabric',6.6,2),
  ('shoes','product','Sepatu','Shoes',40,1),('shirt','product','Kaos','T-shirt',25,2),('bag','product','Tas','Bag',90,3),('dress','product','Gaun','Dress',140,3),('jacket','product','Jaket','Jacket',260,4);
 insert into npc_market (item_id) select id from item_types;
 

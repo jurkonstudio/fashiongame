@@ -1,5 +1,5 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { SUPABASE_URL as U, SUPABASE_KEY as K } from './config.js?v=3';
+import { SUPABASE_URL as U, SUPABASE_KEY as K } from './config.js?v=5';
 let sb = null, uid = null;
 export const status = { mode: U && K ? 'connecting' : 'offline', err: '', clock: false };   // offline | cloud | error
 const fail = (where, e) => { console.error(where, e); status.err = where + ': ' + (e?.message || e); if (status.mode !== 'offline') status.mode = 'error'; };

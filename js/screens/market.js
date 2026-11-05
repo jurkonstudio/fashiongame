@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SUP } from '../data.js?v=3';
-import { T, fmt } from '../i18n.js?v=3';
-import { ic } from '../icons.js?v=3';
-import { G, matPrice, buyMat } from '../state.js?v=3';
+import { D, SUP } from '../data.js?v=5';
+import { T, fmt } from '../i18n.js?v=5';
+import { ic } from '../icons.js?v=5';
+import { G, matPrice, buyMat } from '../state.js?v=5';
 
 let qty = 10;                       // 0 = maksimal sesuai uang
 const OPTS = [1, 10, 50, 100, 0];

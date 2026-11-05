@@ -66,3 +66,13 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - Pabrik & Toko dibangun dengan timer konstruksi (60 dtk, jam server).
 - Tutorial: produksi pertama 10x lebih cepat, penjualan pertama ~2 menit. Setelah penjualan pertama, kecepatan normal.
 - Untuk tes cepat: TIME_SCALE di js/data.js (mis. 60).
+
+## Update v4 (identitas FashionGame)
+- Ikon & logo baru buatan sendiri (assets/icons/*.svg, assets/logo.svg): ubin plum + jahitan putus-putus, motif gantungan baju, benang, kancing.
+- Palet merek: plum gelap + magenta/coral + emas. Kartu & tombol bergaya jahitan.
+- Bangunan di peta punya emblem: gantungan baju (Kantor, Toko), gulungan benang (Pabrik).
+- Notifikasi toast saat produksi, penjualan, atau konstruksi selesai.
+- Cache: versi ?v=4 pada impor & index.html. Naikkan angka saat update.
+
+## Update v5
+- Tema terang bergaya glass (putih, panel semi transparan, blur). Cache ?v=5.

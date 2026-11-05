@@ -1,7 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img">
-<title>warehouse</title><desc>FashionGame icon "warehouse". Copyright (c) 2026 FashionGame. All rights reserved.</desc>
-<!-- Copyright (c) 2026 FashionGame. All rights reserved. Not for copying or redistribution without written permission. -->
-<rect x="2" y="2" width="60" height="60" rx="14" fill="#12443a"/>
-<rect x="6.5" y="6.5" width="51" height="51" rx="10.5" fill="none" stroke="#fffaf2" stroke-opacity=".45" stroke-width="1.5" stroke-dasharray="3 3"/>
-<g fill="#fffaf2" stroke="#fffaf2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 29l20-14 20 14v21H12z"/><rect x="21" y="34" width="22" height="16" fill="#12443a" stroke="none"/><path d="M21 40h22M21 45h22" stroke="#fffaf2" stroke-width="1.5" fill="none"/></g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img"><title>warehouse</title><!-- (c) 2026 FashionGame. Original artwork. All rights reserved. -->
+<defs><linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d2338"/><stop offset="1" stop-color="#16111c"/></linearGradient></defs>
+<rect x="2" y="2" width="60" height="60" rx="14" fill="url(#t)"/><rect x="6.5" y="6.5" width="51" height="51" rx="10.5" fill="none" stroke="#d19a5b" stroke-opacity=".6" stroke-width="1.5" stroke-dasharray="3 3"/>
+<g fill="none" stroke="#f6ead7" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M10 29L32 14l22 15v21H10z" fill="#d19a5b"/><rect x="21" y="35" width="22" height="15" fill="#f6ead7"/><path d="M21 42h22M32 35v15" stroke="#d19a5b"/></g></svg>

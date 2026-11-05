@@ -1,7 +1,10 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=3';
-import { D, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=3';
+import { ic } from './icons.js?v=5';
+import { T, fmt } from './i18n.js?v=5';
+import { D, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=5';
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
+export const toasts = [];
+const toast = txt => { toasts.push({ txt, t: now() }); if (toasts.length > 20) toasts.shift(); };
 let OFF = 0;                                   // selisih jam server Supabase - jam perangkat
 export const setOffset = o => { OFF = o; };
 export const now = () => Date.now() + OFF;     // semua timer pakai waktu server
@@ -64,13 +67,13 @@ export function tick() {
     if (j.end > t) return true;
     if (j.k === 'make') { let good = 0; const dr = defectRate(j.q);
       for (let i = 0; i < j.n; i++) if (Math.random() >= dr) good++;
-      S.scrap += j.n - good; S.cond = Math.max(0, S.cond - 0.03);
+      S.scrap += j.n - good; toast(`${T('done')}: ${good}/${j.n} × ${T(j.id)}`); S.cond = Math.max(0, S.cond - 0.03);
       if (good) { const st = S.stock[j.id] || 0; S.sq[j.id] = ((S.sq[j.id] || 0) * st + j.q * good) / (st + good); S.stock[j.id] = st + good; S.made += good; } }
     if (j.k === 'sell') { const c = CH[j.ch || 'store'], s = j.ch === 'bulk' ? j.n : Math.floor(j.n * demand(j.id, j.price, j.q, j.ch || 'store')),
         rev = s * j.price, tx = rev * TAX, fee = rev * c.fee + s * c.ship;
-      S.sold += s; S.money += rev - tx - fee; S.led.rev += rev; S.led.tax += tx; S.led.fee = (S.led.fee || 0) + fee;
+      S.sold += s; toast(`${T('sold')} ${s} ${T(j.id)} · +${fmt(rev - tx - fee)}`); S.money += rev - tx - fee; S.led.rev += rev; S.led.tax += tx; S.led.fee = (S.led.fee || 0) + fee;
       S.rep = Math.min(100, Math.max(0, S.rep + s * (0.05 + (j.q - 2) * 0.15))); S.stock[j.id] = (S.stock[j.id] || 0) + j.n - s; }
-    if (j.k === 'up') S.b[j.id]++;
+    if (j.k === 'up') { S.b[j.id]++; toast(`${T('done')}: ${T(j.id)} Lv${S.b[j.id]}`); }
     if (j.k === 'res') S.research.push(j.id);
     return false;
   });

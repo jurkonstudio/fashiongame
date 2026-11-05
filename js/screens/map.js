@@ -1,10 +1,10 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=3';
-import { T, fmt } from '../i18n.js?v=3';
-import { ic, icu } from '../icons.js?v=3';
-import { G, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=3';
-import * as factory from './factory.js?v=3';
-import * as store from './store.js?v=3';
+import { D, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=5';
+import { T, fmt } from '../i18n.js?v=5';
+import { ic, icu } from '../icons.js?v=5';
+import { G, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=5';
+import * as factory from './factory.js?v=5';
+import * as store from './store.js?v=5';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -23,12 +23,12 @@ const TH = [   // tier 1-4: berubah menurut level pemain
   { sky: ['#f2b98b', '#fde8c6'], g: '#82bbb2', g2: '#6ea69e', ap: '#b9c2c0', pad: '#e1e6e4', alt: '#d6dcda', far: '#8aa0b0', n: 9 },
   { sky: ['#262a66', '#e9807b'], g: '#5f9ca0', g2: '#4d8c91', ap: '#a9b6c1', pad: '#d9e0e6', alt: '#cdd5dc', far: '#4c5d7c', n: 12 }];
 const COL = { office: { t: '#cfe3f1', l: '#9fc3dc', r: '#7fa7c4', a: '#e8f4fb', h: 38 }, factory: { t: '#b8bfc7', l: '#cfd4d9', r: '#a9b0b8', a: '#e4572e', h: 24 },
-  store: { t: '#e4572e', l: '#f7ead0', r: '#e1d0ab', a: '#12443a', h: 22 }, warehouse: { t: '#d3c4aa', l: '#bfae92', r: '#a39178', a: '#6b5a43', h: 20 } };
+  store: { t: '#e4572e', l: '#f7ead0', r: '#e1d0ab', a: '#b3285b', h: 22 }, warehouse: { t: '#d3c4aa', l: '#bfae92', r: '#a39178', a: '#6b5a43', h: 20 } };
 
 const pill = (cx, y, w, label, a, tone, prog) => {   // tombol aksi langsung di peta
-  const col = { go: '#1f95f0', sell: '#2fb56a', run: '#1b2026', off: '#2c3239' }[tone];
+  const col = { go: '#e8467c', sell: '#2fb56a', run: '#1b2026', off: '#2c3239' }[tone];
   return `<g ${a ? `class="tile" data-a="${a}" role="button" aria-label="${label}"` : 'pointer-events="none"'}><rect x="${cx - w / 2}" y="${y}" width="${w}" height="17" rx="3" fill="${col}" stroke="#000" stroke-opacity=".6"/>`
-    + (prog != null ? `<rect x="${cx - w / 2 + 2}" y="${y + 14}" width="${(w - 4) * prog}" height="2" fill="#7fd0ff"/>` : '')
+    + (prog != null ? `<rect x="${cx - w / 2 + 2}" y="${y + 14}" width="${(w - 4) * prog}" height="2" fill="#ff9ec0"/>` : '')
     + `<text x="${cx}" y="${y + 11}" text-anchor="middle" fill="#fff" style="font-size:8.5px;letter-spacing:.4px">${label}</text></g>`; };
 const prog = j => j.st ? Math.min(1, (now() - j.st) / (j.end - j.st)) : null;
 const quick = (t, i, cx, y) => { const S = G.S;
@@ -42,13 +42,16 @@ const quick = (t, i, cx, y) => { const S = G.S;
     return store.canSell() ? pill(cx, y, 74, `${T('sell').toUpperCase()} ${n}`, 'qsell', 'sell') : pill(cx, y, 74, `${T('stock')} 0`, 'slot:' + i, 'off'); }
   return ''; };
 
+const hang = (x, y, c) => `<g transform="translate(${x} ${y})" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -3v-4a3.2 3.2 0 1 1 3.2 3.2"/><path d="M0 -3L-12 6h24z"/></g>`;
+const emb = (t, cx, cy, h, b) => t === 'office' ? hang(cx, cy - h - b - 4, '#ff9ec0') : t === 'store' ? hang(cx, cy - h - b - 4, '#f6ead7')
+  : t === 'factory' ? `<g transform="translate(${cx + 8} ${cy - h - 8})"><rect x="-6" y="-14" width="12" height="3" rx="1" fill="#f6ead7"/><rect x="-4.5" y="-11" width="9" height="9" fill="#e8467c"/><rect x="-6" y="-2" width="12" height="3" rx="1" fill="#f6ead7"/><path d="M-4.5 -8l9 3M-4.5 -4l9 3" stroke="#f6ead7" stroke-width=".8"/></g>` : '';
 const bld = (t, lv, cx, cy) => {
   const c = COL[t], a = 32, b = 16, h = c.h + 7 * Math.min(lv, 5), up = G.S.jobs.find(j => j.k === 'up' && j.id === t);
   const R = (u, v, w, ht, f) => `<rect x="${u}" y="${v}" width="${w}" height="${ht}" fill="${f}"/>`;
   let l = '', r = '', roof = '';   // detail sisi kiri/kanan memakai koordinat lokal sisi (skew), atap memakai koordinat layar
   if (t === 'office') { const n = Math.max(1, Math.floor((h - 10) / 12));
     for (let i = 0; i < n; i++) for (let k = 0; k < 3; k++) { l += R(4 + k * 10, -h + 6 + i * 12, 6, 7, c.a); r += R(4 + k * 10, -h + 6 + i * 12, 6, 7, c.a); }
-    r += R(24, -10, 5, 10, '#12443a'); roof = `<path d="M${cx} ${cy - h - b}v-13" stroke="#6b6259" stroke-width="2"/><circle cx="${cx}" cy="${cy - h - b - 13}" r="2.5" fill="#e4572e"/>`; }
+    r += R(24, -10, 5, 10, '#b3285b'); roof = ''; }
   if (t === 'factory') { l += R(6, -16, 18, 16, c.a) + R(6, -11, 18, 1, '#fff') + R(6, -6, 18, 1, '#fff'); for (let k = 0; k < 3; k++) r += R(4 + k * 9, -h + 6, 6, 6, '#e8f4fb');
     roof = Array.from({ length: Math.min(lv, 3) }, (_, k) => `<rect x="${cx - 14 + k * 9}" y="${cy - h - 17 + k * 3}" width="6" height="15" fill="#7f868e"/><rect x="${cx - 14 + k * 9}" y="${cy - h - 17 + k * 3}" width="6" height="3" fill="${c.a}"/>`).join('')
       + (G.S.jobs.some(j => j.k === 'make') ? `<circle cx="${cx - 11}" cy="${cy - h - 26}" r="5" fill="#fff" opacity=".8"/><circle cx="${cx - 5}" cy="${cy - h - 35}" r="4" fill="#fff" opacity=".55"/>` : ''); }
@@ -57,7 +60,7 @@ const bld = (t, lv, cx, cy) => {
   return `<ellipse cx="${cx}" cy="${cy + 4}" rx="${a + 8}" ry="${b + 4}" fill="#0003"/>`
     + `<polygon points="${cx - a},${cy} ${cx},${cy + b} ${cx},${cy + b - h} ${cx - a},${cy - h}" fill="${c.l}"/><polygon points="${cx},${cy + b} ${cx + a},${cy} ${cx + a},${cy - h} ${cx},${cy + b - h}" fill="${c.r}"/>`
     + `<polygon points="${cx},${cy - b - h} ${cx + a},${cy - h} ${cx},${cy + b - h} ${cx - a},${cy - h}" fill="${c.t}"/>`
-    + `<g transform="translate(${cx - a} ${cy}) matrix(1 .5 0 1 0 0)">${l}</g><g transform="translate(${cx} ${cy + b}) matrix(1 -.5 0 1 0 0)">${r}</g>` + roof
+    + `<g transform="translate(${cx - a} ${cy}) matrix(1 .5 0 1 0 0)">${l}</g><g transform="translate(${cx} ${cy + b}) matrix(1 -.5 0 1 0 0)">${r}</g>` + roof + emb(t, cx, cy, h, b)
     + (up ? `<polygon points="${cx - a},${cy} ${cx},${cy + b} ${cx + a},${cy} ${cx + a},${cy - h} ${cx},${cy - b - h} ${cx - a},${cy - h}" fill="#fff" opacity=".55"/><rect x="${cx - 31}" y="${cy - h / 2 - 9}" width="62" height="18" rx="9" fill="#e4572e"/><image href="${icu('timer')}" x="${cx - 26}" y="${cy - h / 2 - 6}" width="12" height="12"/><text x="${cx - 11}" y="${cy - h / 2 + 4}" fill="#fff">${mm(up.end - now())}</text>` : '');
 };
 
@@ -97,11 +100,11 @@ export const view = () => { const S = G.S, t = Math.min(4, S.level) - 1, th = TH
     let inner = `<polygon points="${dia(e.c, e.r)}" fill="${fill}"/>`;
     if (!s.own) { inner += `<polygon points="${dia(e.c, e.r)}" fill="#1c1917" opacity=".16" stroke="${aff ? '#f2b84b' : '#6b6259'}" stroke-width="2" stroke-dasharray="6 5"/>`;
       ov += `<g pointer-events="none"><image href="${icu('lock')}" x="${cx - 10}" y="${cy - 22}" width="20" height="20"/><text x="${cx}" y="${cy + 10}" text-anchor="middle" fill="#2b2420">${fmt(SLOT_COST[e.i])}</text></g>`; }
-    else if (!s.t) { inner += `<polygon points="${dia(e.c, e.r)}" fill="none" stroke="#12443a" stroke-width="2" stroke-dasharray="6 5"/>`;
-      ov += `<g pointer-events="none"><circle cx="${cx}" cy="${cy - 4}" r="12" fill="#12443a"/><path d="M${cx - 6} ${cy - 4}h12M${cx} ${cy - 10}v12" stroke="#fff" stroke-width="3" stroke-linecap="round"/><text x="${cx}" y="${cy + 20}" text-anchor="middle" fill="#12443a">${T('buildhere')}</text></g>`; }
+    else if (!s.t) { inner += `<polygon points="${dia(e.c, e.r)}" fill="none" stroke="#b3285b" stroke-width="2" stroke-dasharray="6 5"/>`;
+      ov += `<g pointer-events="none"><circle cx="${cx}" cy="${cy - 4}" r="12" fill="#b3285b"/><path d="M${cx - 6} ${cy - 4}h12M${cx} ${cy - 10}v12" stroke="#fff" stroke-width="3" stroke-linecap="round"/><text x="${cx}" y="${cy + 20}" text-anchor="middle" fill="#b3285b">${T('buildhere')}</text></g>`; }
     else { const lv = S.b[s.t]; inner += bld(s.t, lv, cx, cy);
       const hh = COL[s.t].h + 7 * Math.min(lv, 5);
-      ov += `<g pointer-events="none"><rect x="${cx + 18}" y="${cy - hh - 10}" width="26" height="13" rx="3" fill="#0c0e11" stroke="#2c3239"/><text x="${cx + 31}" y="${cy - hh}" text-anchor="middle" fill="#7fd0ff" style="font-size:8px">Lv${Math.max(1, lv)}</text></g>` + quick(s.t, e.i, cx, cy - hh - 52); }
+      ov += `<g pointer-events="none"><rect x="${cx + 18}" y="${cy - hh - 10}" width="26" height="13" rx="3" fill="#0c0e11" stroke="#2c3239"/><text x="${cx + 31}" y="${cy - hh}" text-anchor="middle" fill="#ff9ec0" style="font-size:8px">Lv${Math.max(1, lv)}</text></g>` + quick(s.t, e.i, cx, cy - hh - 52); }
     if (sel === e.i) inner += `<polygon points="${dia(e.c, e.r)}" fill="none" stroke="#f2b84b" stroke-width="3.5"/>`;
     g += `<g class="tile"${fixed ? '' : ` data-a="slot:${e.i}" role="button" aria-label="${T(s.t || 'plot')} ${e.i + 1}"`}>${inner}</g>`; }
   return guide() + `<div class="card mapbar"><div class="row"><b>${ic('star')}Lv${S.level} · ${T('map_t' + (t + 1))}</b><span class="mute">${sl.filter(s => s.own).length}/${sl.length} ${T('plot')}</span></div>${sl.some(s => s.t === 'factory') ? `<div class="row mute" style="margin-top:4px"><span>${T('warehouse')} ${whUsed()}/${whCap()}</span><span>${T('machine')} ${Math.round(S.cond * 100)}%</span></div>` : ''}</div>`

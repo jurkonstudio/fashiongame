@@ -1,17 +1,17 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=3';
-import { T, fmt, setLang, setCur } from './i18n.js?v=3';
-import { init, load, save, serverOffset, status } from './api.js?v=3';
-import { D } from './data.js?v=3';
-import { G, fresh, tick, setOffset } from './state.js?v=3';
-import * as map from './screens/map.js?v=3';
-import * as market from './screens/market.js?v=3';
-import * as margin from './screens/margin.js?v=3';
-import * as factory from './screens/factory.js?v=3';
-import * as store from './screens/store.js?v=3';
-import * as office from './screens/office.js?v=3';
-import * as finance from './screens/finance.js?v=3';
-import * as profile from './screens/profile.js?v=3';
+import { ic } from './icons.js?v=5';
+import { T, fmt, setLang, setCur } from './i18n.js?v=5';
+import { init, load, save, serverOffset, status } from './api.js?v=5';
+import { D } from './data.js?v=5';
+import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=5';
+import * as map from './screens/map.js?v=5';
+import * as market from './screens/market.js?v=5';
+import * as margin from './screens/margin.js?v=5';
+import * as factory from './screens/factory.js?v=5';
+import * as store from './screens/store.js?v=5';
+import * as office from './screens/office.js?v=5';
+import * as finance from './screens/finance.js?v=5';
+import * as profile from './screens/profile.js?v=5';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, market, margin, office, finance, profile };   // tambah layar baru di sini
@@ -33,7 +33,8 @@ const lvlBar = S => { if (S.level !== 1) return ''; const g = D.goals1, p = (Mat
 
 function render() {
   const S = G.S;
-  setHTML($('#hud'), `<div class="hud1"><span class="money">${fmt(S.money)}</span><button data-a="tab:profile" aria-label="${T('profile')}">${ic('profile')}</button></div><div class="hud2"><span class="pill">${ic('star')} Lv${S.level}</span><span class="pill">${ic('worker')} ${S.workers}</span><span class="pill">${ic('timer')} ${S.jobs.length}</span><span class="pill ${status.mode === 'cloud' ? 'ok' : status.mode === 'error' ? 'bad' : ''}">● ${status.mode === 'cloud' ? 'Cloud' : status.mode === 'error' ? 'Offline' : status.mode === 'connecting' ? '…' : 'Local'}${status.mode === 'cloud' && !status.clock ? ' · clock?' : ''}</span></div>${lvlBar(S)}`);
+  setHTML($('#hud'), `<div class="hud1"><span class="brand"><img class="logo" src="assets/logo.svg" alt=""><span>FASHION<b>GAME</b></span></span><span class="money">${fmt(S.money)}</span><button data-a="tab:profile" aria-label="${T('profile')}">${ic('profile')}</button></div><div class="hud2"><span class="pill">${ic('star')} Lv${S.level}</span><span class="pill">${ic('worker')} ${S.workers}</span><span class="pill">${ic('timer')} ${S.jobs.length}</span><span class="pill ${status.mode === 'cloud' ? 'ok' : status.mode === 'error' ? 'bad' : ''}">● ${status.mode === 'cloud' ? 'Cloud' : status.mode === 'error' ? 'Offline' : status.mode === 'connecting' ? '…' : 'Local'}${status.mode === 'cloud' && !status.clock ? ' · clock?' : ''}</span></div>${lvlBar(S)}`);
+  setHTML($('#toast'), toasts.filter(x => now() - x.t < 6000).slice(-3).map(x => `<div>${x.txt}</div>`).join(''));
   const warn = status.mode === 'error' ? `<div class="card err"><b>Cloud unavailable, playing offline</b><div class="mute">${String(status.err).replace(/[<>&]/g, '')}</div></div>` : '';
   setHTML($('#view'), warn + (tab === 'profile' ? `<h2>${ic('profile')}${T('profile')}</h2>` : '') + screens[tab].view());
   const sh = $('#sheet'), st = sh.querySelector('.shb')?.scrollTop || 0, sel = map.selected();

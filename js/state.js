@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=11';
-import { T, fmt } from './i18n.js?v=11';
-import { D, BTN, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=11';
+import { ic } from './icons.js?v=12';
+import { T, fmt } from './i18n.js?v=12';
+import { D, BTN, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=12';
 export const MOD = { dem: () => 1, mat: () => 1 };   // diisi depth.js (peristiwa, pemasaran)
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 export const toasts = [];
@@ -12,7 +12,7 @@ export const now = () => Date.now() + OFF;     // semua timer pakai waktu server
 export const dur = sec => sec * 1000 / TIME_SCALE;
 export const fresh = () => ({ money: START_MONEY, level: 1, mat: {}, stock: {}, made: 0, sold: 0,
   b: { factory: 0, office: 1, store: 0 }, jobs: [], workers: 1, research: [], price: { shoes: 40 }, last: now(), lang: 'en',
-  mk: { t: now(), fx: 1, idx: { leather: 1, rubber: 1, thread: 1, fabric: 1 } }, mc: {}, mq: {}, sq: {}, loan: 0,
+  mk: { t: now(), fx: 1, idx: { leather: 1, rubber: 1, thread: 1, fabric: 1, cotton: 1, hide: 1, latex: 1, dye: 1 } }, mc: {}, mq: {}, sq: {}, loan: 0,
   led: { rev: 0, tax: 0, mat: 0, wage: 0, power: 0, rent: 0, int: 0, fee: 0, maint: 0 },
   wk: [1], cond: 1, rep: 10, scrap: 0, t0: now(),
   land: { slots: Array.from({ length: SLOTS }, (_, i) => ({ own: i < 3, t: i === 0 ? 'office' : null })) }, btn: 0, name: 'My Fashion Co.', desc: '', notes: '', dp: { ev: null, evAt: 0, camp: null, ct: [], ctAt: 0 }, cur: 'usd', pref: { n1: 1, n2: 1, n3: 1 } });
@@ -21,19 +21,20 @@ export const mm = ms => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.
   return (h ? h + ':' : '') + String(m).padStart(h ? 2 : 1, '0') + ':' + String(s % 60).padStart(2, '0'); };
 
 // --- pasar & bahan ---
-export const matPrice = (m, sup = G.sup) => D.materials[m].price * G.S.mk.idx[m] * (D.materials[m].imp ? G.S.mk.fx : 1) * SUP[sup].mult * MOD.mat(m);
+export const itemDef = id => D.products[id] || D.craft[id];
+export const matPrice = (m, sup = G.sup) => D.materials[m].price * (G.S.mk.idx[m] ?? 1) * (D.materials[m].imp ? G.S.mk.fx : 1) * SUP[sup].mult * MOD.mat(m);
 export const buyMat = (m, n, sup = G.sup) => { const S = G.S, c = matPrice(m, sup) * n; if (n <= 0 || S.money < c) return false;
   S.money -= c; const o = S.mat[m] || 0, t = o + n;
   S.mc[m] = ((S.mc[m] || 0) * o + c) / t; S.mq[m] = ((S.mq[m] || 0) * o + SUP[sup].q * n) / t; S.mat[m] = t; return true; };
 export const shortfall = id => { let cost = 0; const miss = {};
-  for (const [m, n] of Object.entries(D.products[id].recipe)) { const k = Math.max(0, n - (G.S.mat[m] || 0)); if (k) { miss[m] = k; cost += k * matPrice(m); } }
+  for (const [m, n] of Object.entries(itemDef(id).recipe)) { const k = Math.max(0, n - (G.S.mat[m] || 0)); if (k) { miss[m] = k; cost += k * matPrice(m); } }
   return { cost, miss }; };
 export const useBatch = id => { const S = G.S; let cost = 0, q = 0, u = 0;       // pakai bahan stok, hitung HPP + kualitas
-  for (const [m, n] of Object.entries(D.products[id].recipe)) { cost += n * (S.mc[m] || 0); q += n * (S.mq[m] || 1); u += n; S.mat[m] -= n; }
+  for (const [m, n] of Object.entries(itemDef(id).recipe)) { cost += n * (S.mc[m] || 0); q += n * (S.mq[m] || 1); u += n; S.mat[m] -= n; }
   S.led.mat += cost; return { cost, q: q / u }; };
 
 // --- rumus ---
-export const unitCost = id => { const p = D.products[id], S = G.S; return Object.entries(p.recipe).reduce((a, [m, n]) => a + n * (S.mc[m] || matPrice(m)), 0) / p.batch; };
+export const unitCost = id => { const p = itemDef(id), S = G.S; return Object.entries(p.recipe).reduce((a, [m, n]) => a + n * (S.mc[m] || matPrice(m)), 0) / p.batch; };
 export const qm = q => 0.7 + 0.15 * q;                                             // pengali harga acuan dari kualitas
 export const demand = (id, price, q = 2, ch = 'store') => {       // 3 segmen pasar x pesaing x musim x channel
   const b = D.products[id].base, rp = Math.min(1, G.S.rep / 50), f = r => Math.min(1, (r / price) ** 2);
@@ -52,9 +53,10 @@ export const count = k => G.S.jobs.filter(j => j.k === k).length;
 export const job = (k, id) => { const j = G.S.jobs.find(j => j.k === k && j.id === id); return j ? `<div class="mute">${ic('timer')}${mm(j.end - now())}</div>` : ''; };
 
 const pay = (c, k) => { const S = G.S; if (S.money >= c) S.money -= c; else { S.loan += c - S.money; S.money = 0; } S.led[k] += c; };   // kurang kas -> jadi pinjaman
+export const fx = o => { const S = G.S, t = now(); S.fx = (S.fx || []).filter(e => t - e.t < 30000); S.fx.push({ ...o, t }); };
 const rnd = a => (Math.random() * 2 - 1) * a;
 function stepMarket() { const k = G.S.mk;
-  for (const m in k.idx) k.idx[m] = Math.min(1.5, Math.max(0.7, k.idx[m] + 0.3 * (1 - k.idx[m]) + rnd(0.08)));
+  for (const m in D.materials) { const v = k.idx[m] ?? 1; k.idx[m] = Math.min(1.5, Math.max(0.7, v + 0.3 * (1 - v) + rnd(0.08))); }
   k.fx = Math.min(1.2, Math.max(0.9, k.fx + 0.2 * (1 - k.fx) + rnd(0.03))); }
 
 export function tick() {
@@ -66,14 +68,19 @@ export function tick() {
   const i = S.loan * LOAN_RATE * h; S.loan += i; S.led.int += i;
   S.jobs = S.jobs.filter(j => {
     if (j.end > t) return true;
+    if (j.k === 'make' && D.craft[j.id]) { const o = S.mat[j.id] || 0, t2 = o + j.n;   // bahan baku hasil Pabrik masuk stok bahan
+      S.mc[j.id] = ((S.mc[j.id] || 0) * o + (j.c || 0)) / t2; S.mq[j.id] = ((S.mq[j.id] || 0) * o + j.q * j.n) / t2; S.mat[j.id] = t2;
+      S.cond = Math.max(0, S.cond - 0.02); S.btn += BTN.make; fx({ b: 'factory', id: j.id, n: j.n }); toast(`${T('done')}: ${j.n} × ${T(j.id)}`); return false; }
     if (j.k === 'make') { let good = 0; const dr = defectRate(j.q);
       for (let i = 0; i < j.n; i++) if (Math.random() >= dr) good++;
       S.scrap += j.n - good; if (good) { S.btn += BTN.make; toast(`+${BTN.make} ◉ ${T('btn')}`); } toast(`${T('done')}: ${good}/${j.n} × ${T(j.id)}`); S.cond = Math.max(0, S.cond - 0.03);
+      if (good) fx({ b: 'factory', id: j.id, n: good });
       if (good) { const st = S.stock[j.id] || 0; S.sq[j.id] = ((S.sq[j.id] || 0) * st + j.q * good) / (st + good); S.stock[j.id] = st + good; S.made += good; } }
     if (j.k === 'sell') { const c = CH[j.ch || 'store'], s = j.ch === 'bulk' ? j.n : Math.floor(j.n * demand(j.id, j.price, j.q, j.ch || 'store')),
         rev = s * j.price, tx = rev * TAX, fee = rev * c.fee + s * c.ship;
       (S.dp.log = S.dp.log || []).unshift({ t, id: j.id, ch: j.ch || 'store', n: j.n, s, pr: j.price, net: rev - tx - fee }); S.dp.log.length = Math.min(S.dp.log.length, 30);
       S.sold += s; if (s > 0) { S.btn += BTN.sell; toast(`+${BTN.sell} ◉ ${T('btn')}`); } toast(`${T('sold')} ${s} ${T(j.id)} · +${fmt(rev - tx - fee)}`); S.money += rev - tx - fee; S.led.rev += rev; S.led.tax += tx; S.led.fee = (S.led.fee || 0) + fee;
+      if (s > 0) fx({ b: 'store', id: j.id, n: s, m: rev - tx - fee });
       S.rep = Math.min(100, Math.max(0, S.rep + s * (0.05 + (j.q - 2) * 0.15))); S.stock[j.id] = (S.stock[j.id] || 0) + j.n - s; }
     if (j.k === 'up') { S.b[j.id]++; toast(`${T('done')}: ${T(j.id)} Lv${S.b[j.id]}`); }
     if (j.k === 'res') S.research.push(j.id);
@@ -93,6 +100,6 @@ export const CH = {
 };
 export const bulkPrice = (id, q = 2) => D.products[id].base * qm(q) * 0.7;      // harga grosir tetap, pembeli pasti ada
 export const whCap = () => WH_BASE + WH_PER * G.S.b.factory + WH_BLD * (G.S.b.warehouse || 0);
-export const whUsed = () => Object.values(G.S.stock).reduce((a, n) => a + n, 0) + G.S.jobs.filter(j => j.k === 'make').reduce((a, j) => a + j.n, 0);
+export const whUsed = () => Object.values(G.S.stock).reduce((a, n) => a + n, 0) + G.S.jobs.filter(j => j.k === 'make' && D.products[j.id]).reduce((a, j) => a + j.n, 0);
 export const defectRate = q => Math.min(0.4, Math.max(0.01, 0.15 - 0.03 * G.S.wk.reduce((a, k) => a + k, 0) / G.S.wk.length - 0.02 * (q - 1) + (1 - G.S.cond) * 0.15));
 export const fixCost = () => Math.round(150 * G.S.b.factory * (1 - G.S.cond));

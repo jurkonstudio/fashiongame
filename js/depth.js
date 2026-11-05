@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. Kedalaman game v6: peristiwa pasar, kontrak, pemasaran, target level, peringkat.
-import { ic } from './icons.js?v=11';
-import { T, fmt } from './i18n.js?v=11';
-import { D, TAX, BTN } from './data.js?v=11';
-import { G, now, dur, mm, MOD, qm, day, toasts, matPrice, demand } from './state.js?v=11';
+import { ic } from './icons.js?v=12';
+import { T, fmt } from './i18n.js?v=12';
+import { D, TAX, BTN } from './data.js?v=12';
+import { G, now, dur, mm, MOD, qm, day, toasts, matPrice, demand } from './state.js?v=12';
 
 const EV = { strike:{ h:6, mat:{ leather:1.3, rubber:1.3 } }, sale:{ h:6, mat:{ fabric:.75, thread:.8 } }, viral:{ h:4, dem:1.4 }, slump:{ h:6, dem:.75 }, tariff:{ h:8, mat:{ leather:1.2, rubber:1.2, fabric:1.15 } } };
 const CAMP = { social:{ cost:60, x:1.15, h:4, rep:0 }, influ:{ cost:250, x:1.35, h:6, rep:3 }, board:{ cost:600, x:1.25, h:24, rep:8 } };

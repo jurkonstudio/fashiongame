@@ -1,12 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=11';
-import { T, fmt } from '../i18n.js?v=11';
-import { ic, icu } from '../icons.js?v=11';
-import { G, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=11';
-import * as factory from './factory.js?v=11';
-import * as depth from '../depth.js?v=11';
-import * as store from './store.js?v=11';
-import * as m3 from './map3d.js?v=11';
+import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=12';
+import { T, fmt } from '../i18n.js?v=12';
+import { ic, icu } from '../icons.js?v=12';
+import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=12';
+import * as factory from './factory.js?v=12';
+import * as depth from '../depth.js?v=12';
+import * as store from './store.js?v=12';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -24,24 +23,28 @@ const TH = [   // tier 1-4: berubah menurut level pemain
   { sky: ['#a6d6ef', '#f6ecd3'], g: '#93cba2', g2: '#7fb890', ap: '#c9c5b6', pad: '#e7e3d7', alt: '#dedacb', far: '#9db9c6', n: 6 },
   { sky: ['#f2b98b', '#fde8c6'], g: '#82bbb2', g2: '#6ea69e', ap: '#b9c2c0', pad: '#e1e6e4', alt: '#d6dcda', far: '#8aa0b0', n: 9 },
   { sky: ['#262a66', '#e9807b'], g: '#5f9ca0', g2: '#4d8c91', ap: '#a9b6c1', pad: '#d9e0e6', alt: '#cdd5dc', far: '#4c5d7c', n: 12 }];
-const COL = { office: { t: '#cfe3f1', l: '#9fc3dc', r: '#7fa7c4', a: '#e8f4fb', h: 38 }, factory: { t: '#b8bfc7', l: '#cfd4d9', r: '#a9b0b8', a: '#e4572e', h: 24 },
-  store: { t: '#e4572e', l: '#f7ead0', r: '#e1d0ab', a: '#b3285b', h: 22 }, warehouse: { t: '#d3c4aa', l: '#bfae92', r: '#a39178', a: '#6b5a43', h: 20 } };
+const COL = { office: { t: '#f3e6f7', l: '#c9a6d6', r: '#a77fb9', a: '#ffd6ea', h: 38 }, factory: { t: '#d9d2e3', l: '#efe6f2', r: '#c4b6d3', a: '#e8467c', h: 24 },
+  store: { t: '#ff6f9e', l: '#fff3e4', r: '#f0dcc2', a: '#b3285b', h: 22 }, warehouse: { t: '#e9d7b8', l: '#d4bd96', r: '#b99f78', a: '#7a4a6b', h: 20 } };
 
-const pill = (cx, y, w, label, a, tone, prog) => {   // tombol aksi langsung di peta
-  const col = { go: '#e8467c', sell: '#2fb56a', run: '#1b2026', off: '#2c3239' }[tone];
-  return `<g ${a ? `class="tile" data-a="${a}" role="button" aria-label="${label}"` : 'pointer-events="none"'}><rect x="${cx - w / 2}" y="${y}" width="${w}" height="17" rx="3" fill="${col}" stroke="#000" stroke-opacity=".6"/>`
-    + (prog != null ? `<rect x="${cx - w / 2 + 2}" y="${y + 14}" width="${(w - 4) * prog}" height="2" fill="#ff9ec0"/>` : '')
-    + `<text x="${cx}" y="${y + 11}" text-anchor="middle" fill="#fff" style="font-size:8.5px;letter-spacing:.4px">${label}</text></g>`; };
+const chip = (cx, y, icon, label, tone, act, p) => {   // gelembung kecil: ikon + (timer/angka). Tanpa kata-kata
+  const w = label ? 24 + label.length * 5.4 : 26, x = cx - w / 2, col = { run: '#2a1838', go: '#e8467c', sell: '#2fb56a', off: '#6b5f78' }[tone];
+  return `<g ${act ? `class="tile" data-a="${act}" role="button"` : 'pointer-events="none"'}><rect x="${x}" y="${y}" width="${w}" height="19" rx="9.5" fill="${col}" stroke="#fff" stroke-opacity=".75"/>`
+    + `<image href="${icu(icon)}" x="${x + 3}" y="${y + 2}" width="15" height="15"/>`
+    + (label ? `<text x="${x + 20}" y="${y + 13}" fill="#fff" style="font-size:9px;font-weight:700">${label}</text>` : '')
+    + (p != null ? `<rect x="${x + 4}" y="${y + 16}" width="${(w - 8) * p}" height="2" rx="1" fill="#ffc2da"/>` : '') + `</g>`; };
+const fxOf = (b, cx, y) => { const t = now(), L = (G.S.fx || []).filter(e => e.b === b && t - e.t < 12000).slice(-2);   // hasil barang / uang, hilang sendiri
+  return L.map((e, k) => { const a = t - e.t, yy = y - Math.min(a, 3000) / 3000 * 12 - k * 22, op = a > 9000 ? 1 - (a - 9000) / 3000 : 1;
+    const lab = b === 'store' ? '+' + fmt(e.m) : '+' + e.n, icon = b === 'store' ? 'money' : itemDef(e.id).icon, w = 26 + lab.length * 5.6;
+    return `<g pointer-events="none" opacity="${op}"><rect x="${cx - w / 2}" y="${yy}" width="${w}" height="19" rx="9.5" fill="${b === 'store' ? '#f2b84b' : '#fff'}" stroke="${b === 'store' ? '#b9770e' : '#e8467c'}" stroke-width="1.5"/><image href="${icu(icon)}" x="${cx - w / 2 + 3}" y="${yy + 2}" width="15" height="15"/><text x="${cx - w / 2 + 20}" y="${yy + 13}" fill="#2b2420" style="font-size:9.5px;font-weight:800">${lab}</text></g>`; }).join(''); };
 const prog = j => j.st ? Math.min(1, (now() - j.st) / (j.end - j.st)) : null;
 const quick = (t, i, cx, y) => { const S = G.S;
   if (busy('up', t)) return '';
-  if (t === 'factory') { const j = S.jobs.find(j => j.k === 'make');
-    if (j) return pill(cx, y, 74, mm(j.end - now()), null, 'run', prog(j));
-    return pill(cx, y, 74, T('make').toUpperCase(), factory.canMake('shoes') ? 'qmake' : 'slot:' + i, factory.canMake('shoes') ? 'go' : 'off'); }
+  if (t === 'factory') { const js = S.jobs.filter(j => j.k === 'make');
+    if (js.length) { const j = js.reduce((a, b) => (a.end < b.end ? a : b)); return chip(cx, y, itemDef(j.id).icon, mm(j.end - now()) + (js.length > 1 ? ' ×' + js.length : ''), 'run', 'slot:' + i, prog(j)); }
+    const ok = factory.canMake('shoes'); return chip(cx, y, ok ? 'shoes' : 'factory', '', ok ? 'go' : 'off', ok ? 'qmake' : 'slot:' + i); }
   if (t === 'store') { const j = S.jobs.find(j => j.k === 'sell');
-    if (j) return pill(cx, y, 74, mm(j.end - now()), null, 'run', prog(j));
-    const n = Math.min(Object.values(S.stock).reduce((a, v) => a + v, 0), saleCap());
-    return store.canSell() ? pill(cx, y, 74, `${T('sell').toUpperCase()} ${n}`, 'qsell', 'sell') : pill(cx, y, 74, `${T('stock')} 0`, 'slot:' + i, 'off'); }
+    if (j) return chip(cx, y, 'money', mm(j.end - now()), 'run', 'slot:' + i, prog(j));
+    return store.canSell() ? chip(cx, y, 'money', '', 'sell', 'qsell') : ''; }
   return ''; };
 
 const hang = (x, y, c) => `<g transform="translate(${x} ${y})" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -3v-4a3.2 3.2 0 1 1 3.2 3.2"/><path d="M0 -3L-12 6h24z"/></g>`;
@@ -84,11 +87,6 @@ const pillD = (t, i) => { const S = G.S; if (busy('up', t)) return null;
   if (t === 'store') { const j = S.jobs.find(j => j.k === 'sell'); if (j) return [mm(j.end - now()), null, 'run', prog(j)];
     const n = Math.min(Object.values(S.stock).reduce((a, v) => a + v, 0), saleCap()); return store.canSell() ? [`${T('sell').toUpperCase()} ${n}`, 'qsell', 'sell', null] : [`${T('stock')} 0`, 'slot:' + i, 'off', null]; }
   return null; };
-const m3info = (night, t) => { const S = G.S; return { night, tier: t, sel, making: S.jobs.some(j => j.k === 'make'),
-  slots: S.land.slots.map((s, i) => { const up = s.t && S.jobs.find(j => j.k === 'up' && j.id === s.t);
-    return { own: s.own, t: s.t || null, lv: s.t ? S.b[s.t] : 0, fixed: s.own && s.t === 'office', afford: S.btn >= BTN.plot, cost: BTN.plot, build: T('buildhere'), name: s.t ? T(s.t) : '',
-      up: up ? { left: mm(up.end - now()), p: prog(up) } : null, pill: s.t ? pillD(s.t, i) : null }; }) }; };
-
 const inv = () => { const S = G.S, ch = [...Object.keys(D.materials).filter(m => S.mat[m] >= 1).map(m => [D.materials[m].icon, T(m), Math.floor(S.mat[m])]),
     ...Object.keys(D.products).filter(k => S.stock[k]).map(k => [D.products[k].icon, T(k), S.stock[k]])];
   return ch.length ? `<div class="inv">${ch.map(([i, n, c]) => `<span class="ci">${ic(i)}<b>${c}</b><small>${n}</small></span>`).join('')}</div>` : ''; };
@@ -128,17 +126,16 @@ export const view = () => { const S = G.S, hr = new Date(now()).getHours(), nigh
     const s = sl[e.i], aff = !s.own && S.btn >= BTN.plot, fixed = s.own && s.t === 'office';
     let inner = `<polygon points="${dia(e.c, e.r)}" fill="${fill}"/>`;
     if (!s.own) { inner += `<polygon points="${dia(e.c, e.r)}" fill="#1c1917" opacity=".16" stroke="${aff ? '#f2b84b' : '#6b6259'}" stroke-width="2" stroke-dasharray="6 5"/>`;
-      ov += `<g pointer-events="none"><image href="${icu('lock')}" x="${cx - 10}" y="${cy - 22}" width="20" height="20"/><circle cx="${cx - 15}" cy="${cy + 7}" r="6" fill="#f2b84b" stroke="#b9770e"/><text x="${cx + 3}" y="${cy + 10}" text-anchor="middle" fill="#2b2420">${BTN.plot}</text></g>`; }
+      ov += `<g pointer-events="none"><image href="${icu('lock')}" x="${cx - 11}" y="${cy - 20}" width="22" height="22"/>${aff ? `<circle cx="${cx + 12}" cy="${cy - 18}" r="4.5" fill="#f2b84b" stroke="#b9770e"/>` : ''}</g>`; }
     else if (!s.t) { inner += `<polygon points="${dia(e.c, e.r)}" fill="none" stroke="#b3285b" stroke-width="2" stroke-dasharray="6 5"/>`;
-      ov += `<g pointer-events="none"><circle cx="${cx}" cy="${cy - 4}" r="12" fill="#b3285b"/><path d="M${cx - 6} ${cy - 4}h12M${cx} ${cy - 10}v12" stroke="#fff" stroke-width="3" stroke-linecap="round"/><text x="${cx}" y="${cy + 20}" text-anchor="middle" fill="#b3285b">${T('buildhere')}</text></g>`; }
+      ov += `<g pointer-events="none"><circle cx="${cx}" cy="${cy - 2}" r="12" fill="#b3285b" stroke="#fff" stroke-opacity=".8"/><path d="M${cx - 6} ${cy - 2}h12M${cx} ${cy - 8}v12" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>`; }
     else { const lv = S.b[s.t]; inner += bld(s.t, lv, cx, cy);
       const hh = COL[s.t].h + 7 * Math.min(lv, 5);
-      ov += `<g pointer-events="none"><rect x="${cx + 18}" y="${cy - hh - 10}" width="26" height="13" rx="3" fill="#0c0e11" stroke="#2c3239"/><text x="${cx + 31}" y="${cy - hh}" text-anchor="middle" fill="#ff9ec0" style="font-size:8px">Lv${Math.max(1, lv)}</text></g>` + quick(s.t, e.i, cx, cy - hh - 52) + `<g pointer-events="none"><rect x="${cx - 27}" y="${cy + 19}" width="54" height="12" rx="6" fill="#17141d" opacity=".85"/><text x="${cx}" y="${cy + 28}" text-anchor="middle" fill="#fff" style="font-size:7px;letter-spacing:.7px">${T(s.t).toUpperCase()}</text></g>`; }
+      const dx = { factory: -20, store: 22 }[s.t] || 0;
+      ov += quick(s.t, e.i, cx + dx, cy - hh - 42) + fxOf(s.t, cx + dx, cy - hh - 66); }
     if (sel === e.i) inner += `<polygon points="${dia(e.c, e.r)}" fill="none" stroke="#f2b84b" stroke-width="3.5"/>`;
     g += `<g class="tile"${fixed ? '' : ` data-a="slot:${e.i}" role="button" aria-label="${T(s.t || 'plot')} ${e.i + 1}"`}>${inner}</g>`; }
-  if (m3.ready()) m3.update(m3info(night, t));
-  return guide() + `<div class="card mapbar"><div class="row"><b>${ic('star')}Lv${S.level} · ${T('map_t' + (t + 1))}</b><span class="mute">${sl.filter(s => s.own).length}/${sl.length} ${T('plot')}</span></div>${sl.some(s => s.t === 'factory') ? `<div class="row mute" style="margin-top:4px"><span>${T('warehouse')} ${whUsed()}/${whCap()}</span><span>${T('machine')} ${Math.round(S.cond * 100)}%</span></div>` : ''}</div>`
-    + (m3.ready() ? '<div id="mapslot" class="m3slot"></div>' : `<svg class="mapsvg" viewBox="0 0 360 380" role="group" aria-label="${T('map')}">${bg}${g}${tint}${ov}</svg>`) + inv(); };
+  return `<svg class="mapsvg" viewBox="0 0 360 380" role="group" aria-label="${T('map')}">${bg}${g}${tint}${ov}</svg>`; };
 
 const upCard = id => { const S = G.S, b = D.buildings[id], lv = S.b[id], top = lv >= bMax();
   return `<div class="card"><div class="row"><span>${ic(b.icon)}${T(id)} Lv${lv}/${bMax()}</span><button class="b" data-a="up:${id}" ${top || busy('up', id) || S.money < upCost(id) ? 'disabled' : ''}>${top ? T('max') : `${T('upgrade')} · ${fmt(upCost(id))} · ${mm(dur(upSec(id)))}`}</button></div><div class="mute row"><span>${T(b.fx)}</span></div>${job('up', id)}</div>`; };
@@ -155,7 +152,7 @@ export const sheet = () => { if (sel === null) return '';
     body = (free.map(([t, b]) => `<div class="card"><div class="row"><span>${ic(b.icon)}${T(t)}</span><button class="b" data-a="build:${t}" ${S.money < b.cost ? 'disabled' : ''}>${T('buildhere')} · ${fmt(b.cost)}</button></div><div class="mute">${T(b.fx)}</div></div>`).join('') || `<div class="card mute">${T('allbuilt')}</div>`)
       + `<div class="card mute">${T('soon')}: ${T('boutique')}, ${T('studio')}</div>`; }
   else { ti = `${ic(IC[s.t])}${T(s.t)} Lv${S.b[s.t]}`; body = (PANEL[s.t] || (() => ''))(); }
-  return `<div class="shbg" data-a="close"></div><div class="sh" role="dialog"><div class="shh"><h2>${ti}</h2><button class="x" data-a="close" aria-label="${T('close')}">✕</button></div><div class="shb">${body}</div></div>`; };
+  return `<div class="shbg" data-a="close"></div><div class="sh" role="dialog"><div class="shh"><h2>${ti}</h2><button class="x" data-a="close" aria-label="${T('close')}">✕</button></div><div class="shb">${guide()}${body}</div></div>`; };
 
 export const actions = {
   slot: i => { sel = +i; },

@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SUP } from '../data.js?v=11';
-import { T, fmt } from '../i18n.js?v=11';
-import { ic } from '../icons.js?v=11';
-import { G, now, dur, mm, unitCost, factoryMult, busy, count, shortfall, buyMat, useBatch, whCap, whUsed, defectRate, fixCost } from '../state.js?v=11';
+import { D, SUP } from '../data.js?v=12';
+import { T, fmt } from '../i18n.js?v=12';
+import { ic } from '../icons.js?v=12';
+import { G, itemDef, now, dur, mm, unitCost, factoryMult, busy, count, shortfall, buyMat, useBatch, whCap, whUsed, defectRate, fixCost } from '../state.js?v=12';
 
 const blocked = id => { const S = G.S;
-  return busy('up', 'factory') || count('make') >= S.b.factory || S.cond <= 0.2 || whUsed() + D.products[id].batch > whCap(); };
+  return busy('up', 'factory') || count('make') >= S.b.factory || S.cond <= 0.2 || (D.products[id] && whUsed() + D.products[id].batch > whCap()); };
 
 export const canMake = id => { const sf = shortfall(id); return !blocked(id) && G.S.money >= sf.cost; };
 
@@ -19,24 +19,25 @@ export const view = () => {
     <div class="row"><span>${T('warehouse')}</span><b class="${whUsed() >= whCap() ? 'neg' : ''}">${whUsed()}/${whCap()}</b></div>
     <div class="row mute"><span>${T('supplier')}</span><span>${T(G.sup)}</span></div>
     <div class="row mute"><span>${T('scrap')}</span><span>${S.scrap} ${T('unit')}</span></div></div>` +
-    Object.entries(D.products).map(([id, p]) => {
+    Object.entries(D.products).concat([['_h']], Object.entries(D.craft)).map(([id, p]) => {
+      if (id === '_h') return `<div class="cat">${T('mats')}</div>`;
       if (p.lvl > S.level) return `<div class="card mute">${ic('lock')} ${ic(p.icon)} ${T(id)} · ${T('locked')} ${p.lvl}</div>`;
       const sf = shortfall(id), ok = !blocked(id) && S.money >= sf.cost;
       return `<div class="card"><div class="row"><span>${ic(p.icon)}${T(id)} ×${p.batch} · ${mm(dur(p.time) * factoryMult())}</span>
         <button class="b" data-a="make:${id}" ${ok ? '' : 'disabled'}>${sf.cost > 0 ? `${T('buymake')} · ${fmt(sf.cost)}` : T('make')}</button></div>
-        <div class="mute row"><span>${Object.entries(p.recipe).map(([m, n]) => `${ic(D.materials[m].icon)}${Math.min(S.mat[m] || 0, n)}/${n}`).join(' ')}</span><span>${T('defect')} ~${Math.round(defectRate(SUP[G.sup].q) * 100)}%</span></div>
+        <div class="mute row"><span>${Object.entries(p.recipe).map(([m, n]) => `${ic(D.materials[m].icon)}${Math.min(S.mat[m] || 0, n)}/${n}`).join(' ')}</span><span>${D.products[id] ? `${T('defect')} ~${Math.round(defectRate(SUP[G.sup].q) * 100)}%` : ''}</span></div>
         <div class="mute row"><span>${T('cost')} ${fmt(unitCost(id))}/${T('unit')}</span></div></div>`;
     }).join('') +
-    S.jobs.filter(j => j.k === 'make').map(j => `<div class="card"><div class="row"><span>${ic(D.products[j.id].icon)} ×${j.n}</span><span>${ic('timer')}${mm(j.end - now())}</span></div></div>`).join('');
+    S.jobs.filter(j => j.k === 'make').map(j => `<div class="card"><div class="row"><span>${ic(itemDef(j.id).icon)} ×${j.n}</span><span>${ic('timer')}${mm(j.end - now())}</span></div></div>`).join('');
 };
 
 export const actions = {
   fix: () => { const S = G.S, c = fixCost(); if (c <= 0 || S.money < c) return; S.money -= c; S.led.maint = (S.led.maint || 0) + c; S.cond = 1; },
   make: id => {
-    const S = G.S, p = D.products[id], sf = shortfall(id);
+    const S = G.S, p = itemDef(id), sf = shortfall(id);
     if (blocked(id) || S.money < sf.cost) return;
     for (const m in sf.miss) buyMat(m, sf.miss[m]);
     const u = useBatch(id);
-    S.jobs.push({ k: 'make', id, n: p.batch, q: u.q, st: now(), end: now() + dur(p.time) * factoryMult() });
+    S.jobs.push({ k: 'make', id, n: p.batch, q: u.q, c: u.cost, st: now(), end: now() + dur(p.time) * factoryMult() });
   }
 };

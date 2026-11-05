@@ -1,23 +1,22 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=11';
-import { T, fmt, setLang, setCur } from './i18n.js?v=11';
-import { init, load, save, serverOffset, status } from './api.js?v=11';
-import { D } from './data.js?v=11';
-import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=11';
-import * as map from './screens/map.js?v=11';
-import * as market from './screens/market.js?v=11';
-import * as margin from './screens/margin.js?v=11';
-import * as factory from './screens/factory.js?v=11';
-import * as store from './screens/store.js?v=11';
-import * as office from './screens/office.js?v=11';
-import * as finance from './screens/finance.js?v=11';
-import * as depth from './depth.js?v=11';
-import * as warehouse from './screens/warehouse.js?v=11';
-import { GB } from './art.js?v=11';
-import * as item from './screens/item.js?v=11';
-import * as more from './screens/more.js?v=11';
-import * as profile from './screens/profile.js?v=11';
-import * as m3 from './screens/map3d.js?v=11';
+import { ic } from './icons.js?v=12';
+import { T, fmt, setLang, setCur } from './i18n.js?v=12';
+import { init, load, save, serverOffset, status } from './api.js?v=12';
+import { D } from './data.js?v=12';
+import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=12';
+import * as map from './screens/map.js?v=12';
+import * as market from './screens/market.js?v=12';
+import * as margin from './screens/margin.js?v=12';
+import * as factory from './screens/factory.js?v=12';
+import * as store from './screens/store.js?v=12';
+import * as office from './screens/office.js?v=12';
+import * as finance from './screens/finance.js?v=12';
+import * as depth from './depth.js?v=12';
+import * as warehouse from './screens/warehouse.js?v=12';
+import { GB } from './art.js?v=12';
+import * as item from './screens/item.js?v=12';
+import * as more from './screens/more.js?v=12';
+import * as profile from './screens/profile.js?v=12';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, item, more, warehouse, market, margin, office, finance, profile };   // tambah layar baru di sini
@@ -43,10 +42,9 @@ const DR = [['prof', 'p_card', 'profile'], ['goal', 'goal', 'target'], ['ct', 'c
 function render() {
   const S = G.S, pr = depth.prog(), xp = pr ? Math.round(pr.p * 100) : 100;
   setHTML($('#hud'), `<div class="hud1"><button class="hb" data-a="menu" aria-label="${T('menu')}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 6h18M3 12h18M3 18h18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></button><button class="av" data-a="go:prof" aria-label="${T('profile')}"><img class="logo" src="assets/logo.svg" alt=""></button><span class="sp"></span><button data-a="go:rank" aria-label="${T('rank')}">${ic('star')}</button><span class="money">${fmt(S.money)}</span><span class="lvp">★ ${S.level}<small>${xp}%</small></span></div><div class="hud2"><span class="pill gb">${GB}${Math.floor(S.btn)}</span><span class="pill">${ic('star')} Lv${S.level}</span><span class="pill">${ic('worker')} ${S.workers}</span><span class="pill">${ic('timer')} ${S.jobs.length}</span><span class="pill ${status.mode === 'cloud' ? 'ok' : status.mode === 'error' ? 'bad' : ''}">● ${status.mode === 'cloud' ? 'Cloud' : status.mode === 'error' ? 'Offline' : status.mode === 'connecting' ? '…' : 'Local'}${status.mode === 'cloud' && !status.clock ? ' · clock?' : ''}</span></div>${depth.banner()}`);
-  setHTML($('#toast'), toasts.filter(x => now() - x.t < 6000).slice(-3).map(x => `<div>${x.txt}</div>`).join(''));
+  setHTML($('#toast'), tab === 'map' ? '' : toasts.filter(x => now() - x.t < 6000).slice(-3).map(x => `<div>${x.txt}</div>`).join(''));
   const warn = status.mode === 'error' ? `<div class="card err"><b>Cloud unavailable, playing offline</b><div class="mute">${String(status.err).replace(/[<>&]/g, '')}</div></div>` : '';
   if (!document.activeElement?.dataset?.n) setHTML($('#view'), warn + (tab === 'profile' ? `<h2>${ic('profile')}${T('profile')}</h2>` : '') + screens[tab].view());
-  m3.attach($('#mapslot'));   // kanvas 3D dipertahankan antar render (tidak ikut innerHTML)
   const sh = $('#sheet'), st = sh.querySelector('.shb')?.scrollTop || 0, sel = map.selected();
   setHTML(sh, tab === 'map' ? map.sheet() : '');
   const nb = sh.querySelector('.shb'); if (nb && sel === lastSel) nb.scrollTop = st;   // jaga posisi scroll panel saat refresh tiap detik
@@ -61,12 +59,12 @@ document.addEventListener('click', e => {
   const [a, arg] = el.dataset.a.split(/:(.*)/s); actions[a](arg); tick(); depth.tick(); render();
 });
 
-m3.hooks.pick = i => { actions.slot(i); tick(); depth.tick(); render(); };
 (async () => { try {
   await init();
   setOffset(await serverOffset());                                  // timer ikut jam server
   setInterval(async () => setOffset(await serverOffset()), 300000);   // sinkron ulang tiap 5 menit
   G.S = Object.assign(fresh(), (await load()) || {});   // migrasi save lama
+  for (const m in D.materials) G.S.mk.idx[m] = G.S.mk.idx[m] ?? 1;   // bahan mentah baru (migrasi save lama)
   if (G.S.wk.length !== G.S.workers) G.S.wk = Array(G.S.workers).fill(1);
   setLang(G.S.lang); setCur(G.S.cur);
   tick(); depth.tick(); render();

@@ -1,9 +1,9 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SUP } from '../data.js?v=11';
-import { T, fmt } from '../i18n.js?v=11';
-import { ic } from '../icons.js?v=11';
-import * as depth from '../depth.js?v=11';
-import { G, matPrice, buyMat } from '../state.js?v=11';
+import { D, SUP } from '../data.js?v=12';
+import { T, fmt } from '../i18n.js?v=12';
+import { ic } from '../icons.js?v=12';
+import * as depth from '../depth.js?v=12';
+import { G, matPrice, buyMat } from '../state.js?v=12';
 
 let qty = 10;                       // 0 = maksimal sesuai uang
 const OPTS = [1, 10, 50, 100, 0];

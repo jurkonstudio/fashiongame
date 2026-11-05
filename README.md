@@ -108,3 +108,11 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - js/screens/map3d.js: peta 3D sungguhan (Three.js r160, dimuat dari CDN jsdelivr, versi dipin). Model low-poly (Kantor, Pabrik bergerigi + cerobong berasap, Toko ber-awning, Gudang bergelombang), tekstur prosedural dari canvas (tanpa file gambar), bayangan real-time (PCF soft), tone mapping ACES, air facet beranimasi, awan, mobil, lampu jalan dengan PointLight saat malam, jendela menyala di malam hari.
 - Interaksi: ketuk petak/bangunan (sama seperti peta SVG), geser horizontal untuk memutar kamera. Tombol PRODUCE/SELL, timer, dan label muncul sebagai overlay HTML yang mengikuti posisi 3D.
 - Fallback otomatis ke peta SVG bila CDN/WebGL tidak tersedia (mode offline penuh tetap memakai peta SVG). Catatan: ini satu-satunya dependensi eksternal; untuk offline penuh, unduh three.module.js ke folder lib/ dan ubah URL3 di map3d.js.
+
+## Update v12 (sesi 1: peta 2D tanpa teks + bahan baku dari Pabrik)
+- Peta 3D (Three.js) dihapus. Peta kini 2D isometrik SVG bergaya fashion (palet plum/pink/krem). Tanpa dependensi CDN untuk peta.
+- Di peta hanya ada gelembung ikon: timer produksi/penjualan/konstruksi, hasil barang (+n) saat produksi selesai, uang (+$) saat penjualan selesai (hilang sendiri setelah 12 dtk). Tidak ada label teks, kartu, atau toast di tab Peta.
+- Semua tindakan: ketuk bangunan > panel. Gelembung merah muda (ikon sepatu) di Pabrik = produksi cepat; gelembung hijau (ikon uang) di Toko = jual cepat.
+- Pabrik kini juga memproduksi **bahan baku** (data.js: `D.craft`). Bahan mentah baru: Kapas, Kulit mentah, Lateks, Pewarna (dibeli di Pasar). Resep: Benang = 10 Kapas; Karet = 5 Lateks; Kulit = 5 Kulit mentah + 1 Pewarna; Kain = 20 Benang + 4 Pewarna. Bahan hasil Pabrik masuk stok bahan dengan biaya rata-rata dan kualitas dari bahan sumber. Kekurangan bahan dibeli otomatis di Pasar.
+- Save lama kompatibel (indeks harga bahan mentah ditambahkan otomatis).
+- Rencana sesi berikutnya: (2) panel Pabrik bertab Produk/Bahan + seni bangunan fashion, (3) rantai bahan lebih dalam & bangunan baru, (4) polesan animasi + balancing.

@@ -27,7 +27,16 @@ export const SLOT_COST = [0, 0, 0, 100, 150, 250, 400, 650, 1000, 1500];
 export const BUILD_SEC = { factory: 60, store: 60 };   // waktu konstruksi (detik, memakai jam server)
 export const NEW_B = { factory:{cost:200,icon:'factory',fx:'fx_factory'}, store:{cost:150,icon:'store',fx:'fx_store'}, warehouse:{cost:300,icon:'warehouse',fx:'fx_warehouse'} };
 export const D = {
-  materials: { leather:{icon:'leather',price:8,imp:1}, rubber:{icon:'rubber',price:4,imp:1}, thread:{icon:'thread',price:1}, fabric:{icon:'fabric',price:6} },
+  materials: { leather:{icon:'leather',price:8,imp:1}, rubber:{icon:'rubber',price:4,imp:1}, thread:{icon:'thread',price:1}, fabric:{icon:'fabric',price:6},
+    // bahan mentah (sumber untuk produksi bahan baku di Pabrik)
+    cotton:{icon:'cotton',price:0.6}, hide:{icon:'hide',price:5,imp:1}, latex:{icon:'latex',price:2.5,imp:1}, dye:{icon:'dye',price:3} },
+  // Pabrik juga bisa membuat bahan baku sendiri (hemat dibanding beli jadi di Pasar, tapi butuh waktu)
+  craft: {
+    thread:{icon:'thread',lvl:1,time:300,batch:20,recipe:{cotton:10}},
+    rubber:{icon:'rubber',lvl:1,time:600,batch:5,recipe:{latex:5}},
+    leather:{icon:'leather',lvl:1,time:900,batch:5,recipe:{hide:5,dye:1}},
+    fabric:{icon:'fabric',lvl:2,time:600,batch:10,recipe:{thread:20,dye:4}}
+  },
   // time = detik per batch; recipe = bahan per batch
   products: {
     shoes:{icon:'shoes',lvl:1,time:600,base:40,batch:5,recipe:{leather:5,rubber:5,thread:10}},

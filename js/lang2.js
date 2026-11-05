@@ -18,3 +18,6 @@ Object.assign(L2.id, { btn:'Kancing Emas' });
 Object.assign(L2.en, { btn:'Gold Buttons' });
 Object.assign(L2.id, { sci:'Poin Sains', sci_hint:'SP didapat dari Kantor tiap jam, produksi, dan penjualan. Riset menaikkan kualitas produk (+0.5 Q per bintang, maks Q5). Kualitas tinggi = harga jual jauh lebih mahal.', qbonus:'Bonus kualitas', qcap:'Kualitas bahan Premium jadi' });
 Object.assign(L2.en, { sci:'Science points', sci_hint:'SP come from the Office every hour, production and sales. Research raises product quality (+0.5 Q per star, max Q5). Higher quality sells for much more.', qbonus:'Quality bonus', qcap:'Premium materials yield' });
+
+Object.assign(L2.id, { cat_farm:'Hasil kebun', showall:'Lihat semua', whempty:'Gudang masih kosong. Beli bahan di Pasar atau produksi di Pabrik.', exch:'Bursa', recent:'Terakhir dilihat', npcsell:'Penjual NPC', hintmap:'Ketuk lahan atau bangunan di peta' });
+Object.assign(L2.en, { cat_farm:'Farm produce', showall:'Show all', whempty:'Warehouse is empty. Buy materials in the Market or produce in the Factory.', exch:'Exchange', recent:'Recent', npcsell:'NPC sellers', hintmap:'Tap a plot or building on the map' });

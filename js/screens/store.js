@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SEASONS, TAX } from '../data.js?v=19';
-import { T, fmt } from '../i18n.js?v=19';
-import { ic } from '../icons.js?v=19';
-import { G, now, dur, mm, unitCost, demand, saleCap, busy, count, CH, bulkPrice, month, compPrice } from '../state.js?v=19';
+import { D, SEASONS, TAX } from '../data.js?v=20';
+import { T, fmt } from '../i18n.js?v=20';
+import { ic } from '../icons.js?v=20';
+import { G, now, dur, mm, unitCost, demand, saleCap, busy, count, CH, bulkPrice, month, compPrice } from '../state.js?v=20';
 
 let ch = 'store';
 const pr = id => ch === 'bulk' ? bulkPrice(id, G.S.sq[id] || 2) : (G.S.price[id] || D.products[id].base);

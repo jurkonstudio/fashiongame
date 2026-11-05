@@ -1,13 +1,13 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Halaman bangunan (gaya Sim Companies): gambar besar, tombol aksi, riwayat, carousel barang + satu tombol aksi besar.
-import { D, TAX, WAGE, RENT_HOUR } from '../data.js?v=19';
-import { T, fmt } from '../i18n.js?v=19';
-import { ic } from '../icons.js?v=19';
-import { ART } from '../art.js?v=19';
-import { G, now, dur, mm, busy, count, bMax, upCost, upSec, shortfall, unitCost, factoryMult, whCap, whUsed, fixCost, defectRate, demand, saleCap, CH, bulkPrice, compPrice } from '../state.js?v=19';
-import * as store from './store.js?v=19';
-import * as farm from './farm.js?v=19';
-import * as factory from './factory.js?v=19';
+import { D, TAX, WAGE, RENT_HOUR } from '../data.js?v=20';
+import { T, fmt } from '../i18n.js?v=20';
+import { ic } from '../icons.js?v=20';
+import { ART } from '../art.js?v=20';
+import { G, now, dur, mm, busy, count, bMax, upCost, upSec, shortfall, unitCost, factoryMult, whCap, whUsed, fixCost, defectRate, demand, saleCap, CH, bulkPrice, compPrice } from '../state.js?v=20';
+import * as store from './store.js?v=20';
+import * as farm from './farm.js?v=20';
+import * as factory from './factory.js?v=20';
 
 let cur = 'factory'; const pick = {};
 const byLvl = o => Object.keys(o).sort((a, b) => o[a].lvl - o[b].lvl);

@@ -76,3 +76,19 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 
 ## Update v5
 - Tema terang bergaya glass (putih, panel semi transparan, blur). Cache ?v=5.
+
+## Update v6 (kedalaman ala Sim Companies)
+- js/depth.js (modul baru) + js/lang2.js (teks ID/EN). Cache ?v=6.
+- Peristiwa pasar acak (mogok pelabuhan, obral tekstil, tren viral, daya beli lesu, tarif impor): memengaruhi harga bahan / permintaan, tampil sebagai lencana di HUD.
+- Kontrak (Pasar > Kontrak): pembeli ritel menawar harga di atas pasar, butuh jumlah + kualitas minimum, ada tenggat. Dibuka setelah penjualan pertama.
+- Pemasaran (Kantor > Pemasaran): 3 kampanye (Sosmed, Influencer, Baliho) menaikkan permintaan sementara; biaya masuk laporan laba rugi.
+- Target level bertingkat Lv1 sampai Lv4 (produksi, penjualan, pendapatan, reputasi, level Toko/Kantor).
+- Peringkat (Keuangan > Peringkat): valuasi kamu vs 5 pesaing NPC yang tumbuh tiap hari game.
+- Save lama kompatibel (field `dp` otomatis ditambahkan).
+
+## Update v7 (tampilan modern ala Sim Companies)
+- HUD gelap: menu, avatar, peringkat, uang (pill hijau), level + persen XP. Navigasi bawah gelap: Peta, Gudang, Pasar, Kantor, Keuangan. Cache ?v=7.
+- Menu samping (hamburger): Profil, Target, Kontrak, Peringkat, Margin, Bahasa/Setelan.
+- Gudang (js/screens/warehouse.js): kartu bergambar per kategori (bahan baku, produk jadi) dengan harga, jumlah, kualitas; bar kapasitas + nilai stok; tab Margin dipindah ke sini.
+- Profil perusahaan (Profil > Profil): thumbnail kota sesuai level, nama/deskripsi/catatan pribadi yang bisa diedit, peringkat valuasi, rating A-E dari reputasi, tier, tanggal berdiri, tag produk.
+- Ilustrasi: js/art.js (7 barang + thumbnail kota).

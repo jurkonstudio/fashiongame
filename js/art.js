@@ -1,0 +1,15 @@
+// (c) 2026 FashionGame. Ilustrasi barang & thumbnail kota (SVG buatan sendiri).
+const W = b => `<svg viewBox="0 0 64 64" class="art" aria-hidden="true">${b}</svg>`;
+export const ART = {
+  leather: W('<path d="M8 24l12-9 12 4 14-7 9 13-7 10 4 13-15 4-10-6-13 4-6-15z" fill="#a8643a"/><path d="M14 26l8-6 10 3 12-5 5 9-5 9 3 10-11 3-9-5-10 3-4-11z" fill="none" stroke="#e2a36b" stroke-width="1.6" stroke-dasharray="3 2.5"/>'),
+  rubber: W('<ellipse cx="32" cy="42" rx="24" ry="10" fill="#1f2328"/><path d="M8 42v-9a24 10 0 0 1 48 0v9a24 10 0 0 1-48 0z" fill="#3a4048"/><ellipse cx="32" cy="33" rx="24" ry="10" fill="#59616b"/><ellipse cx="32" cy="33" rx="12" ry="4.5" fill="#2a2f35"/>'),
+  thread: W('<rect x="13" y="9" width="38" height="8" rx="3" fill="#caa46a"/><rect x="13" y="47" width="38" height="8" rx="3" fill="#caa46a"/><rect x="18" y="17" width="28" height="30" fill="#e8467c"/><path d="M18 23h28M18 29h28M18 35h28M18 41h28" stroke="#b3285b" stroke-width="1.4"/><path d="M46 38c8 2 8 10 4 14" fill="none" stroke="#e8467c" stroke-width="2"/>'),
+  fabric: W('<rect x="8" y="20" width="40" height="28" rx="4" fill="#5b8def"/><path d="M15 20v28M23 20v28M31 20v28M39 20v28" stroke="#fff" stroke-opacity=".35" stroke-width="2.4"/><ellipse cx="48" cy="34" rx="8" ry="14" fill="#8fb0ff"/><ellipse cx="48" cy="34" rx="3" ry="6" fill="#3a5fc0"/>'),
+  shoes: W('<path d="M6 38c8-1 11-8 13-15l9 4c3 2 7 3 12 4l13 5c4 2 4 8 0 8H9c-3 0-5-4-3-6z" fill="#e8467c"/><path d="M6 45h52v6H9z" fill="#f6ead7"/><path d="M26 31l4-4M33 33l4-4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>'),
+  shirt: W('<path d="M22 9L8 17l6 12 7-3v28h24V26l7 3 6-12-14-8q-4 6-10 6t-10-6z" fill="#2ec4b6"/><path d="M22 9q4 6 10 6t10-6" fill="none" stroke="#1a8f84" stroke-width="2.2"/>'),
+  bag: W('<path d="M22 25v-6a10 10 0 0 1 20 0v6" fill="none" stroke="#7a3b1d" stroke-width="3.6"/><path d="M9 25h46l4 30H5z" fill="#d9961a"/><rect x="27" y="33" width="10" height="8" rx="2" fill="#7a3b1d"/>')
+};
+export const city = (slots, lv) => { const C = { office: '#9fc3dc', factory: '#b8bfc7', store: '#e4572e', warehouse: '#d3c4aa' }; let b = '';
+  slots.forEach((s, i) => { if (!s.t) return; const x = 10 + i * 34, h = 26 + lv * 6 + i % 3 * 9;
+    b += `<rect x="${x}" y="${104 - h}" width="28" height="${h}" rx="2" fill="${C[s.t]}"/>` + [0, 1, 2].map(k => `<rect x="${x + 5}" y="${110 - h + k * 12}" width="6" height="6" fill="#fff" opacity=".75"/><rect x="${x + 17}" y="${110 - h + k * 12}" width="6" height="6" fill="#fff" opacity=".75"/>`).join(''); });
+  return `<svg viewBox="0 0 360 120" class="thumb" aria-hidden="true"><rect width="360" height="120" fill="${['#bfe7f6', '#a6d6ef', '#f2b98b', '#262a66'][Math.min(lv, 4) - 1]}"/><rect y="104" width="360" height="16" fill="#8fc276"/>${b}</svg>`; };

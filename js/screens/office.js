@@ -1,11 +1,12 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, WAGE, HIRE } from '../data.js?v=5';
-import { T, fmt } from '../i18n.js?v=5';
-import { ic } from '../icons.js?v=5';
-import { G, now, dur, mm, busy, job, bMax, upCost, upSec } from '../state.js?v=5';
+import { D, WAGE, HIRE } from '../data.js?v=7';
+import { T, fmt } from '../i18n.js?v=7';
+import { ic } from '../icons.js?v=7';
+import * as depth from '../depth.js?v=7';
+import { G, now, dur, mm, busy, job, bMax, upCost, upSec } from '../state.js?v=7';
 
 let sub = 'goal';
-const SUBS = [['goal', 'target', 't_goal'], ['workers', 'worker', 'workers'], ['research', 'research', 'research'], ['build', 'office', 't_build']];
+const SUBS = [['goal', 'target', 't_goal'], ['workers', 'worker', 'workers'], ['research', 'research', 'research'], ['mkt', 'chart', 't_mkt'], ['build', 'office', 't_build']];
 const bar = n => `<div class="bar"><i style="width:${Math.min(100, n)}%"></i></div>`;
 
 const panels = {
@@ -29,6 +30,7 @@ const panels = {
       <div class="mute row"><span>${T(b.fx)}</span></div>${job('up', id)}</div>`; }).join(''); }
 };
 
+panels.goal = depth.goalPanel; panels.mkt = depth.mktPanel;
 export const view = () => `<div class="tabs">${SUBS.map(([k, i, l]) => `<button class="chip ${k === sub ? 'on' : ''}" data-a="sub:${k}">${ic(i)}<span>${T(l)}</span></button>`).join('')}</div>` + panels[sub]();
 
 export const actions = {

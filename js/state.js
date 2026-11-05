@@ -1,7 +1,8 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=5';
-import { T, fmt } from './i18n.js?v=5';
-import { D, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=5';
+import { ic } from './icons.js?v=7';
+import { T, fmt } from './i18n.js?v=7';
+import { D, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=7';
+export const MOD = { dem: () => 1, mat: () => 1 };   // diisi depth.js (peristiwa, pemasaran)
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 export const toasts = [];
 const toast = txt => { toasts.push({ txt, t: now() }); if (toasts.length > 20) toasts.shift(); };
@@ -14,13 +15,13 @@ export const fresh = () => ({ money: START_MONEY, level: 1, mat: {}, stock: {}, 
   mk: { t: now(), fx: 1, idx: { leather: 1, rubber: 1, thread: 1, fabric: 1 } }, mc: {}, mq: {}, sq: {}, loan: 0,
   led: { rev: 0, tax: 0, mat: 0, wage: 0, power: 0, rent: 0, int: 0, fee: 0, maint: 0 },
   wk: [1], cond: 1, rep: 10, scrap: 0, t0: now(),
-  land: { slots: Array.from({ length: SLOTS }, (_, i) => ({ own: i < 3, t: i === 0 ? 'office' : null })) }, cur: 'usd', pref: { n1: 1, n2: 1, n3: 1 } });
+  land: { slots: Array.from({ length: SLOTS }, (_, i) => ({ own: i < 3, t: i === 0 ? 'office' : null })) }, name: 'My Fashion Co.', desc: '', notes: '', dp: { ev: null, evAt: 0, camp: null, ct: [], ctAt: 0 }, cur: 'usd', pref: { n1: 1, n2: 1, n3: 1 } });
 
 export const mm = ms => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
   return (h ? h + ':' : '') + String(m).padStart(h ? 2 : 1, '0') + ':' + String(s % 60).padStart(2, '0'); };
 
 // --- pasar & bahan ---
-export const matPrice = (m, sup = G.sup) => D.materials[m].price * G.S.mk.idx[m] * (D.materials[m].imp ? G.S.mk.fx : 1) * SUP[sup].mult;
+export const matPrice = (m, sup = G.sup) => D.materials[m].price * G.S.mk.idx[m] * (D.materials[m].imp ? G.S.mk.fx : 1) * SUP[sup].mult * MOD.mat(m);
 export const buyMat = (m, n, sup = G.sup) => { const S = G.S, c = matPrice(m, sup) * n; if (n <= 0 || S.money < c) return false;
   S.money -= c; const o = S.mat[m] || 0, t = o + n;
   S.mc[m] = ((S.mc[m] || 0) * o + c) / t; S.mq[m] = ((S.mq[m] || 0) * o + SUP[sup].q * n) / t; S.mat[m] = t; return true; };
@@ -38,7 +39,7 @@ export const demand = (id, price, q = 2, ch = 'store') => {       // 3 segmen pa
   const b = D.products[id].base, rp = Math.min(1, G.S.rep / 50), f = r => Math.min(1, (r / price) ** 2);
   const d = SEG.hemat * Math.min(1, (b * 0.85 / price) ** 2.5) + SEG.mid * f(b * qm(q)) + SEG.prem * f(b * 1.5 * q / 3) * rp;
   const cf = Math.min(1.2, Math.max(0.5, (compPrice(id) / price) ** 0.6));
-  return Math.min(1, d * cf * season(id, ch) * CH[ch].dm); };
+  return Math.min(1, d * cf * season(id, ch) * CH[ch].dm * MOD.dem()); };
 export const workerSpeed = () => 1 - Math.min(0.5, G.S.wk.reduce((a, k) => a + k, 0) * 0.04);
 export const factoryMult = () => workerSpeed() * 0.9 ** (G.S.b.factory - 1) * (1 + (1 - G.S.cond) * 0.3) * (G.S.sold ? 1 : 0.1);   // produksi pertama 10x lebih cepat (tutorial)
 export const saleSec = () => SALE_HOURS * 3600 * 0.85 ** (G.S.b.store - 1) * (G.S.sold ? 1 : 1 / 60);   // penjualan pertama ~2 menit (tutorial)
@@ -77,8 +78,6 @@ export function tick() {
     if (j.k === 'res') S.research.push(j.id);
     return false;
   });
-  const g = D.goals1;
-  if (S.level === 1 && S.made >= g.made && S.sold >= g.sold && S.research.includes(g.research)) S.level = 2;
 }
 
 // --- Tahap B: kalender, pesaing, channel, gudang, mesin, cacat ---

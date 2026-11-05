@@ -1,19 +1,28 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, WAGE, SLOT_COST } from '../data.js?v=5';
-import { T, fmt, setLang, setCur } from '../i18n.js?v=5';
-import { SUPABASE_URL } from '../config.js?v=5';
-import { ic } from '../icons.js?v=5';
-import { G, fresh, unitCost, factoryMult } from '../state.js?v=5';
+import { D, WAGE, SLOT_COST } from '../data.js?v=7';
+import { T, fmt, setLang, setCur } from '../i18n.js?v=7';
+import { SUPABASE_URL } from '../config.js?v=7';
+import { ic } from '../icons.js?v=7';
+import { city } from '../art.js?v=7';
+import { rankList } from '../depth.js?v=7';
+import { G, fresh, unitCost, factoryMult } from '../state.js?v=7';
 
 // Profil & pengaturan (teks/logika). Nama eksekutif adalah tokoh fiktif buatan sendiri.
-let sub = 'company', arm = false;
-const SUBS = [['company', 'p_company'], ['account', 'p_account'], ['lang', 'p_lang'], ['pref', 'p_pref'], ['notif', 'p_notif'], ['chat', 'p_chat'], ['reset', 'p_reset']];
+let sub = 'card', arm = false;
+const SUBS = [['card', 'p_card'], ['company', 'p_company'], ['account', 'p_account'], ['lang', 'p_lang'], ['pref', 'p_pref'], ['notif', 'p_notif'], ['chat', 'p_chat'], ['reset', 'p_reset']];
 const EX = [['coo', 'Bayu Anggara'], ['cfo', 'Sinta Maheswari'], ['cmo', 'Dimas Kurnia'], ['cto', 'Laras Prameswari']];
 const row = (k, v) => `<div class="row"><span>${T(k)}</span><b>${v}</b></div>`;
 const card = (h, b) => `<div class="card"><h2>${h}</h2>${b}</div>`;
 const chips = (items, cur, a, w) => `<div class="tabs ${w || ''}">${items.map(([k, l]) => `<button class="chip ${k === cur ? 'on' : ''}" data-a="${a}:${k}">${l}</button>`).join('')}</div>`;
 
+const esc = x => String(x || '').replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]);
 const PANELS = {
+  card: () => { const S = G.S, L = rankList(), pos = L.findIndex(r => r[2] === 1) + 1, rp = S.rep, rt = rp >= 80 ? 'A' : rp >= 60 ? 'B' : rp >= 40 ? 'C' : rp >= 20 ? 'D' : 'E', tags = Object.keys(D.products).filter(k => D.products[k].lvl <= S.level);
+    return `<div class="card pc">${city(S.land.slots, S.level)}<input class="in" data-n="name" value="${esc(S.name)}" maxlength="30" aria-label="${T('cname')}"></div>`
+      + card(T('rankings'), row('cvalue', '#' + pos + ' / ' + L.length) + row('rep', Math.round(rp)) + row('sold', S.sold))
+      + card(T('info'), row('rating', `<span class="rt">${rt}</span>`) + row('govtier', 'T' + S.level) + row('est', new Date(S.t0).toLocaleDateString()) + row('country', 'Indonesia') + row('lastseen', T('today')) + `<div class="row">${tags.map(k => `<span class="tag ok">${ic(D.products[k].icon)}${T(k)}</span>`).join('')}</div>`)
+      + card(T('desc'), `<textarea class="in" rows="3" data-n="desc" maxlength="300">${esc(S.desc)}</textarea>`)
+      + card(T('notes'), `<textarea class="in" rows="3" data-n="notes" maxlength="300">${esc(S.notes)}</textarea>`); },
   company: () => { const S = G.S, cap = S.b.office * 5;
     const bval = Object.keys(D.buildings).filter(id => S.b[id]).reduce((a, id) => { let s = 0; for (let l = 1; l <= S.b[id]; l++) s += D.buildings[id].cost * 1.8 ** (l - 1); return a + s; }, 0) + S.land.slots.reduce((a, s, i) => a + (s.own ? SLOT_COST[i] : 0), 0);
     const rval = S.research.reduce((a, id) => a + D.research[id].cost, 0);

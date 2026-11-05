@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // v22: logika ekonomi ala Sim Companies: fase ekonomi, kejenuhan pasar, overhead admin, bursa/kontrak, eksekutif.
 // Memakai pola yang sama dengan depth.js (membungkus MOD) supaya state.js tetap kecil.
-import './depth.js?v=24';   // depth.js mengisi MOD.dem/MOD.mat lebih dulu; econ membungkusnya
-import { D, PHASES, PHASE_TRANS, PHASE_DAYS, SAT, EXCH, EXEC, EXEC_LVL, EXEC_LIFE, POACH, ADMIN, DAY_SEC, TIME_SCALE, WAGE, RENT_HOUR, POWER_HOUR, TAX, CASH, ORD, BOND, SCRAP_REFUND } from './data.js?v=24';
-import { T, fmt } from './i18n.js?v=24';
-import { ic } from './icons.js?v=24';
-import { G, MOD, now, dur, mm, day, pay, accrue, income, settle as payDue, toasts, xAct, adminRaw, adminPct, satTotal, satFactor, exchRef, whCap, whUsed, CH, unitCost, demand } from './state.js?v=24';
+import './depth.js?v=25';   // depth.js mengisi MOD.dem/MOD.mat lebih dulu; econ membungkusnya
+import { D, PHASES, PHASE_TRANS, PHASE_DAYS, SAT, EXCH, EXEC, EXEC_LVL, EXEC_LIFE, POACH, ADMIN, DAY_SEC, TIME_SCALE, WAGE, RENT_HOUR, POWER_HOUR, TAX, CASH, ORD, BOND, SCRAP_REFUND } from './data.js?v=25';
+import { T, fmt } from './i18n.js?v=25';
+import { ic } from './icons.js?v=25';
+import { G, MOD, now, dur, mm, day, pay, accrue, income, settle as payDue, toasts, xAct, adminRaw, adminPct, satTotal, satFactor, exchRef, whCap, whUsed, CH, unitCost, demand } from './state.js?v=25';
 
 const EXN = { coo: 'Bayu Anggara', cfo: 'Sinta Maheswari', cmo: 'Dimas Kurnia', cto: 'Laras Prameswari' };   // tokoh fiktif
 const ph = () => PHASES[(G.S.eco || {}).ph || 'normal'];

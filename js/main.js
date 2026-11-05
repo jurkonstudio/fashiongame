@@ -1,41 +1,45 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=24';
-import { T, fmt, setLang, setCur } from './i18n.js?v=24';
-import { init, load, save, serverOffset, status } from './api.js?v=24';
-import { D, xpCum } from './data.js?v=24';
-import { G, fresh, tick, setOffset, toasts, now, mm } from './state.js?v=24';
-import * as map from './screens/map.js?v=24';
-import * as market from './screens/market.js?v=24';
-import * as margin from './screens/margin.js?v=24';
-import * as factory from './screens/factory.js?v=24';
-import * as store from './screens/store.js?v=24';
-import * as farm from './screens/farm.js?v=24';
-import * as bp from './screens/bp.js?v=24';
-import * as office from './screens/office.js?v=24';
-import * as finance from './screens/finance.js?v=24';
-import * as depth from './depth.js?v=24';
-import * as econ from './econ.js?v=24';
-import * as warehouse from './screens/warehouse.js?v=24';
-import { GB } from './art.js?v=24';
-import * as item from './screens/item.js?v=24';
-import * as more from './screens/more.js?v=24';
-import * as profile from './screens/profile.js?v=24';
-import * as settings from './screens/settings.js?v=24';
+import { ic } from './icons.js?v=25';
+import { T, fmt, setLang, setCur } from './i18n.js?v=25';
+import { init, load, save, serverOffset, status } from './api.js?v=25';
+import { D, xpCum } from './data.js?v=25';
+import { G, fresh, tick, setOffset, toasts, now, mm } from './state.js?v=25';
+import * as map from './screens/map.js?v=25';
+import * as market from './screens/market.js?v=25';
+import * as margin from './screens/margin.js?v=25';
+import * as factory from './screens/factory.js?v=25';
+import * as store from './screens/store.js?v=25';
+import * as farm from './screens/farm.js?v=25';
+import * as bp from './screens/bp.js?v=25';
+import * as office from './screens/office.js?v=25';
+import * as finance from './screens/finance.js?v=25';
+import * as depth from './depth.js?v=25';
+import * as econ from './econ.js?v=25';
+import * as warehouse from './screens/warehouse.js?v=25';
+import { GB } from './art.js?v=25';
+import * as item from './screens/item.js?v=25';
+import * as more from './screens/more.js?v=25';
+import * as profile from './screens/profile.js?v=25';
+import * as settings from './screens/settings.js?v=25';
+import * as btnshop from './screens/btnshop.js?v=25';
+import * as chat from './screens/chat.js?v=25';
+import * as search from './screens/search.js?v=25';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
-const screens = { map, item, more, warehouse, market, margin, office, finance, profile, settings };   // tambah layar baru di sini
-const NAV = ['map', 'warehouse', 'market', 'office', 'finance'];
-const ICON = { map: 'factory', warehouse: 'warehouse', market: 'cart', margin: 'chart', office: 'office', finance: 'money' };
+const screens = { map, item, more, warehouse, market, margin, office, finance, profile, settings, btnshop, chat, search };   // tambah layar baru di sini
+const NAV = ['map', 'warehouse', 'market', 'chat', 'search'];
+const ICON = { map: 'factory', warehouse: 'warehouse', market: 'cart', margin: 'chart', office: 'office', finance: 'money', chat: 'chat', search: 'search' };
 const $ = s => document.querySelector(s);
 let tab = 'map', lastSel = null, menu = false;
 
 const actions = {
-  ...Object.assign({}, ...[map, item, more, warehouse, market, margin, factory, store, farm, bp, office, finance, profile, settings, depth, econ].map(s => s.actions)),
+  ...Object.assign({}, ...[map, item, more, warehouse, market, margin, factory, store, farm, bp, office, finance, profile, settings, btnshop, chat, search, depth, econ].map(s => s.actions)),
   lang: () => { setLang(G.S.lang = G.S.lang === 'id' ? 'en' : 'id'); document.documentElement.lang = G.S.lang; },
   tab: t => { tab = t; menu = false; map.actions.close(); },
   menu: () => { menu = !menu; },
+  xp: () => { const pr = depth.prog(); toasts.push({ txt: `${T('xp_left')}: ${Math.max(0, Math.ceil(pr.need - pr.cur))} ${T('hd_xp')} → Lv ${G.S.level + 1}`, t: now() }); },
   item: k => { menu = false; map.actions.close(); const [i, o] = k.split('@'); item.actions.pick(i, o); tab = 'item'; },
-  go: k => { menu = false; map.actions.close(); const g = { prof: ['profile', () => {}], set: ['settings', () => {}], enc: ['more', () => more.actions.msub2('enc')], notes: ['more', () => more.actions.msub2('notes')], redeem: ['more', () => more.actions.msub2('redeem')], margin: ['warehouse', () => warehouse.actions.wsub('margin')], ct: ['market', () => market.actions.msub('ct')], xc: ['market', () => market.actions.msub('xc')], rank: ['finance', () => finance.actions.fsub('rank')], eco: ['finance', () => finance.actions.fsub('eco')], bank: ['finance', () => finance.actions.fsub('bank')], goal: ['office', () => office.actions.sub('goal')], ach: ['more', () => more.actions.msub2('ach')], lib: ['more', () => more.actions.msub2('lib')], about: ['more', () => more.actions.msub2('about')] }[k]; tab = g[0]; g[1](); }
+  go: k => { menu = false; map.actions.close(); const g = { prof: ['profile', () => {}], set: ['settings', () => {}], enc: ['more', () => more.actions.msub2('enc')], notes: ['more', () => more.actions.msub2('notes')], redeem: ['more', () => more.actions.msub2('redeem')], margin: ['warehouse', () => warehouse.actions.wsub('margin')], ct: ['market', () => market.actions.msub('ct')], xc: ['market', () => market.actions.msub('xc')], rank: ['finance', () => finance.actions.fsub('rank')], eco: ['finance', () => finance.actions.fsub('eco')], bank: ['finance', () => finance.actions.fsub('bank')], goal: ['office', () => office.actions.sub('goal')], ach: ['more', () => more.actions.msub2('ach')], lib: ['more', () => more.actions.msub2('lib')], about: ['more', () => more.actions.msub2('about')], btnshop: ['btnshop', () => {}], chat: ['chat', () => {}], search: ['search', () => {}] }[k]; tab = g[0]; g[1](); }
 };
 
 const setHTML = (el, h) => { if (el._h !== h) { el._h = h; el.innerHTML = h; } };   // render hanya jika berubah
@@ -61,14 +65,16 @@ function hud() {
   if (E) c.push(chip('go:eco', ic('chart'), `${T('ph_' + E.ph)}`, E.ph === 'recession' ? 'bad' : E.ph === 'boom' ? 'ok' : ''));
   if ((S.due || 0) > 0.005) c.push(chip('tab:finance', ic('money'), `${T('hd_bills')} ${fmt(S.due)}`, 'warn'));
   if (S.loan > 0.005) c.push(chip('go:bank', ic('office'), `${T('loan')} ${fmt(S.loan)}`, 'bad'));
+  if (d.contest) c.push(chip('go:rank', ic('star'), T('hd_contest'), 'ok'));
+  if ((S.inbox || []).length) c.push(chip('go:chat', ic('chat'), `${T('hd_msg')} ${S.inbox.length}`, 'warn'));
   const rk = depth.rankList().findIndex(r => r[2] === 1) + 1;
   c.push(chip('go:rank', ic('star'), `#${rk}`));
   c.push(chip('go:prof', ic('worker'), `${S.workers}`));
   c.push(`<span class="chp st ${status.mode === 'cloud' ? 'ok' : status.mode === 'error' ? 'bad' : ''}">● ${status.mode === 'cloud' ? 'Cloud' : status.mode === 'error' ? 'Offline' : status.mode === 'connecting' ? '…' : 'Local'}${status.mode === 'cloud' && !status.clock ? ' · clock?' : ''}</span>`);
   return `<div class="hud1"><button class="hb" data-a="menu" aria-label="${T('menu')}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 6h18M3 12h18M3 18h18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></button>`
     + `<button class="av ring" data-a="go:prof" aria-label="${T('profile')}" style="--p:${Math.round(pr.p * 360)}deg"><img class="logo" src="assets/logo.svg" alt=""><b class="lvb">${S.level}</b></button>`
-    + `<button class="who" data-a="go:goal"><span class="nm">${esc(S.name)}</span><span class="xb"><i style="width:${Math.round(pr.p * 100)}%"></i></span><small>Lv ${S.level} · ${Math.floor(pr.cur)}/${pr.need} ${T('hd_xp')}</small></button>`
-    + `<span class="sp"></span><button class="gbp" data-a="go:redeem" aria-label="${T('btn')}">${GB}<b>${Math.floor(S.btn)}</b></button>`
+    + `<div class="who"><span class="nm" data-a="go:prof" role="button">${esc(S.name)}</span><span class="xb" data-a="xp" role="button"><i style="width:${Math.round(pr.p * 100)}%"></i></span><small data-a="xp" role="button">Lv ${S.level} · ${Math.floor(pr.cur)}/${pr.need} ${T('hd_xp')}</small></div>`
+    + `<span class="sp"></span><button class="gbp" data-a="go:btnshop" aria-label="${T('btn')}">${GB}<b>${Math.floor(S.btn)}</b></button>`
     + `<button class="cash" data-a="tab:finance" aria-label="${T('cash')}"><small>${T('cash')}</small><b class="money">${fmt(S.money)}</b>${gain ? `<em class="gain">+${fmt(gain.v)}</em>` : ''}</button></div>`
     + `<div class="hud2">${c.join('')}</div>`;
 }
@@ -107,6 +113,7 @@ document.addEventListener('click', e => {
   G.S.b.farm = G.S.b.farm || 0;
   for (const m in D.materials) G.S.mk.idx[m] = G.S.mk.idx[m] ?? 1;   // bahan mentah baru (migrasi save lama)
   if (G.S.xp == null) G.S.xp = xpCum(G.S.level);   // migrasi: level lama -> XP setara
+  G.S.inbox = G.S.inbox || [];   // migrasi v25
   G.S.sp = G.S.sp || 0; G.S.rq = G.S.rq || {}; G.S.rqSpent = G.S.rqSpent || 0;   // migrasi v16
   if (G.S.wk.length !== G.S.workers) G.S.wk = Array(G.S.workers).fill(1);
   setLang(G.S.lang); setCur(G.S.cur);

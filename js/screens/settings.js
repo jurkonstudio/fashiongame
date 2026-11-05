@@ -1,9 +1,9 @@
 // (c) 2026 FashionGame. Pengaturan (dibuka dari menu): umum, tampilan peta, notifikasi, akun, data.
-import { T } from '../i18n.js?v=24';
-import { setLang, setCur } from '../i18n.js?v=24';
-import { SUPABASE_URL } from '../config.js?v=24';
-import { ic } from '../icons.js?v=24';
-import { G, fresh, now, toasts } from '../state.js?v=24';
+import { T } from '../i18n.js?v=25';
+import { setLang, setCur } from '../i18n.js?v=25';
+import { SUPABASE_URL } from '../config.js?v=25';
+import { ic } from '../icons.js?v=25';
+import { G, fresh, now, toasts } from '../state.js?v=25';
 
 let arm = false;
 const sec = (h, b) => `<div class="card kc"><h2>${h}</h2>${b}</div>`;

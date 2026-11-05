@@ -1,14 +1,14 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Halaman bangunan (gaya Sim Companies): gambar besar, tombol aksi, riwayat, carousel barang + satu tombol aksi besar.
-import * as econ from '../econ.js?v=24';
-import { D, TAX, WAGE, RENT_HOUR } from '../data.js?v=24';
-import { T, fmt } from '../i18n.js?v=24';
-import { ic } from '../icons.js?v=24';
-import { ART } from '../art.js?v=24';
-import { G, now, dur, mm, busy, count, bMax, upCost, upSec, shortfall, unitCost, factoryMult, whCap, whUsed, fixCost, defectRate, demand, saleCap, CH, bulkPrice, compPrice } from '../state.js?v=24';
-import * as store from './store.js?v=24';
-import * as farm from './farm.js?v=24';
-import * as factory from './factory.js?v=24';
+import * as econ from '../econ.js?v=25';
+import { D, TAX, WAGE, RENT_HOUR } from '../data.js?v=25';
+import { T, fmt } from '../i18n.js?v=25';
+import { ic } from '../icons.js?v=25';
+import { ART } from '../art.js?v=25';
+import { G, now, dur, mm, busy, count, bMax, upCost, upSec, shortfall, unitCost, factoryMult, whCap, whUsed, fixCost, defectRate, demand, saleCap, CH, bulkPrice, compPrice } from '../state.js?v=25';
+import * as store from './store.js?v=25';
+import * as farm from './farm.js?v=25';
+import * as factory from './factory.js?v=25';
 
 let cur = 'factory'; const pick = {};
 const byLvl = o => Object.keys(o).sort((a, b) => o[a].lvl - o[b].lvl);

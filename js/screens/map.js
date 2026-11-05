@@ -1,10 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=7';
-import { T, fmt } from '../i18n.js?v=7';
-import { ic, icu } from '../icons.js?v=7';
-import { G, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=7';
-import * as factory from './factory.js?v=7';
-import * as store from './store.js?v=7';
+import { D, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=8';
+import { T, fmt } from '../i18n.js?v=8';
+import { ic, icu } from '../icons.js?v=8';
+import { G, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=8';
+import * as factory from './factory.js?v=8';
+import * as depth from '../depth.js?v=8';
+import * as store from './store.js?v=8';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -112,7 +113,7 @@ export const view = () => { const S = G.S, t = Math.min(4, S.level) - 1, th = TH
 
 const upCard = id => { const S = G.S, b = D.buildings[id], lv = S.b[id], top = lv >= bMax();
   return `<div class="card"><div class="row"><span>${ic(b.icon)}${T(id)} Lv${lv}/${bMax()}</span><button class="b" data-a="up:${id}" ${top || busy('up', id) || S.money < upCost(id) ? 'disabled' : ''}>${top ? T('max') : `${T('upgrade')} · ${fmt(upCost(id))} · ${mm(dur(upSec(id)))}`}</button></div><div class="mute row"><span>${T(b.fx)}</span></div>${job('up', id)}</div>`; };
-const PANEL = { factory: () => upCard('factory') + factory.view(), store: () => upCard('store') + store.view(),
+const PANEL = { factory: () => upCard('factory') + factory.view(), store: () => upCard('store') + store.view() + depth.salesPanel(),
   warehouse: () => upCard('warehouse') + `<div class="card"><div class="row"><span>${T('warehouse')}</span><b>${whUsed()}/${whCap()}</b></div></div>` };
 
 export const sheet = () => { if (sel === null) return '';

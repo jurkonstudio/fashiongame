@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. Kedalaman game v6: peristiwa pasar, kontrak, pemasaran, target level, peringkat.
-import { ic } from './icons.js?v=7';
-import { T, fmt } from './i18n.js?v=7';
-import { D, TAX } from './data.js?v=7';
-import { G, now, dur, mm, MOD, qm, day, toasts } from './state.js?v=7';
+import { ic } from './icons.js?v=8';
+import { T, fmt } from './i18n.js?v=8';
+import { D, TAX } from './data.js?v=8';
+import { G, now, dur, mm, MOD, qm, day, toasts, matPrice, demand } from './state.js?v=8';
 
 const EV = { strike:{ h:6, mat:{ leather:1.3, rubber:1.3 } }, sale:{ h:6, mat:{ fabric:.75, thread:.8 } }, viral:{ h:4, dem:1.4 }, slump:{ h:6, dem:.75 }, tariff:{ h:8, mat:{ leather:1.2, rubber:1.2, fabric:1.15 } } };
 const CAMP = { social:{ cost:60, x:1.15, h:4, rep:0 }, influ:{ cost:250, x:1.35, h:6, rep:3 }, board:{ cost:600, x:1.25, h:24, rep:8 } };
@@ -23,6 +23,7 @@ export function tick() { const S = G.S, d = S.dp, t = now();
   if (!d.evAt) d.evAt = t + hr(2);
   if (!d.ev && t >= d.evAt) { const id = pick(Object.keys(EV)); d.ev = { id, end: t + hr(EV[id].h) }; d.evAt = d.ev.end + hr(3 + Math.random() * 5); toasts.push({ txt: T('ev_' + id), t }); }
   d.ct = d.ct.filter(c => c.end > t);
+  if (d.hd !== day()) { d.hd = day(); const h = d.hist = d.hist || {}; for (const m in D.materials) { const a = h[m] = h[m] || Array.from({ length: 7 }, () => matPrice(m, 'std') * (.95 + Math.random() * .1)); a.push(matPrice(m, 'std')); if (a.length > 7) a.shift(); } }
   if (!d.ctAt) d.ctAt = t;
   if (S.sold >= 1 && d.ct.length < 3 && t >= d.ctAt) { newContract(); d.ctAt = t + hr(.5 + Math.random() * .5); }
   const p = prog(); if (p && p.p >= 1) { S.level++; toasts.push({ txt: '★ Level ' + S.level, t }); } }
@@ -53,6 +54,12 @@ export const rankPanel = () => { const L = rankList();
 
 export const actions = {
   deliver: i => { const S = G.S, c = S.dp.ct[+i]; if (!c || (S.stock[c.p] || 0) < c.n || (S.sq[c.p] || 2) < c.q) return;
-    const rev = c.n * c.pr; S.stock[c.p] -= c.n; S.money += rev * (1 - TAX); S.led.rev += rev; S.led.tax += rev * TAX; S.sold += c.n; S.rep = Math.min(100, S.rep + c.n * .2); S.dp.ct.splice(+i, 1); },
+    const rev = c.n * c.pr; S.stock[c.p] -= c.n; S.money += rev * (1 - TAX); S.led.rev += rev; S.led.tax += rev * TAX; S.sold += c.n; S.rep = Math.min(100, S.rep + c.n * .2); S.dp.ct.splice(+i, 1); S.dp.cdone = (S.dp.cdone || 0) + 1; },
   camp: id => { const S = G.S, c = CAMP[id]; if (!c || S.dp.camp || S.money < c.cost) return; S.money -= c.cost; S.led.mkt = (S.led.mkt || 0) + c.cost; S.rep = Math.min(100, S.rep + c.rep); S.dp.camp = { id, end: now() + dur(c.h * 3600) }; }
 };
+
+export const hist = id => D.materials[id] ? (G.S.dp.hist || {})[id] || [] : Array.from({ length: 7 }, (_, i) => D.products[id].base * (1 + .12 * Math.sin((day() - 6 + i) / 20 + id.length)) * qm(G.S.sq[id] || 2));
+export const salesPanel = () => { const S = G.S, L = S.dp.log || [], tot = L.reduce((a, x) => [a[0] + x.n, a[1] + x.s, a[2] + x.net], [0, 0, 0]);
+  return `<div class="card"><h2>${ic('chart')}${T('saleslog')}</h2><div class="row"><span>${T('sellthru')}</span><b>${tot[0] ? Math.round(tot[1] / tot[0] * 100) : 0}%</b></div><div class="row"><span>${T('netrev')}</span><b>${fmt(tot[2])}</b></div></div>`
+    + `<div class="card">${Object.entries(D.products).filter(([, p]) => p.lvl <= S.level).map(([k, p]) => { const pr = S.price[k] || p.base; return `<div class="row"><span>${ic(p.icon)}${T(k)} · ${fmt(pr)}</span><span class="mute">${T('demand')} ${Math.round(demand(k, pr, S.sq[k] || 2, 'store') * 100)}% · ${T('stock')} ${S.stock[k] || 0}</span></div>`; }).join('')}</div>`
+    + (L.length ? `<div class="card">${L.slice(0, 8).map(x => `<div class="row"><span>${ic(D.products[x.id].icon)}${x.s}/${x.n} × ${T(x.id)} @ ${fmt(x.pr)} <small class="mute">${T('ch_' + x.ch)}</small></span><b class="pos">+${fmt(x.net)}</b></div>`).join('')}</div>` : `<div class="card mute">${T('nosales')}</div>`); };

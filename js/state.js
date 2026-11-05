@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=7';
-import { T, fmt } from './i18n.js?v=7';
-import { D, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=7';
+import { ic } from './icons.js?v=8';
+import { T, fmt } from './i18n.js?v=8';
+import { D, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=8';
 export const MOD = { dem: () => 1, mat: () => 1 };   // diisi depth.js (peristiwa, pemasaran)
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 export const toasts = [];
@@ -72,6 +72,7 @@ export function tick() {
       if (good) { const st = S.stock[j.id] || 0; S.sq[j.id] = ((S.sq[j.id] || 0) * st + j.q * good) / (st + good); S.stock[j.id] = st + good; S.made += good; } }
     if (j.k === 'sell') { const c = CH[j.ch || 'store'], s = j.ch === 'bulk' ? j.n : Math.floor(j.n * demand(j.id, j.price, j.q, j.ch || 'store')),
         rev = s * j.price, tx = rev * TAX, fee = rev * c.fee + s * c.ship;
+      (S.dp.log = S.dp.log || []).unshift({ t, id: j.id, ch: j.ch || 'store', n: j.n, s, pr: j.price, net: rev - tx - fee }); S.dp.log.length = Math.min(S.dp.log.length, 30);
       S.sold += s; toast(`${T('sold')} ${s} ${T(j.id)} · +${fmt(rev - tx - fee)}`); S.money += rev - tx - fee; S.led.rev += rev; S.led.tax += tx; S.led.fee = (S.led.fee || 0) + fee;
       S.rep = Math.min(100, Math.max(0, S.rep + s * (0.05 + (j.q - 2) * 0.15))); S.stock[j.id] = (S.stock[j.id] || 0) + j.n - s; }
     if (j.k === 'up') { S.b[j.id]++; toast(`${T('done')}: ${T(j.id)} Lv${S.b[j.id]}`); }

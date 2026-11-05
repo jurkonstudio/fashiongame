@@ -92,3 +92,9 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - Gudang (js/screens/warehouse.js): kartu bergambar per kategori (bahan baku, produk jadi) dengan harga, jumlah, kualitas; bar kapasitas + nilai stok; tab Margin dipindah ke sini.
 - Profil perusahaan (Profil > Profil): thumbnail kota sesuai level, nama/deskripsi/catatan pribadi yang bisa diedit, peringkat valuasi, rating A-E dari reputasi, tier, tanggal berdiri, tag produk.
 - Ilustrasi: js/art.js (7 barang + thumbnail kota).
+
+## Update v8 (detail barang & penjualan toko)
+- Gudang: ketuk barang membuka detail (js/screens/item.js): jumlah, kualitas, biaya sumber, rincian biaya (bahan/pekerja/administrasi), grafik 7 hari, tombol aksi (Beli x10/x50, Atur harga, Jual di toko, Produksi batch, Kirim kontrak), order bursa NPC (Pembeli/Penjual, ketuk untuk trading 10 unit, biaya 2%), dan navigasi barang sebelumnya/berikutnya.
+- Toko di peta: panel kini menampilkan Riwayat penjualan (30 terakhir, saluran, laku dari total, pendapatan bersih) + permintaan & stok per produk. Log disimpan di S.dp.log.
+- Menu samping: Pencapaian (10), Perpustakaan (resep & dipakai di), Tentang (js/screens/more.js).
+- Riwayat harga bahan disimpan di S.dp.hist (sampel per hari game). Cache ?v=8.

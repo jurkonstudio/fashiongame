@@ -1,40 +1,43 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=7';
-import { T, fmt, setLang, setCur } from './i18n.js?v=7';
-import { init, load, save, serverOffset, status } from './api.js?v=7';
-import { D } from './data.js?v=7';
-import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=7';
-import * as map from './screens/map.js?v=7';
-import * as market from './screens/market.js?v=7';
-import * as margin from './screens/margin.js?v=7';
-import * as factory from './screens/factory.js?v=7';
-import * as store from './screens/store.js?v=7';
-import * as office from './screens/office.js?v=7';
-import * as finance from './screens/finance.js?v=7';
-import * as depth from './depth.js?v=7';
-import * as warehouse from './screens/warehouse.js?v=7';
-import * as profile from './screens/profile.js?v=7';
+import { ic } from './icons.js?v=8';
+import { T, fmt, setLang, setCur } from './i18n.js?v=8';
+import { init, load, save, serverOffset, status } from './api.js?v=8';
+import { D } from './data.js?v=8';
+import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=8';
+import * as map from './screens/map.js?v=8';
+import * as market from './screens/market.js?v=8';
+import * as margin from './screens/margin.js?v=8';
+import * as factory from './screens/factory.js?v=8';
+import * as store from './screens/store.js?v=8';
+import * as office from './screens/office.js?v=8';
+import * as finance from './screens/finance.js?v=8';
+import * as depth from './depth.js?v=8';
+import * as warehouse from './screens/warehouse.js?v=8';
+import * as item from './screens/item.js?v=8';
+import * as more from './screens/more.js?v=8';
+import * as profile from './screens/profile.js?v=8';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
-const screens = { map, warehouse, market, margin, office, finance, profile };   // tambah layar baru di sini
+const screens = { map, item, more, warehouse, market, margin, office, finance, profile };   // tambah layar baru di sini
 const NAV = ['map', 'warehouse', 'market', 'office', 'finance'];
 const ICON = { map: 'map', warehouse: 'warehouse', market: 'cart', margin: 'chart', office: 'office', finance: 'money' };
 const $ = s => document.querySelector(s);
 let tab = 'map', lastSel = null, menu = false;
 
 const actions = {
-  ...Object.assign({}, ...[map, warehouse, market, margin, factory, store, office, finance, profile, depth].map(s => s.actions)),
+  ...Object.assign({}, ...[map, item, more, warehouse, market, margin, factory, store, office, finance, profile, depth].map(s => s.actions)),
   lang: () => { setLang(G.S.lang = G.S.lang === 'id' ? 'en' : 'id'); document.documentElement.lang = G.S.lang; },
   tab: t => { tab = t; menu = false; map.actions.close(); },
   menu: () => { menu = !menu; },
-  go: k => { menu = false; map.actions.close(); const g = { prof: ['profile', () => profile.actions.psub('card')], set: ['profile', () => profile.actions.psub('lang')], margin: ['warehouse', () => warehouse.actions.wsub('margin')], ct: ['market', () => market.actions.msub('ct')], rank: ['finance', () => finance.actions.fsub('rank')], goal: ['office', () => office.actions.sub('goal')] }[k]; tab = g[0]; g[1](); }
+  item: k => { menu = false; map.actions.close(); item.actions.pick(k); tab = 'item'; },
+  go: k => { menu = false; map.actions.close(); const g = { prof: ['profile', () => profile.actions.psub('card')], set: ['profile', () => profile.actions.psub('lang')], margin: ['warehouse', () => warehouse.actions.wsub('margin')], ct: ['market', () => market.actions.msub('ct')], rank: ['finance', () => finance.actions.fsub('rank')], goal: ['office', () => office.actions.sub('goal')], ach: ['more', () => more.actions.msub2('ach')], lib: ['more', () => more.actions.msub2('lib')], about: ['more', () => more.actions.msub2('about')] }[k]; tab = g[0]; g[1](); }
 };
 
 const setHTML = (el, h) => { if (el._h !== h) { el._h = h; el.innerHTML = h; } };   // render hanya jika berubah
 
 const lvlBar = depth.lvlBar;
 
-const DR = [['prof', 'p_card', 'profile'], ['goal', 'goal', 'target'], ['ct', 'contracts', 'cart'], ['rank', 'rank', 'star'], ['margin', 'margin', 'chart'], ['set', 'p_lang', 'office']];
+const DR = [['prof', 'p_card', 'profile'], ['goal', 'goal', 'target'], ['ct', 'contracts', 'cart'], ['rank', 'rank', 'star'], ['ach', 'ach', 'star'], ['lib', 'lib', 'research'], ['margin', 'margin', 'chart'], ['set', 'p_lang', 'office'], ['about', 'about', 'office']];
 function render() {
   const S = G.S, pr = depth.prog(), xp = pr ? Math.round(pr.p * 100) : 100;
   setHTML($('#hud'), `<div class="hud1"><button class="hb" data-a="menu" aria-label="${T('menu')}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 6h18M3 12h18M3 18h18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></button><button class="av" data-a="go:prof" aria-label="${T('profile')}"><img class="logo" src="assets/logo.svg" alt=""></button><span class="sp"></span><button data-a="go:rank" aria-label="${T('rank')}">${ic('star')}</button><span class="money">${fmt(S.money)}</span><span class="lvp">★ ${S.level}<small>${xp}%</small></span></div><div class="hud2"><span class="pill">${ic('star')} Lv${S.level}</span><span class="pill">${ic('worker')} ${S.workers}</span><span class="pill">${ic('timer')} ${S.jobs.length}</span><span class="pill ${status.mode === 'cloud' ? 'ok' : status.mode === 'error' ? 'bad' : ''}">● ${status.mode === 'cloud' ? 'Cloud' : status.mode === 'error' ? 'Offline' : status.mode === 'connecting' ? '…' : 'Local'}${status.mode === 'cloud' && !status.clock ? ' · clock?' : ''}</span></div>${depth.banner()}`);
@@ -46,7 +49,7 @@ function render() {
   const nb = sh.querySelector('.shb'); if (nb && sel === lastSel) nb.scrollTop = st;   // jaga posisi scroll panel saat refresh tiap detik
   lastSel = sel;
   setHTML($('#drawer'), menu ? `<div class="shbg" data-a="menu"></div><aside class="dw"><div class="dh"><img class="logo" src="assets/logo.svg" alt=""><div><b>${String(S.name).replace(/[<>&]/g, '')}</b><small>Lv${S.level}</small></div></div>${DR.map(([k, l, i]) => `<button data-a="go:${k}">${ic(i)}${T(l)}</button>`).join('')}</aside>` : '');
-  setHTML($('#nav'), NAV.map(t => `<button data-a="tab:${t}" class="${t === tab ? 'on' : ''}">${ic(ICON[t])}${T(t)}</button>`).join(''));
+  setHTML($('#nav'), NAV.map(t => `<button data-a="tab:${t}" class="${t === tab || (tab === 'item' && t === 'warehouse') ? 'on' : ''}">${ic(ICON[t])}${T(t)}</button>`).join(''));
 }
 
 document.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.n; if (k) G.S[k] = e.target.value.slice(0, 300); });

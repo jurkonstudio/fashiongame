@@ -88,3 +88,9 @@ h2 img.ic{width:1.3rem;height:1.3rem;margin-right:6px}
 .dw{position:fixed;left:0;top:0;bottom:0;width:78%;max-width:300px;z-index:40;background:#17141d;color:#fff;padding:calc(14px + env(safe-area-inset-top)) 12px 12px;display:flex;flex-direction:column;gap:6px}
 .dh{display:flex;align-items:center;gap:10px;padding-bottom:12px;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.12)}.dh small{display:block;color:#a89fb4}
 .dw button{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 10px;background:rgba(255,255,255,.06);color:#fff;border:0;border-radius:10px;font:600 .9rem system-ui;text-align:left}
+/* v8: detail barang */
+.car{display:flex;gap:8px;margin-bottom:9px}.car .chip{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 10px;text-transform:none;font-size:.85rem}
+.mini .art{width:28px;height:28px;display:block}.ih{display:flex;justify-content:space-between;align-items:center}.ih .art{width:96px;height:96px;flex:none}
+.big{font-size:1.5rem}.gold{color:var(--gold)}.spark{width:100%;height:56px;display:block}.seg{display:flex;gap:6px}.seg .chip{min-height:32px;padding:0 12px;flex:none}
+.ab{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:0 12px;margin-bottom:8px;background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:10px;font:600 .84rem system-ui;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);text-align:left}.ab:disabled{opacity:.45}
+.ol{padding:7px 2px;border-bottom:1px solid var(--line);cursor:pointer}.lib .art{width:34px;height:34px;vertical-align:middle;margin-right:6px}

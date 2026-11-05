@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, WAGE, SLOT_COST } from '../data.js?v=7';
-import { T, fmt, setLang, setCur } from '../i18n.js?v=7';
-import { SUPABASE_URL } from '../config.js?v=7';
-import { ic } from '../icons.js?v=7';
-import { city } from '../art.js?v=7';
-import { rankList } from '../depth.js?v=7';
-import { G, fresh, unitCost, factoryMult } from '../state.js?v=7';
+import { D, WAGE, SLOT_COST } from '../data.js?v=8';
+import { T, fmt, setLang, setCur } from '../i18n.js?v=8';
+import { SUPABASE_URL } from '../config.js?v=8';
+import { ic } from '../icons.js?v=8';
+import { city } from '../art.js?v=8';
+import { rankList } from '../depth.js?v=8';
+import { G, fresh, unitCost, factoryMult } from '../state.js?v=8';
 
 // Profil & pengaturan (teks/logika). Nama eksekutif adalah tokoh fiktif buatan sendiri.
 let sub = 'card', arm = false;

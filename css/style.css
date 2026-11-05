@@ -151,3 +151,17 @@ body{background:radial-gradient(1200px 600px at 80% -10%,#ffe9f2 0,transparent 6
 .gbtn{display:flex;flex-direction:column;gap:5px;margin-top:auto}
 .gfx{font-size:.78rem;font-weight:700;color:#1d8f4e}
 .gt .mute{font-size:.74rem}
+
+/* panel toko gaya Sim Companies (v18) */
+.sq.red{background:#c9302c;border-color:#a32420;color:#fff}.sq.red img.ic{filter:brightness(0) invert(1)}
+.enc{position:relative;margin-top:8px;z-index:2;display:flex;align-items:center;gap:6px;background:none;border:0;color:#2b7fb8;font:500 1.05rem system-ui;padding:0}.enc i{width:22px;height:22px;border-radius:50%;background:#2b7fb8;color:#fff;font:700 .8rem/22px system-ui;text-align:center;font-style:normal}
+.nxi{margin-top:14px;color:#2b7fb8;font-size:1.02rem}
+.sc{display:grid;grid-template-columns:42% 1fr;gap:10px;align-items:center;background:linear-gradient(#e4e0e8,#d3cfd9);border-radius:16px;padding:14px 12px 12px;margin-top:6px}
+.sci{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:130px}.sci .art{width:100%;max-width:130px;height:auto}
+.stars{position:absolute;left:0;top:0;color:#f5a623;font-size:1.7rem;letter-spacing:-2px;text-shadow:0 1px 0 #b36b00,0 0 3px #fff8}
+.scr{border-left:3px solid #8a8494;padding-left:12px;font-size:.98rem;line-height:1.55;min-width:0}.scr h3{margin:0 0 6px;text-transform:uppercase;font-size:1.15rem;letter-spacing:.02em;text-align:center}.scr small{color:var(--mute);display:block}.scr hr{border:0;border-top:1.5px solid #3b3544;margin:6px 0}.scr b{font-size:1rem}
+.qm{display:inline-block;width:20px;height:20px;border-radius:50%;background:#3b3544;color:#fff;font:700 .75rem/20px system-ui;text-align:center;vertical-align:1px}
+.scn{display:flex;align-items:center;justify-content:center;gap:6px;margin:6px 0 2px}.nv.sm{width:36px;height:30px;font-size:1.8rem}
+.qp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}.qp h4{margin:0 0 6px;text-align:center;font-size:1.1rem;letter-spacing:.02em}
+.stp{display:flex;align-items:center;justify-content:center;gap:2px}.stp input{width:100%;min-width:0;height:50px;border:1px solid #8f8a98;border-radius:8px;background:#fff;text-align:center;font:500 1.35rem system-ui;color:var(--ink)}.stp input:focus{outline:2px solid #3a8ede}
+.chv{flex:none;width:34px;height:50px;background:none;border:0;color:#2b2634;padding:0}.fx{font:600 1.3rem system-ui;padding:10px 0}

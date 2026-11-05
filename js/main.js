@@ -1,24 +1,24 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=17';
-import { T, fmt, setLang, setCur } from './i18n.js?v=17';
-import { init, load, save, serverOffset, status } from './api.js?v=17';
-import { D } from './data.js?v=17';
-import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=17';
-import * as map from './screens/map.js?v=17';
-import * as market from './screens/market.js?v=17';
-import * as margin from './screens/margin.js?v=17';
-import * as factory from './screens/factory.js?v=17';
-import * as store from './screens/store.js?v=17';
-import * as farm from './screens/farm.js?v=17';
-import * as bp from './screens/bp.js?v=17';
-import * as office from './screens/office.js?v=17';
-import * as finance from './screens/finance.js?v=17';
-import * as depth from './depth.js?v=17';
-import * as warehouse from './screens/warehouse.js?v=17';
-import { GB } from './art.js?v=17';
-import * as item from './screens/item.js?v=17';
-import * as more from './screens/more.js?v=17';
-import * as profile from './screens/profile.js?v=17';
+import { ic } from './icons.js?v=18';
+import { T, fmt, setLang, setCur } from './i18n.js?v=18';
+import { init, load, save, serverOffset, status } from './api.js?v=18';
+import { D } from './data.js?v=18';
+import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=18';
+import * as map from './screens/map.js?v=18';
+import * as market from './screens/market.js?v=18';
+import * as margin from './screens/margin.js?v=18';
+import * as factory from './screens/factory.js?v=18';
+import * as store from './screens/store.js?v=18';
+import * as farm from './screens/farm.js?v=18';
+import * as bp from './screens/bp.js?v=18';
+import * as office from './screens/office.js?v=18';
+import * as finance from './screens/finance.js?v=18';
+import * as depth from './depth.js?v=18';
+import * as warehouse from './screens/warehouse.js?v=18';
+import { GB } from './art.js?v=18';
+import * as item from './screens/item.js?v=18';
+import * as more from './screens/more.js?v=18';
+import * as profile from './screens/profile.js?v=18';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, item, more, warehouse, market, margin, office, finance, profile };   // tambah layar baru di sini
@@ -48,7 +48,7 @@ function render() {
   const warn = status.mode === 'error' ? `<div class="card err"><b>Cloud unavailable, playing offline</b><div class="mute">${String(status.err).replace(/[<>&]/g, '')}</div></div>` : '';
   if (!document.activeElement?.dataset?.n) setHTML($('#view'), warn + (tab === 'profile' ? `<h2>${ic('profile')}${T('profile')}</h2>` : '') + screens[tab].view());
   const sh = $('#sheet'), st = sh.querySelector('.shb, .bp')?.scrollTop || 0, sel = map.selected();
-  setHTML(sh, tab === 'map' ? map.sheet() : '');
+  if (!document.activeElement?.dataset?.in) setHTML(sh, tab === 'map' ? map.sheet() : '');
   const nb = sh.querySelector('.shb, .bp'); if (nb && sel === lastSel) nb.scrollTop = st;   // jaga posisi scroll panel saat refresh tiap detik
   lastSel = sel;
   setHTML($('#drawer'), menu ? `<div class="shbg" data-a="menu"></div><aside class="dw"><div class="dh"><img class="logo" src="assets/logo.svg" alt=""><div><b>${String(S.name).replace(/[<>&]/g, '')}</b><small>Lv${S.level}</small></div></div>${DR.map(([k, l, i]) => `<button data-a="go:${k}">${ic(i)}${T(l)}</button>`).join('')}</aside>` : '');
@@ -56,6 +56,7 @@ function render() {
 }
 
 document.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.n; if (k) G.S[k] = e.target.value.slice(0, 300); });
+document.addEventListener('change', e => { const d = e.target.dataset && e.target.dataset.in; if (!d) return; const [a, id] = d.split(':'); actions[a](id + ',' + e.target.value); tick(); render(); });
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-a]'); if (!el) return;
   const [a, arg] = el.dataset.a.split(/:(.*)/s); actions[a](arg); tick(); depth.tick(); render();

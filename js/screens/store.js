@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SEASONS, TAX } from '../data.js?v=17';
-import { T, fmt } from '../i18n.js?v=17';
-import { ic } from '../icons.js?v=17';
-import { G, now, dur, mm, unitCost, demand, saleCap, busy, count, CH, bulkPrice, month, compPrice } from '../state.js?v=17';
+import { D, SEASONS, TAX } from '../data.js?v=18';
+import { T, fmt } from '../i18n.js?v=18';
+import { ic } from '../icons.js?v=18';
+import { G, now, dur, mm, unitCost, demand, saleCap, busy, count, CH, bulkPrice, month, compPrice } from '../state.js?v=18';
 
 let ch = 'store';
 const pr = id => ch === 'bulk' ? bulkPrice(id, G.S.sq[id] || 2) : (G.S.price[id] || D.products[id].base);
@@ -34,10 +34,13 @@ export const canSell = () => { const S = G.S; return !busy('up', 'store') && cou
 export const actions = {
   ch: k => { ch = k; },
   price: s => { const [id, d] = s.split(','); G.S.price[id] = Math.max(1, (G.S.price[id] || D.products[id].base) + +d); },
+  sqty: s => { const [id, d] = s.split(','), S = G.S, mx = Math.min(S.stock[id] || 0, CH[ch].cap()); S.qty = S.qty || {}; S.qty[id] = Math.max(0, Math.min(mx, ((S.qty[id] ?? mx) + +d))); },
+  sqtyset: s => { const [id, v] = s.split(','), S = G.S, mx = Math.min(S.stock[id] || 0, CH[ch].cap()); S.qty = S.qty || {}; S.qty[id] = Math.max(0, Math.min(mx, Math.round(+v) || 0)); },
+  pset: s => { const [id, v] = s.split(','); if (ch !== 'bulk') G.S.price[id] = Math.max(1, Math.round(+v) || 1); },
   sell: id => {
-    const S = G.S, C = CH[ch], n = Math.min(S.stock[id] || 0, C.cap());
+    const S = G.S, C = CH[ch], n = Math.min(S.stock[id] || 0, C.cap(), (S.qty || {})[id] ?? Infinity);
     if (!n || !C.ok() || busy('up', 'store') || count('sell') >= S.b.store) return;
-    S.stock[id] -= n;
+    S.stock[id] -= n; if (S.qty) delete S.qty[id];
     S.jobs.push({ k: 'sell', id, n, ch, price: pr(id), q: S.sq[id] || 2, st: now(), end: now() + dur(C.sec()) });
   }
 };

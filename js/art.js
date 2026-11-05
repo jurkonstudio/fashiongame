@@ -9,11 +9,13 @@ export const ART = {
   hide: W('<path d="M8 26l12-10 12 4 14-8 10 14-7 11 4 14-16 4-10-6-14 4-6-16z" fill="#8c5a38"/><path d="M15 29l8-6 10 3 12-5 5 9-5 9 3 10" fill="none" stroke="#e2a36b" stroke-width="1.6" stroke-dasharray="3 2.5"/>'),
   latex: W('<path d="M32 8c11 15 18 24 18 33a18 18 0 0 1-36 0c0-9 7-18 18-33z" fill="#f6ead7"/><path d="M23 40a9 9 0 0 0 7 9" fill="none" stroke="#caa46a" stroke-width="2.4"/>'),
   dye: W('<rect x="18" y="26" width="28" height="30" rx="7" fill="#8a4fff"/><rect x="25" y="13" width="14" height="13" rx="3" fill="#f6ead7"/><path d="M23 38h18M23 46h18" stroke="#fff" stroke-opacity=".55" stroke-width="2"/>'),
+  dress: W('<path d="M24 8h16l-3 14 12 32H15l12-32z" fill="#b45cff"/><path d="M26 22h12" stroke="#fff" stroke-opacity=".6" stroke-width="2"/><path d="M21 44q11 6 22 0" fill="none" stroke="#7a2fd0" stroke-width="2"/>'),
+  jacket: W('<path d="M22 10l-14 8 4 30h10V24l10 6 10-6v24h10l4-30-14-8q-4 6-10 6t-10-6z" fill="#3a4a6b"/><path d="M32 16v36" stroke="#f2b84b" stroke-width="2" stroke-dasharray="3 3"/>'),
   shoes: W('<path d="M6 38c8-1 11-8 13-15l9 4c3 2 7 3 12 4l13 5c4 2 4 8 0 8H9c-3 0-5-4-3-6z" fill="#e8467c"/><path d="M6 45h52v6H9z" fill="#f6ead7"/><path d="M26 31l4-4M33 33l4-4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>'),
   shirt: W('<path d="M22 9L8 17l6 12 7-3v28h24V26l7 3 6-12-14-8q-4 6-10 6t-10-6z" fill="#2ec4b6"/><path d="M22 9q4 6 10 6t10-6" fill="none" stroke="#1a8f84" stroke-width="2.2"/>'),
   bag: W('<path d="M22 25v-6a10 10 0 0 1 20 0v6" fill="none" stroke="#7a3b1d" stroke-width="3.6"/><path d="M9 25h46l4 30H5z" fill="#d9961a"/><rect x="27" y="33" width="10" height="8" rx="2" fill="#7a3b1d"/>')
 };
-export const city = (slots, lv) => { const C = { office: '#9fc3dc', factory: '#b8bfc7', store: '#e4572e', warehouse: '#d3c4aa' }; let b = '';
+export const city = (slots, lv) => { const C = { office: '#9fc3dc', factory: '#b8bfc7', store: '#e4572e', warehouse: '#d3c4aa', farm: '#9bc57a' }; let b = '';
   slots.forEach((s, i) => { if (!s.t) return; const x = 10 + i * 34, h = 26 + lv * 6 + i % 3 * 9;
     b += `<rect x="${x}" y="${104 - h}" width="28" height="${h}" rx="2" fill="${C[s.t]}"/>` + [0, 1, 2].map(k => `<rect x="${x + 5}" y="${110 - h + k * 12}" width="6" height="6" fill="#fff" opacity=".75"/><rect x="${x + 17}" y="${110 - h + k * 12}" width="6" height="6" fill="#fff" opacity=".75"/>`).join(''); });
   return `<svg viewBox="0 0 360 120" class="thumb" aria-hidden="true"><rect width="360" height="120" fill="${['#bfe7f6', '#a6d6ef', '#f2b98b', '#262a66'][Math.min(lv, 4) - 1]}"/><rect y="104" width="360" height="16" fill="#8fc276"/>${b}</svg>`; };

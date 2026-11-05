@@ -1,11 +1,11 @@
 // Teks tambahan (Update v6). Dipakai oleh T() di i18n.js
 export const L2 = {
-  id: { cotton:'Kapas', hide:'Kulit mentah', latex:'Lateks', dye:'Pewarna', contracts:'Kontrak', mats:'Bahan', ct_hint:'Pembeli ritel menawarkan harga di atas pasar. Kirim sebelum tenggat.', ct_none:'Belum ada tawaran. Jual dulu, lalu tunggu pembeli datang.', deliver:'Kirim',
+  id: { farm:'Kebun', fx_farm:'Panen kapas, lateks, kulit mentah & pewarna tanpa bahan masukan', grow:'Panen', dress:'Gaun', jacket:'Jaket', cotton:'Kapas', hide:'Kulit mentah', latex:'Lateks', dye:'Pewarna', contracts:'Kontrak', mats:'Bahan', ct_hint:'Pembeli ritel menawarkan harga di atas pasar. Kirim sebelum tenggat.', ct_none:'Belum ada tawaran. Jual dulu, lalu tunggu pembeli datang.', deliver:'Kirim',
     t_mkt:'Pemasaran', mkt:'Kampanye', active:'Aktif', camp_social:'Iklan Sosmed', camp_influ:'Influencer', camp_board:'Baliho Kota', campx:'Permintaan', mktx:'Pemasaran',
     rank:'Peringkat', you:'Kamu', valuation:'Valuasi', rank_hint:'Valuasi = kas + stok + bangunan - pinjaman. Pesaing tumbuh tiap hari game.',
     ev_strike:'Mogok pelabuhan: kulit & karet naik', ev_sale:'Obral tekstil: kain & benang turun', ev_viral:'Tren viral: permintaan naik', ev_slump:'Daya beli lesu: permintaan turun', ev_tariff:'Tarif impor naik: bahan naik',
     gl_made:'Produksi', gl_sold:'Terjual', gl_rev:'Pendapatan', gl_rep:'Reputasi', gl_storelv:'Toko Lv', gl_officelv:'Kantor Lv', gl_res:'Riset Dasar', maxlv:'Level maksimum tercapai', reward:'Naik level membuka produk baru & batas upgrade' },
-  en: { cotton:'Cotton', hide:'Raw hide', latex:'Latex', dye:'Dye', contracts:'Contracts', mats:'Materials', ct_hint:'Retail buyers offer above-market prices. Deliver before the deadline.', ct_none:'No offers yet. Make some sales and buyers will come.', deliver:'Deliver',
+  en: { farm:'Plantation', fx_farm:'Harvests cotton, latex, raw hide & dye with no inputs', grow:'Harvest', dress:'Dress', jacket:'Jacket', cotton:'Cotton', hide:'Raw hide', latex:'Latex', dye:'Dye', contracts:'Contracts', mats:'Materials', ct_hint:'Retail buyers offer above-market prices. Deliver before the deadline.', ct_none:'No offers yet. Make some sales and buyers will come.', deliver:'Deliver',
     t_mkt:'Marketing', mkt:'Campaign', active:'Active', camp_social:'Social Ads', camp_influ:'Influencer', camp_board:'City Billboard', campx:'Demand', mktx:'Marketing',
     rank:'Ranking', you:'You', valuation:'Valuation', rank_hint:'Valuation = cash + stock + buildings - loan. Rivals grow every game day.',
     ev_strike:'Port strike: leather & rubber up', ev_sale:'Textile sale: fabric & thread down', ev_viral:'Viral trend: demand up', ev_slump:'Weak spending: demand down', ev_tariff:'Import tariff: materials up',

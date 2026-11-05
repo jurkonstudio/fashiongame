@@ -24,8 +24,8 @@ export const SEASONS = [{m:3,id:'lebaran',x:1.6},{m:6,id:'school',x:1.5,only:'sh
 // Peta 2D: 10 lahan dalam satu petak (4 pertama gratis). Harga lahan dalam USD. NEW_B = bangunan tambahan untuk lahan kosong.
 export const SLOTS = 10, WH_BLD = 30;     // WH_BLD = tambahan kapasitas gudang per level Gudang
 export const SLOT_COST = [0, 0, 0, 100, 150, 250, 400, 650, 1000, 1500];
-export const BUILD_SEC = { factory: 60, store: 60 };   // waktu konstruksi (detik, memakai jam server)
-export const NEW_B = { factory:{cost:200,icon:'factory',fx:'fx_factory'}, store:{cost:150,icon:'store',fx:'fx_store'}, warehouse:{cost:300,icon:'warehouse',fx:'fx_warehouse'} };
+export const BUILD_SEC = { factory: 60, store: 60, farm: 60 };   // waktu konstruksi (detik, memakai jam server)
+export const NEW_B = { factory:{cost:200,icon:'factory',fx:'fx_factory'}, store:{cost:150,icon:'store',fx:'fx_store'}, warehouse:{cost:300,icon:'warehouse',fx:'fx_warehouse'}, farm:{cost:250,icon:'farm',fx:'fx_farm'} };
 export const D = {
   materials: { leather:{icon:'leather',price:8,imp:1}, rubber:{icon:'rubber',price:4,imp:1}, thread:{icon:'thread',price:1}, fabric:{icon:'fabric',price:6},
     // bahan mentah (sumber untuk produksi bahan baku di Pabrik)
@@ -40,11 +40,16 @@ export const D = {
   // time = detik per batch; recipe = bahan per batch
   products: {
     shoes:{icon:'shoes',lvl:1,time:600,base:40,batch:5,recipe:{leather:5,rubber:5,thread:10}},
+    dress:{icon:'dress',lvl:3,time:2400,base:140,batch:5,recipe:{fabric:15,thread:10,dye:3}},
+    jacket:{icon:'jacket',lvl:4,time:3600,base:260,batch:4,recipe:{leather:10,fabric:10,thread:10}},
     shirt:{icon:'shirt',lvl:2,time:900,base:25,batch:10,recipe:{fabric:20,thread:10}},
     bag:{icon:'bag',lvl:3,time:1800,base:90,batch:5,recipe:{leather:15,thread:15}}
   },
   // cost naik x1.8 tiap level, time (detik) dikali level saat ini
+  // Kebun: panen bahan mentah (tanpa bahan masukan, biaya 40% harga pasar). time = detik per panen
+  grow: { cotton:{time:600,batch:50}, dye:{time:900,batch:10}, latex:{time:900,batch:20}, hide:{time:1200,batch:10} },
   buildings: {
+    farm:{icon:'farm',cost:600,time:3600,fx:'fx_farm'},
     factory:{icon:'factory',cost:1000,time:3600,fx:'fx_factory'},
     office:{icon:'office',cost:800,time:3600,fx:'fx_office'},
     store:{icon:'store',cost:1200,time:5400,fx:'fx_store'},

@@ -9,6 +9,7 @@ import * as market from './screens/market.js?v=14';
 import * as margin from './screens/margin.js?v=14';
 import * as factory from './screens/factory.js?v=14';
 import * as store from './screens/store.js?v=14';
+import * as farm from './screens/farm.js?v=14';
 import * as office from './screens/office.js?v=14';
 import * as finance from './screens/finance.js?v=14';
 import * as depth from './depth.js?v=14';
@@ -26,7 +27,7 @@ const $ = s => document.querySelector(s);
 let tab = 'map', lastSel = null, menu = false;
 
 const actions = {
-  ...Object.assign({}, ...[map, item, more, warehouse, market, margin, factory, store, office, finance, profile, depth].map(s => s.actions)),
+  ...Object.assign({}, ...[map, item, more, warehouse, market, margin, factory, store, farm, office, finance, profile, depth].map(s => s.actions)),
   lang: () => { setLang(G.S.lang = G.S.lang === 'id' ? 'en' : 'id'); document.documentElement.lang = G.S.lang; },
   tab: t => { tab = t; menu = false; map.actions.close(); },
   menu: () => { menu = !menu; },
@@ -64,6 +65,7 @@ document.addEventListener('click', e => {
   setOffset(await serverOffset());                                  // timer ikut jam server
   setInterval(async () => setOffset(await serverOffset()), 300000);   // sinkron ulang tiap 5 menit
   G.S = Object.assign(fresh(), (await load()) || {});   // migrasi save lama
+  G.S.b.farm = G.S.b.farm || 0;
   for (const m in D.materials) G.S.mk.idx[m] = G.S.mk.idx[m] ?? 1;   // bahan mentah baru (migrasi save lama)
   if (G.S.wk.length !== G.S.workers) G.S.wk = Array(G.S.workers).fill(1);
   setLang(G.S.lang); setCur(G.S.cur);

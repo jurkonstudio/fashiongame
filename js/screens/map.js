@@ -6,6 +6,7 @@ import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed
 import * as factory from './factory.js?v=14';
 import * as depth from '../depth.js?v=14';
 import * as store from './store.js?v=14';
+import * as farm from './farm.js?v=14';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -17,13 +18,13 @@ const pts = a => a.map(p => p.join(',')).join(' ');
 const dia = (c, r) => pts([P(c, r), P(c + 1, r), P(c + 1, r + 1), P(c, r + 1)]);
 const cen = (c, r) => { const p = P(c, r); return [p[0], p[1] + DY]; };
 const CELLS = [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2], [2, 2], [3, 2]], DECOR = [[3, 0, 'trees'], [0, 2, 'pond']];
-const IC = { factory: 'factory', store: 'store', office: 'office', warehouse: 'warehouse' };
+const IC = { farm: 'farm', factory: 'factory', store: 'store', office: 'office', warehouse: 'warehouse' };
 const TH = [   // tier 1-4: berubah menurut level pemain
   { sky: ['#bfe7f6', '#fbf1d6'], g: '#a3d18b', g2: '#8fc276', ap: '#d8c8a2', pad: '#efe3c6', alt: '#e6d8b8', far: '#86b872', n: 0 },
   { sky: ['#a6d6ef', '#f6ecd3'], g: '#93cba2', g2: '#7fb890', ap: '#c9c5b6', pad: '#e7e3d7', alt: '#dedacb', far: '#9db9c6', n: 6 },
   { sky: ['#f2b98b', '#fde8c6'], g: '#82bbb2', g2: '#6ea69e', ap: '#b9c2c0', pad: '#e1e6e4', alt: '#d6dcda', far: '#8aa0b0', n: 9 },
   { sky: ['#262a66', '#e9807b'], g: '#5f9ca0', g2: '#4d8c91', ap: '#a9b6c1', pad: '#d9e0e6', alt: '#cdd5dc', far: '#4c5d7c', n: 12 }];
-const COL = { office: { t: '#f3e6f7', l: '#c9a6d6', r: '#a77fb9', a: '#ffd6ea', h: 38 }, factory: { t: '#d9d2e3', l: '#efe6f2', r: '#c4b6d3', a: '#e8467c', h: 24 },
+const COL = { farm: { t: '#c9e7a8', l: '#a9d184', r: '#8cb86a', a: '#fff', h: 10 }, office: { t: '#f3e6f7', l: '#c9a6d6', r: '#a77fb9', a: '#ffd6ea', h: 38 }, factory: { t: '#d9d2e3', l: '#efe6f2', r: '#c4b6d3', a: '#e8467c', h: 24 },
   store: { t: '#ff6f9e', l: '#fff3e4', r: '#f0dcc2', a: '#b3285b', h: 22 }, warehouse: { t: '#e9d7b8', l: '#d4bd96', r: '#b99f78', a: '#7a4a6b', h: 20 } };
 
 const chip = (cx, y, icon, label, tone, act, p) => {   // gelembung kecil: ikon + (timer/angka). Tanpa kata-kata
@@ -34,7 +35,7 @@ const chip = (cx, y, icon, label, tone, act, p) => {   // gelembung kecil: ikon 
     + (p != null ? `<rect x="${x + 4}" y="${y + 16}" width="${(w - 8) * p}" height="2" rx="1" fill="#ffc2da"/>` : '') + `</g>`; };
 const fxOf = (b, cx, y) => { const t = now(), L = (G.S.fx || []).filter(e => e.b === b && t - e.t < 12000).slice(-2);   // hasil barang / uang, hilang sendiri
   return L.map((e, k) => { const a = t - e.t, yy = y - Math.min(a, 3000) / 3000 * 12 - k * 22, op = a > 9000 ? 1 - (a - 9000) / 3000 : 1;
-    const lab = b === 'store' ? '+' + fmt(e.m) : '+' + e.n, icon = b === 'store' ? 'money' : itemDef(e.id).icon, w = 26 + lab.length * 5.6;
+    const lab = b === 'store' ? '+' + fmt(e.m) : '+' + e.n, icon = b === 'store' ? 'money' : (D.materials[e.id] && b === 'farm' ? D.materials[e.id].icon : itemDef(e.id).icon), w = 26 + lab.length * 5.6;
     return `<g pointer-events="none" opacity="${op}"><rect x="${cx - w / 2}" y="${yy}" width="${w}" height="19" rx="9.5" fill="${b === 'store' ? '#f2b84b' : '#fff'}" stroke="${b === 'store' ? '#b9770e' : '#e8467c'}" stroke-width="1.5"/><image href="${icu(icon)}" x="${cx - w / 2 + 3}" y="${yy + 2}" width="15" height="15"/><text x="${cx - w / 2 + 20}" y="${yy + 13}" fill="#2b2420" style="font-size:9.5px;font-weight:800">${lab}</text></g>`; }).join(''); };
 const prog = j => j.st ? Math.min(1, (now() - j.st) / (j.end - j.st)) : null;
 const quick = (t, i, cx, y) => { const S = G.S;
@@ -42,6 +43,9 @@ const quick = (t, i, cx, y) => { const S = G.S;
   if (t === 'factory') { const js = S.jobs.filter(j => j.k === 'make');
     if (js.length) { const j = js.reduce((a, b) => (a.end < b.end ? a : b)); return chip(cx, y, itemDef(j.id).icon, mm(j.end - now()) + (js.length > 1 ? ' ×' + js.length : ''), 'run', 'slot:' + i, prog(j)); }
     const ok = factory.canMake('shoes'); return chip(cx, y, ok ? 'shoes' : 'factory', '', ok ? 'go' : 'off', ok ? 'qmake' : 'slot:' + i); }
+  if (t === 'farm') { const js = S.jobs.filter(j => j.k === 'grow');
+    if (js.length) { const j = js.reduce((a, b) => (a.end < b.end ? a : b)); return chip(cx, y, D.materials[j.id].icon, mm(j.end - now()) + (js.length > 1 ? ' ×' + js.length : ''), 'run', 'slot:' + i, prog(j)); }
+    return chip(cx, y, 'farm', '', G.S.money >= 20 && G.S.b.farm ? 'go' : 'off', G.S.money >= 20 && G.S.b.farm ? 'qgrow' : 'slot:' + i); }
   if (t === 'store') { const j = S.jobs.find(j => j.k === 'sell');
     if (j) return chip(cx, y, 'money', mm(j.end - now()), 'run', 'slot:' + i, prog(j));
     return store.canSell() ? chip(cx, y, 'money', '', 'sell', 'qsell') : ''; }
@@ -62,6 +66,7 @@ const bld = (t, lv, cx, cy) => {
       + (G.S.jobs.some(j => j.k === 'make') ? `<circle cx="${cx - 11}" cy="${cy - h - 26}" r="5" fill="#fff" opacity=".8"/><circle cx="${cx - 5}" cy="${cy - h - 35}" r="4" fill="#fff" opacity=".55"/>` : ''); }
   if (t === 'store') { for (let k = 0; k < 4; k++) l += R(k * 8, -h + 5, 8, 9, k % 2 ? '#fffaf2' : '#e4572e'); l += R(5, -12, 22, 8, '#bfe3ee') + `<circle cx="16" cy="-10.6" r="1.4" fill="#f6ead7"/><path d="M16 -9.2l-3.4 5.2h6.8z" fill="#e8467c"/>`; r += R(10, -13, 10, 13, c.a) + R(4, -h + 8, 6, 6, '#bfe3ee'); }
   if (t === 'warehouse') { l += R(6, -18, 20, 18, c.a); for (let k = 1; k < 5; k++) l += R(6, -18 + k * 3.6, 20, .8, '#fff'); r += R(5, -h + 5, 22, 4, c.l); }
+  if (t === 'farm') roof = [-15, 0, 15].map(d => `<ellipse cx="${cx + d}" cy="${cy - h - 2 + Math.abs(d) / 5}" rx="7" ry="4" fill="#8fc276"/><circle cx="${cx + d - 2}" cy="${cy - h - 5 + Math.abs(d) / 5}" r="3.2" fill="#fff"/><circle cx="${cx + d + 2.5}" cy="${cy - h - 4 + Math.abs(d) / 5}" r="2.6" fill="#fff"/>`).join('');
   if (t === 'warehouse') roof = [['#e8467c', -13], ['#5b8def', 0], ['#2ec4b6', 13]].map(([c, d]) => `<rect x="${cx + d - 6}" y="${cy - h - 7}" width="12" height="8" fill="${c}"/><ellipse cx="${cx + d}" cy="${cy - h + 1}" rx="6" ry="3" fill="${c}"/><ellipse cx="${cx + d}" cy="${cy - h - 7}" rx="6" ry="3" fill="#fff" opacity=".5"/><ellipse cx="${cx + d}" cy="${cy - h - 7}" rx="2" ry="1" fill="#0004"/>`).join('');   // gulungan kain di atap
   const sh = `<polygon filter="url(#sh)" points="${cx - a},${cy} ${cx},${cy + b} ${cx + a + 16 + h * .5},${cy + 5 + h * .12} ${cx + 22 + h * .5},${cy - b + 5}" fill="#1a0f2e" opacity=".42"/><ellipse cx="${cx}" cy="${cy + 6}" rx="${a + 2}" ry="${b - 1}" fill="#000" opacity=".3" filter="url(#sh)"/>`;
   return sh
@@ -132,7 +137,7 @@ export const view = () => { const S = G.S, hr = new Date(now()).getHours(), nigh
       ov += `<g pointer-events="none"><circle cx="${cx}" cy="${cy - 2}" r="12" fill="#b3285b" stroke="#fff" stroke-opacity=".8"/><path d="M${cx - 6} ${cy - 2}h12M${cx} ${cy - 8}v12" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>`; }
     else { const lv = S.b[s.t]; inner += bld(s.t, lv, cx, cy);
       const hh = COL[s.t].h + 7 * Math.min(lv, 5);
-      const dx = { factory: -20, store: 22 }[s.t] || 0;
+      const dx = { factory: -20, store: 22, farm: -8 }[s.t] || 0;
       ov += quick(s.t, e.i, cx + dx, cy - hh - 42) + fxOf(s.t, cx + dx, cy - hh - 66); }
     if (sel === e.i) inner += `<polygon points="${dia(e.c, e.r)}" fill="none" stroke="#f2b84b" stroke-width="3.5"/>`;
     g += `<g class="tile"${fixed ? '' : ` data-a="slot:${e.i}" role="button" aria-label="${T(s.t || 'plot')} ${e.i + 1}"`}>${inner}</g>`; }
@@ -140,7 +145,7 @@ export const view = () => { const S = G.S, hr = new Date(now()).getHours(), nigh
 
 const upCard = id => { const S = G.S, b = D.buildings[id], lv = S.b[id], top = lv >= bMax();
   return `<div class="card"><div class="row"><span>${ic(b.icon)}${T(id)} Lv${lv}/${bMax()}</span><button class="b" data-a="up:${id}" ${top || busy('up', id) || S.money < upCost(id) ? 'disabled' : ''}>${top ? T('max') : `${T('upgrade')} · ${fmt(upCost(id))} · ${mm(dur(upSec(id)))}`}</button></div><div class="mute row"><span>${T(b.fx)}</span></div>${job('up', id)}</div>`; };
-const PANEL = { factory: () => upCard('factory') + factory.view(), store: () => upCard('store') + store.view() + depth.salesPanel(),
+const PANEL = { farm: () => upCard('farm') + farm.view(), factory: () => upCard('factory') + factory.view(), store: () => upCard('store') + store.view() + depth.salesPanel(),
   warehouse: () => upCard('warehouse') + `<div class="card"><div class="row"><span>${T('warehouse')}</span><b>${whUsed()}/${whCap()}</b></div></div>` };
 
 export const sheet = () => { if (sel === null) return '';
@@ -163,6 +168,7 @@ export const actions = {
     if (!s || !s.own || s.t || !NEW_B[t] || S.money < NEW_B[t].cost || S.land.slots.some(x => x.t === t)) return;
     S.money -= NEW_B[t].cost; s.t = t;
     if (BUILD_SEC[t]) { S.b[t] = 0; S.jobs.push({ k: 'up', id: t, st: now(), end: now() + dur(BUILD_SEC[t]) }); } else S.b[t] = S.b[t] || 1; },
+  qgrow: () => farm.actions.qgrow(),
   qmake: () => factory.actions.make('shoes'),
   qsell: () => { const id = Object.keys(D.products).find(k => (G.S.stock[k] || 0) > 0); if (id) store.actions.sell(id); }
 };

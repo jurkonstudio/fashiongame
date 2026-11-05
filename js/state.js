@@ -11,7 +11,7 @@ export const setOffset = o => { OFF = o; };
 export const now = () => Date.now() + OFF;     // semua timer pakai waktu server
 export const dur = sec => sec * 1000 / TIME_SCALE;
 export const fresh = () => ({ money: START_MONEY, level: 1, mat: {}, stock: {}, made: 0, sold: 0,
-  b: { factory: 0, office: 1, store: 0 }, jobs: [], workers: 1, research: [], price: { shoes: 40 }, last: now(), lang: 'en',
+  b: { factory: 0, office: 1, store: 0, farm: 0 }, jobs: [], workers: 1, research: [], price: { shoes: 40 }, last: now(), lang: 'en',
   mk: { t: now(), fx: 1, idx: { leather: 1, rubber: 1, thread: 1, fabric: 1, cotton: 1, hide: 1, latex: 1, dye: 1 } }, mc: {}, mq: {}, sq: {}, loan: 0,
   led: { rev: 0, tax: 0, mat: 0, wage: 0, power: 0, rent: 0, int: 0, fee: 0, maint: 0 },
   wk: [1], cond: 1, rep: 10, scrap: 0, t0: now(),
@@ -68,6 +68,9 @@ export function tick() {
   const i = S.loan * LOAN_RATE * h; S.loan += i; S.led.int += i;
   S.jobs = S.jobs.filter(j => {
     if (j.end > t) return true;
+    if (j.k === 'grow') { const o = S.mat[j.id] || 0, t2 = o + j.n;   // panen Kebun masuk stok bahan
+      S.mc[j.id] = ((S.mc[j.id] || 0) * o + j.c) / t2; S.mq[j.id] = ((S.mq[j.id] || 0) * o + 2 * j.n) / t2; S.mat[j.id] = t2;
+      fx({ b: 'farm', id: j.id, n: j.n }); toast(`${T('done')}: ${j.n} × ${T(j.id)}`); return false; }
     if (j.k === 'make' && D.craft[j.id]) { const o = S.mat[j.id] || 0, t2 = o + j.n;   // bahan baku hasil Pabrik masuk stok bahan
       S.mc[j.id] = ((S.mc[j.id] || 0) * o + (j.c || 0)) / t2; S.mq[j.id] = ((S.mq[j.id] || 0) * o + j.q * j.n) / t2; S.mat[j.id] = t2;
       S.cond = Math.max(0, S.cond - 0.02); S.btn += BTN.make; fx({ b: 'factory', id: j.id, n: j.n }); toast(`${T('done')}: ${j.n} × ${T(j.id)}`); return false; }

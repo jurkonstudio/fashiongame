@@ -122,3 +122,9 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - Seni bangunan: gulungan kain warna-warni di atap Gudang, manekin bergaun pink di jendela Toko.
 - Peta ditaruh lebih ke tengah layar. Cache ?v=14.
 - Sesi 3 (rencana): rantai bahan lebih dalam + bangunan baru; sesi 4: animasi & balancing.
+
+## Update v14 (sesi 3: Kebun + produk baru)
+- Bangunan baru **Kebun** (js/screens/farm.js, D.grow di data.js): panen Kapas, Pewarna, Lateks, Kulit mentah tanpa bahan masukan (biaya 40% harga pasar). Dibangun di lahan kosong ($250), bisa di-upgrade (slot panen = level, -10% waktu per level). Hasil masuk stok bahan.
+- Rantai penuh: Kebun > bahan mentah > Pabrik (benang/kain/kulit/karet) > Pabrik (produk) > Toko.
+- Produk baru: **Gaun** (Lv3) dan **Jaket** (Lv4). Resep ada di data.js (D.products).
+- Peta: bangunan Kebun dengan semak kapas, gelembung panen. Save lama kompatibel (S.b.farm ditambahkan otomatis). Cache ?v=14.

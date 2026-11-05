@@ -1,0 +1,15 @@
+// Teks tambahan v22 (logika ekonomi). Dipakai oleh T() di i18n.js
+export const L3 = {
+  id: { eco:'Ekonomi', phase:'Fase ekonomi', ph_recession:'Resesi', ph_normal:'Ekonomi normal', ph_boom:'Booming', ph_dem:'Permintaan ritel', ph_mat:'Harga bahan', ph_px:'Harga grosir & bursa', ph_hint:'Fase diundi tiap minggu game. Resesi: jualan lambat, harga jatuh (saatnya menimbun/riset). Booming: ritel ramai, bahan baku mahal.',
+    admx:'Overhead admin', adm_lv:'Total level bangunan / batas gratis', adm_pct:'Overhead admin', adm_coo:'Potongan COO', adm_cost:'Biaya admin sekarang', adm_hint:'Makin banyak bangunan & level, gaji + sewa + listrik makin mahal. Perusahaan besar perlu produk bernilai tinggi atau COO.',
+    sat_t:'Kejenuhan pasar', sat_hint:'Kejenuhan = jualanmu + pesaing. Makin jenuh, permintaan ritel makin lambat (maks −40%). Pulih 30% tiap jam.',
+    xc_t:'Barang jadi', xc_hint:'Bursa: beli barang jadi untuk dijual lewat Toko (ritel). Biaya bursa 3% + ongkos kirim per unit. Jual lewat kanal Bursa (biaya 3%) atau Kontrak (biaya 0%, ongkos kirim 50%).', xc_free:'Ruang gudang', xc_idx:'Indeks', xc_all:'Total', ch_exch:'Bursa', ch_contract:'Kontrak', need_exch:'Butuh level 2', need_contract:'Butuh level 2 + Kantor Lv2',
+    qchance:'Peluang', qr_fail:'Riset gagal', execx:'Gaji eksekutif', ex_lock:'Eksekutif terbuka di level', ex_fire:'Pecat', ex_poach:'dibajak perusahaan lain', ex_retire:'pensiun',
+    fxe_coo:'Overhead admin −50%', fxe_cfo:'Bunga pinjaman −50%', fxe_cmo:'Permintaan ritel +8%', fxe_cto:'Peluang riset +15 poin' },
+  en: { eco:'Economy', phase:'Economic phase', ph_recession:'Recession', ph_normal:'Normal economy', ph_boom:'Boom', ph_dem:'Retail demand', ph_mat:'Material prices', ph_px:'Wholesale & exchange prices', ph_hint:'Phase is rolled every game week. Recession: slow sales, falling prices (time to stockpile/research). Boom: busy retail, pricey materials.',
+    admx:'Admin overhead', adm_lv:'Total building levels / free limit', adm_pct:'Admin overhead', adm_coo:'COO reduction', adm_cost:'Current admin cost', adm_hint:'More buildings and levels make wages + rent + power costlier. Big companies need high-value products or a COO.',
+    sat_t:'Market saturation', sat_hint:'Saturation = your sales + rivals. The more saturated, the slower retail demand (max −40%). Recovers 30% per hour.',
+    xc_t:'Finished goods', xc_hint:'Exchange: buy finished goods to resell through your Store (retail). Exchange fee 3% + shipping per unit. Sell via the Exchange channel (3% fee) or Contract (0% fee, 50% shipping).', xc_free:'Warehouse space', xc_idx:'Index', xc_all:'Total', ch_exch:'Exchange', ch_contract:'Contract', need_exch:'Needs level 2', need_contract:'Needs level 2 + Office Lv2',
+    qchance:'Chance', qr_fail:'Research failed', execx:'Executive pay', ex_lock:'Executives unlock at level', ex_fire:'Fire', ex_poach:'was poached by a rival', ex_retire:'retired',
+    fxe_coo:'Admin overhead −50%', fxe_cfo:'Loan interest −50%', fxe_cmo:'Retail demand +8%', fxe_cto:'Research chance +15 pts' }
+};

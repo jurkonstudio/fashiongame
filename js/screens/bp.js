@@ -1,13 +1,13 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Halaman bangunan (gaya Sim Companies): gambar besar, tombol aksi, riwayat, carousel barang + satu tombol aksi besar.
-import { D, TAX, WAGE, RENT_HOUR } from '../data.js?v=21';
-import { T, fmt } from '../i18n.js?v=21';
-import { ic } from '../icons.js?v=21';
-import { ART } from '../art.js?v=21';
-import { G, now, dur, mm, busy, count, bMax, upCost, upSec, shortfall, unitCost, factoryMult, whCap, whUsed, fixCost, defectRate, demand, saleCap, CH, bulkPrice, compPrice } from '../state.js?v=21';
-import * as store from './store.js?v=21';
-import * as farm from './farm.js?v=21';
-import * as factory from './factory.js?v=21';
+import { D, TAX, WAGE, RENT_HOUR } from '../data.js?v=22';
+import { T, fmt } from '../i18n.js?v=22';
+import { ic } from '../icons.js?v=22';
+import { ART } from '../art.js?v=22';
+import { G, now, dur, mm, busy, count, bMax, upCost, upSec, shortfall, unitCost, factoryMult, whCap, whUsed, fixCost, defectRate, demand, saleCap, CH, bulkPrice, compPrice } from '../state.js?v=22';
+import * as store from './store.js?v=22';
+import * as farm from './farm.js?v=22';
+import * as factory from './factory.js?v=22';
 
 let cur = 'factory'; const pick = {};
 const byLvl = o => Object.keys(o).sort((a, b) => o[a].lvl - o[b].lvl);
@@ -38,8 +38,8 @@ const stats = t => { const S = G.S, lv = S.b[t];
 const selector = t => { const S = G.S, id = sel(t); if (!id) return '';
   const d = def(id), L = itemsOf(t), nav = `<button class="nv" data-a="pk:-1" aria-label="prev">‹</button><div class="big">${ART[id]}</div><button class="nv" data-a="pk:1" aria-label="next">›</button>`;
   const dots = `<div class="dots">${L.map(k => `<i class="${k === id ? 'on' : ''}"></i>`).join('')}</div>`;
-  if (t === 'store') { const c = store.curCh(), C = CH[c], p0 = c === 'bulk' ? bulkPrice(id, S.sq[id] || 2) : (S.price[id] || D.products[id].base), st = S.stock[id] || 0, mx = Math.min(st, C.cap()), q = S.sq[id] || 2;
-    const n = Math.max(0, Math.min(mx, (S.qty || {})[id] ?? mx)), dm = c === 'bulk' ? 1 : demand(id, p0, q, c), sold = Math.floor(n * dm), pu = p0 * (1 - TAX - C.fee) - C.ship - unitCost(id), ms = dur(C.sec());
+  if (t === 'store') { const c = store.curCh(), C = CH[c], p0 = C.fixed ? C.price(id, S.sq[id] || 2) : (S.price[id] || D.products[id].base), st = S.stock[id] || 0, mx = Math.min(st, C.cap()), q = S.sq[id] || 2;
+    const n = Math.max(0, Math.min(mx, (S.qty || {})[id] ?? mx)), dm = C.fixed ? 1 : demand(id, p0, q, c), sold = Math.floor(n * dm), pu = p0 * (1 - TAX - C.fee) - C.ship - unitCost(id), ms = dur(C.sec());
     const hh = Math.floor(ms / 3600000), mn = Math.round(ms % 3600000 / 60000), fin = new Date(now() + ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), net = sold * pu, pph = ms > 0 ? net / (ms / 3600000) : 0;
     const full = busy('up', 'store') || count('sell') >= S.b.store, chv = up => `<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="${up ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     return `<div class="tabs w">${Object.entries(CH).map(([k, x]) => `<button class="chip ${k === c ? 'on' : ''}" data-a="ch:${k}" ${x.ok() ? '' : 'disabled'}>${ic(x.icon)}<span>${T('ch_' + k)}</span></button>`).join('')}</div>
@@ -48,7 +48,7 @@ const selector = t => { const S = G.S, id = sel(t); if (!id) return '';
         <div>${T('finishes')}: ${fin}</div><small>${T('inx')} ${hh ? hh + 'h, ' : ''}${mn}m</small><hr><b>${T('phour')}: ${fmt(pph)}</b></div></div>
     <div class="scn"><button class="nv sm" data-a="pk:-1" aria-label="prev">‹</button>${dots}<button class="nv sm" data-a="pk:1" aria-label="next">›</button></div>
     <div class="qp"><div><h4>${T('qty')}</h4><div class="stp"><button class="chv" data-a="sqty:${id},-1" aria-label="-">${chv(0)}</button><input type="number" inputmode="numeric" min="0" max="${mx}" value="${n}" data-in="sqtyset:${id}" aria-label="${T('qty')}"><button class="chv" data-a="sqty:${id},1" aria-label="+">${chv(1)}</button></div></div>
-      <div><h4>${T('pricel')}</h4>${c === 'bulk' ? `<div class="stp"><span class="fx">${fmt(p0)}</span></div>` : `<div class="stp"><button class="chv" data-a="price:${id},-1" aria-label="-">${chv(0)}</button><input type="number" inputmode="numeric" min="1" value="${Math.round(p0)}" data-in="pset:${id}" aria-label="${T('pricel')}"><button class="chv" data-a="price:${id},1" aria-label="+">${chv(1)}</button></div>`}</div></div>
+      <div><h4>${T('pricel')}</h4>${C.fixed ? `<div class="stp"><span class="fx">${fmt(p0)}</span></div>` : `<div class="stp"><button class="chv" data-a="price:${id},-1" aria-label="-">${chv(0)}</button><input type="number" inputmode="numeric" min="1" value="${Math.round(p0)}" data-in="pset:${id}" aria-label="${T('pricel')}"><button class="chv" data-a="price:${id},1" aria-label="+">${chv(1)}</button></div>`}</div></div>
     <div class="mute row"><span>${T('comp')} ${fmt(compPrice(id))}</span><span>${T('demand')} ${Math.round(dm * 100)}% · ≈ ${fmt(net)}</span></div>
     <button class="b go" data-a="sell:${id}" ${full || !n || !C.ok() ? 'disabled' : ''}>${T('sell')} ${n}</button>`; }
   const locked = d.lvl > S.level;

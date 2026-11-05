@@ -1,9 +1,10 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { LOAN_STEP, LOAN_RATE } from '../data.js?v=21';
-import { T, fmt } from '../i18n.js?v=21';
-import { ic } from '../icons.js?v=21';
-import * as depth from '../depth.js?v=21';
-import { G } from '../state.js?v=21';
+import { LOAN_STEP, LOAN_RATE } from '../data.js?v=22';
+import { T, fmt } from '../i18n.js?v=22';
+import { ic } from '../icons.js?v=22';
+import * as depth from '../depth.js?v=22';
+import { G } from '../state.js?v=22';
+import * as econ from '../econ.js?v=22';
 
 let sub = 'report';
 const limit = () => 4000 * G.S.b.office;
@@ -11,8 +12,8 @@ const row = (k, v) => `<div class="row"><span>${T(k)}</span><b>${fmt(v)}</b></di
 const cost = (k, v) => `<div class="row"><span>${T(k)}</span><span class="mute">−${fmt(v)}</span></div>`;
 
 const panels = {
-  report: () => { const L = G.S.led, net = L.rev - L.tax - L.mat - L.wage - L.power - L.rent - L.int - (L.fee || 0) - (L.maint || 0) - (L.mkt || 0);
-    return `<div class="card"><h2>${ic('money')}${T('report')}</h2>${row('rev', L.rev)}${cost('tax', L.tax)}${cost('matx', L.mat)}${cost('wagex', L.wage)}${cost('power', L.power)}${cost('rent', L.rent)}${cost('intr', L.int)}${cost('feex', L.fee || 0)}${cost('maintx', L.maint || 0)}${cost('mktx', L.mkt || 0)}
+  report: () => { const L = G.S.led, net = L.rev - L.tax - L.mat - L.wage - L.power - L.rent - L.int - (L.fee || 0) - (L.maint || 0) - (L.mkt || 0) - (L.adm || 0) - (L.exec || 0);
+    return `<div class="card"><h2>${ic('money')}${T('report')}</h2>${row('rev', L.rev)}${cost('tax', L.tax)}${cost('matx', L.mat)}${cost('wagex', L.wage)}${cost('power', L.power)}${cost('rent', L.rent)}${cost('intr', L.int)}${cost('feex', L.fee || 0)}${cost('maintx', L.maint || 0)}${cost('mktx', L.mkt || 0)}${cost('admx', L.adm || 0)}${cost('execx', L.exec || 0)}
     <div class="row"><b>${T('net')}</b><b class="${net >= 0 ? 'pos' : 'neg'}">${net < 0 ? '−' : ''}${fmt(Math.abs(net))}</b></div></div>`; },
   bank: () => { const S = G.S, l = S.loan;
     return `<div class="card"><h2>${ic('office')}${T('bank')}</h2>
@@ -23,8 +24,8 @@ const panels = {
     <button class="b" data-a="repay" ${l <= 0 || S.money <= 0 ? 'disabled' : ''}>${T('repay')}</button></div></div>`; }
 };
 
-panels.rank = depth.rankPanel;
-export const view = () => `<div class="tabs">${[['report', 'money'], ['bank', 'office'], ['rank', 'star']].map(([k, i]) => `<button class="chip ${k === sub ? 'on' : ''}" data-a="fsub:${k}">${ic(i)}<span>${T(k)}</span></button>`).join('')}</div>` + panels[sub]();
+panels.rank = depth.rankPanel; panels.eco = econ.panel;
+export const view = () => `<div class="tabs">${[['report', 'money'], ['bank', 'office'], ['eco', 'chart'], ['rank', 'star']].map(([k, i]) => `<button class="chip ${k === sub ? 'on' : ''}" data-a="fsub:${k}">${ic(i)}<span>${T(k)}</span></button>`).join('')}</div>` + panels[sub]();
 
 export const actions = {
   fsub: k => { sub = k; },

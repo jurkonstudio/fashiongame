@@ -1,9 +1,9 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, WAGE, HIRE, QR } from '../data.js?v=21';
-import { T, fmt } from '../i18n.js?v=21';
-import { ic } from '../icons.js?v=21';
-import * as depth from '../depth.js?v=21';
-import { G, now, dur, mm, busy, job, bMax, upCost, upSec } from '../state.js?v=21';
+import { D, WAGE, HIRE, QR } from '../data.js?v=22';
+import { T, fmt } from '../i18n.js?v=22';
+import { ic } from '../icons.js?v=22';
+import * as depth from '../depth.js?v=22';
+import { G, now, dur, mm, busy, job, bMax, upCost, upSec, qrChance } from '../state.js?v=22';
 
 let sub = 'goal';
 const SUBS = [['goal', 'target', 't_goal'], ['workers', 'worker', 'workers'], ['research', 'research', 'research'], ['mkt', 'chart', 't_mkt'], ['build', 'office', 't_build']];
@@ -35,7 +35,7 @@ const qres = () => { const S = G.S;
     Object.entries(D.products).filter(([, p]) => p.lvl <= S.level).map(([id, p]) => { const n = S.rq[id] || 0, top = n >= QR.max, sp = QR.sp[n], c = Math.round(p.base * QR.mul[n]), dis = busy('qr', id) || (S.sp || 0) < sp || S.money < c;
       return `<div class="card"><div class="row"><span>${ic(p.icon)}${T(id)}</span><b class="gold">${'★'.repeat(n)}${'☆'.repeat(QR.max - n)}</b></div>
       <div class="row mute"><span>${T('qbonus')} +${(n * QR.bonus).toFixed(1)} Q</span><span>${T('qcap')} Q${Math.min(5, 3 + n * QR.bonus).toFixed(1)}</span></div>` +
-      (top ? `<div class="mute">${T('max')}</div>` : `<div class="row"><span class="mute">${sp} SP · ${mm(dur(QR.time[n]))}</span><button class="b" data-a="qres:${id}" ${dis ? 'disabled' : ''}>${T('research')} · ${fmt(c)}</button></div>`) + job('qr', id) + `</div>`; }).join(''); };
+      (top ? `<div class="mute">${T('max')}</div>` : `<div class="row"><span class="mute">${sp} SP · ${mm(dur(QR.time[n]))} · ${T('qchance')} ${Math.round(qrChance(n) * 100)}%</span><button class="b" data-a="qres:${id}" ${dis ? 'disabled' : ''}>${T('research')} · ${fmt(c)}</button></div>`) + job('qr', id) + `</div>`; }).join(''); };
 const research0 = panels.research; panels.research = () => qres() + research0();
 panels.goal = depth.goalPanel; panels.mkt = depth.mktPanel;
 export const view = () => `<div class="tabs">${SUBS.map(([k, i, l]) => `<button class="chip ${k === sub ? 'on' : ''}" data-a="sub:${k}">${ic(i)}<span>${T(l)}</span></button>`).join('')}</div>` + panels[sub]();

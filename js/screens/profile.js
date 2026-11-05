@@ -1,12 +1,13 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Profil perusahaan: satu halaman panjang (gaya Sim Companies) dengan identitas FashionGame. Nama eksekutif adalah tokoh fiktif buatan sendiri.
-import { D, WAGE, SLOT_COST } from '../data.js?v=21';
-import { T, fmt } from '../i18n.js?v=21';
-import { ic } from '../icons.js?v=21';
-import { city, GB } from '../art.js?v=21';
-import { rankList } from '../depth.js?v=21';
-import { ACH } from './more.js?v=21';
-import { G, now, clk, toasts, unitCost, factoryMult } from '../state.js?v=21';
+import { D, WAGE, SLOT_COST } from '../data.js?v=22';
+import { T, fmt } from '../i18n.js?v=22';
+import { ic } from '../icons.js?v=22';
+import { city, GB } from '../art.js?v=22';
+import { rankList } from '../depth.js?v=22';
+import * as econ from '../econ.js?v=22';
+import { ACH } from './more.js?v=22';
+import { G, now, clk, toasts, unitCost, factoryMult, adminPct } from '../state.js?v=22';
 
 let ed = false;
 const EX = [['coo', 'Bayu Anggara'], ['cfo', 'Sinta Maheswari'], ['cmo', 'Dimas Kurnia'], ['cto', 'Laras Prameswari']];
@@ -40,9 +41,9 @@ export const view = () => { const S = G.S, L = rankList(), pos = L.findIndex(r =
       [T('stags'), (esc(S.tags) || tags.map(k => T(k)).join(', ')) + ` <button class="mini-b" data-a="pedit">${ic('profile')}${T('edit')}</button>`]]);
   o += `<div class="card kc dsc">${S.desc ? esc(S.desc).replace(/\n/g, '<br>') : `<span class="mute">${T('nodesc')}</span>`}</div>`;
   // --- tim, bonus, valuasi, kewajiban ---
-  o += ks(`${T('execs')}`, EX.map(([k, n]) => [T(k), n]))
+  o += econ.execsCard()
     + ks(T('emp'), [[T('workers'), `${S.wk.length}/${cap}`], [T('avgskill'), avg.toFixed(1)], [T('wagetot'), fmt(wages) + T('perh')]])
-    + ks(T('bonus'), [[T('prodspd'), pb + '% +0%'], [T('salespd'), sb + '% +0%']])
+    + ks(T('bonus'), [[T('prodspd'), pb + '% +0%'], [T('salespd'), sb + '% +0%'], [T('adm_pct'), '+' + Math.round(adminPct() * 100) + '%']])
     + ks(T('valu'), [[T('cvalue'), fmt(S.money + bval + rval + ival - S.loan)], [T('bvalue'), fmt(bval)], [T('rvalue'), fmt(rval)], [T('ivalue'), fmt(ival)]], `(${T('asof')} ${clk(Date.now())})`)
     + ks(T('liab'), [[T('loan'), `<span class="${S.loan > 0 ? 'neg' : ''}">${fmt(S.loan)}</span>`], [T('bonds'), T('none')]]);
   // --- etalase pencapaian ---

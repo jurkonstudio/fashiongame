@@ -144,3 +144,17 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - Tiap kartu: status, progress bar + timer, hasil terakhir (+n barang / +uang), tombol aksi langsung (PRODUCE / SELL n / HARVEST) dan Upgrade. Ketuk judul kartu = halaman detail bangunan (bp.js) seperti sebelumnya.
 - Beli lahan (`pbuy`) dan bangun (`pbuild`) langsung dari kartu, tanpa panel perantara. Kantor membuka tab Kantor.
 - Toast notifikasi kini juga tampil di tab Bangunan. Cache ?v=17.
+
+## Update v22 (logika ekonomi ala Sim Companies)
+Semua angka ada di **bagian bawah `js/data.js`** (ADMIN, PHASES, SAT, EXCH, CONTRACT, QRC, EXEC). Logika baru ada di `js/econ.js`; teks di `js/lang3.js`. Save lama kompatibel (field `eco`, `sat`, `ex` dibuat otomatis). Cache ?v=22.
+
+- **Overhead admin**: total level semua bangunan di atas 4 menambah +3% per level (maks +60%) pada gaji + sewa + listrik. Tercatat sebagai baris "Overhead admin" di Keuangan > Laporan. COO memotongnya 50%. Fungsi: `adminPct()` di state.js.
+- **Fase ekonomi** (Resesi / Normal / Booming): diundi tiap 7 hari game (matriks peluang `PHASE_TRANS`), tetap berjalan walau game ditinggal. Memengaruhi permintaan ritel, harga bahan, dan harga grosir/bursa. Terlihat sebagai label di HUD dan di Keuangan > Ekonomi.
+- **Kejenuhan pasar**: tiap unit yang kamu jual menaikkan kejenuhan produk itu (`n/40`), pesaing NPC ikut menambah, pulih 30% per jam. Permintaan ritel turun sampai −40% saat jenuh. Kanal Toko, Online, dan Grosir ikut menjenuhkan pasar.
+- **Bursa vs Kontrak** (butuh level 2): dua kanal jual baru di Toko, harga tetap dari indeks bursa (tanpa undian permintaan).
+  - Bursa: biaya 3% + ongkos kirim per unit; menjual menurunkan indeks.
+  - Kontrak: biaya 0%, ongkos kirim 50%, harga 1% di bawah acuan, lebih lambat, butuh Kantor Lv2.
+  - Pajak 11% tetap berlaku di semua kanal. Tab **Pasar > Barang jadi** memungkinkan membeli barang jadi dari bursa untuk dijual lewat Toko (sisi ritel); membeli menaikkan indeks.
+- **Riset kualitas berbasis peluang**: peluang berhasil 90% / 75% / 60% / 45% per bintang (tampil di tombol riset). Gagal: uang dan waktu hangus, 50% SP kembali.
+- **Eksekutif** (terbuka di level 15, ubah `EXEC_LVL` untuk tes): COO (admin −50%), CFO (bunga −50%), CMO (permintaan +8%), CTO (peluang riset +15 poin). Ada biaya rekrut dan gaji per jam, masa kerja acak 40–80 hari game, dan peluang dibajak 0,4% per jam. Dikelola di Profil > Eksekutif.
+- Keterbatasan: semua ini masih dihitung di browser (pesaing, indeks bursa, dan fase adalah simulasi NPC per pemain). Agar benar-benar dibagi antar pemain, pindahkan ke fungsi Supabase sesuai `docs/economy-spec.md`.

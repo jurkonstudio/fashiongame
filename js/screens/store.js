@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SEASONS, TAX } from '../data.js?v=21';
-import { T, fmt } from '../i18n.js?v=21';
-import { ic } from '../icons.js?v=21';
-import { G, now, dur, mm, unitCost, demand, saleCap, busy, count, CH, bulkPrice, month, compPrice } from '../state.js?v=21';
+import { D, SEASONS, TAX } from '../data.js?v=22';
+import { T, fmt } from '../i18n.js?v=22';
+import { ic } from '../icons.js?v=22';
+import { G, now, dur, mm, unitCost, demand, saleCap, busy, count, CH, bulkPrice, month, compPrice } from '../state.js?v=22';
 
 let ch = 'store';
-const pr = id => ch === 'bulk' ? bulkPrice(id, G.S.sq[id] || 2) : (G.S.price[id] || D.products[id].base);
+const pr = id => CH[ch].fixed ? CH[ch].price(id, G.S.sq[id] || 2) : (G.S.price[id] || D.products[id].base);
 
 export const curCh = () => ch;
 export const view = () => {
@@ -19,9 +19,9 @@ export const view = () => {
     ${!C.ok() ? `<div class="mute">${ic('lock')}${T('need_' + ch)}</div>` : ''}${up ? `<div class="mute">${ic('upgrade')} ${T('building')}</div>` : ''}</div>` +
   Object.entries(D.products).filter(([, p]) => p.lvl <= S.level).map(([id, p]) => {
     const p0 = pr(id), mg = p0 - unitCost(id), st = S.stock[id] || 0, n = Math.min(st, C.cap()), q = S.sq[id] || 2;
-    const dm = ch === 'bulk' ? 1 : demand(id, p0, q, ch), net = Math.floor(n * dm) * p0 * (1 - TAX - C.fee) - Math.floor(n * dm) * C.ship;
+    const dm = C.fixed ? 1 : demand(id, p0, q, ch), net = Math.floor(n * dm) * p0 * (1 - TAX - C.fee) - Math.floor(n * dm) * C.ship;
     return `<div class="card"><div class="row"><span>${ic(p.icon)}${T(id)}</span><span>${T('stock')} ${st}${S.sq[id] ? ' · Q' + S.sq[id].toFixed(1) : ''}</span></div>
-    <div class="row">${ch === 'bulk' ? `<b>${fmt(p0)}</b><span class="mute">${T('fixed')}</span>` : `<button class="b" data-a="price:${id},-1">−</button><b>${fmt(p0)}</b><button class="b" data-a="price:${id},1">+</button>`}</div>
+    <div class="row">${C.fixed ? `<b>${fmt(p0)}</b><span class="mute">${T('fixed')}</span>` : `<button class="b" data-a="price:${id},-1">−</button><b>${fmt(p0)}</b><button class="b" data-a="price:${id},1">+</button>`}</div>
     <div class="row mute"><span>${T('margin')}</span><span>${fmt(mg)} (${Math.round(mg / unitCost(id) * 100)}%)</span></div>
     <div class="row mute"><span>${T('demand')} · ${T('comp')} ${fmt(compPrice(id))}</span><span>${Math.round(dm * 100)}%</span></div>
     <div class="row"><span class="mute">≈ ${fmt(net)}</span><button class="b" data-a="sell:${id}" ${full || !n || !C.ok() ? 'disabled' : ''}>${T('sell')} ${n} ${T('unit')}</button></div></div>`;
@@ -36,7 +36,7 @@ export const actions = {
   price: s => { const [id, d] = s.split(','); G.S.price[id] = Math.max(1, (G.S.price[id] || D.products[id].base) + +d); },
   sqty: s => { const [id, d] = s.split(','), S = G.S, mx = Math.min(S.stock[id] || 0, CH[ch].cap()); S.qty = S.qty || {}; S.qty[id] = Math.max(0, Math.min(mx, ((S.qty[id] ?? mx) + +d))); },
   sqtyset: s => { const [id, v] = s.split(','), S = G.S, mx = Math.min(S.stock[id] || 0, CH[ch].cap()); S.qty = S.qty || {}; S.qty[id] = Math.max(0, Math.min(mx, Math.round(+v) || 0)); },
-  pset: s => { const [id, v] = s.split(','); if (ch !== 'bulk') G.S.price[id] = Math.max(1, Math.round(+v) || 1); },
+  pset: s => { const [id, v] = s.split(','); if (!CH[ch].fixed) G.S.price[id] = Math.max(1, Math.round(+v) || 1); },
   sell: id => {
     const S = G.S, C = CH[ch], n = Math.min(S.stock[id] || 0, C.cap(), (S.qty || {})[id] ?? Infinity);
     if (!n || !C.ok() || busy('up', 'store') || count('sell') >= S.b.store) return;

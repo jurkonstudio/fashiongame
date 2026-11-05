@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. Gudang ala Sim Companies: kategori + kartu stok 3 kolom (hanya yang dimiliki, 'Lihat semua' untuk semua) + analisis margin.
-import { D } from '../data.js?v=21';
-import { T, fmt } from '../i18n.js?v=21';
-import { ic } from '../icons.js?v=21';
-import { ART } from '../art.js?v=21';
-import { G, matPrice, whCap, whUsed } from '../state.js?v=21';
-import { subbar } from '../subbar.js?v=21';
-import * as margin from './margin.js?v=21';
+import { D } from '../data.js?v=22';
+import { T, fmt } from '../i18n.js?v=22';
+import { ic } from '../icons.js?v=22';
+import { ART } from '../art.js?v=22';
+import { G, matPrice, whCap, whUsed } from '../state.js?v=22';
+import { subbar } from '../subbar.js?v=22';
+import * as margin from './margin.js?v=22';
 
 let sub = 'stock', all = false;
 const GROUPS = [['cat_farm', () => ['cotton', 'hide', 'latex', 'dye']], ['cat_mat', () => ['thread', 'rubber', 'leather', 'fabric']], ['cat_prod', () => Object.keys(D.products)]];

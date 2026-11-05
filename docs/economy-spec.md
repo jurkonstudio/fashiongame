@@ -87,3 +87,18 @@ Skema dan fungsi diuji di PostgreSQL 16 dengan stub Supabase: alur bangun → be
 ## 12. Yang belum diputuskan
 - Pertanyaan 7 (desain bebas/terbatas) dan 8 (anti-curang) dijawab dengan asumsi di atas.
 - Jumlah level di atas Lv4, riset kualitas versi server, dan market antar pemain.
+
+## 13. Logika tambahan ala Sim Companies (v22, prototipe klien)
+Status: sudah berjalan di prototipe (`js/econ.js`, konstanta di akhir `js/data.js`). Saat dipindah ke server, tabel `game_config` menampung konstanta yang sama.
+
+| Mekanik | Rumus | Catatan |
+|---|---|---|
+| Overhead admin | `min(0,6, max(0, Σlevel − 4) × 0,03) × (1 − 0,5 × COO)` | mengalikan gaji + sewa + listrik |
+| Fase ekonomi | undi tiap 7 hari game, matriks `PHASE_TRANS` | pengali `dem` / `mat` / `px`: Resesi 0,75/0,92/0,85, Normal 1/1/1, Booming 1,3/1,12/1,1 |
+| Kejenuhan | `jual += n/40`, `× 0,7` per jam, pesaing `+rand(0..0,25)` | permintaan `× (1 − 0,4 × min(1, jenuh))` |
+| Bursa | harga jual = acuan × 0,96; harga beli = acuan × 1,04; biaya 3% + $0,5/unit | indeks bergeser `±n/150` per transaksi, kembali ke harga fase 30%/jam |
+| Kontrak | harga = acuan × 0,99; biaya 0%; ongkos kirim 50% | butuh Kantor Lv2 |
+| Riset | peluang `[0,9; 0,75; 0,6; 0,45] + 0,15 × CTO` (maks 0,95) | gagal: 50% SP kembali |
+| Eksekutif | rekrut $4.000, gaji $25/jam, masa 40–80 hari, dibajak 0,4%/jam | terbuka level 15 |
+
+Untuk versi server: pindahkan undian fase, kejenuhan global (jumlah jual semua pemain), dan `market_orders` (bursa antar pemain sungguhan) ke fungsi Postgres + pg_cron. Pesaing NPC di klien bisa dihapus setelah ada cukup pemain.

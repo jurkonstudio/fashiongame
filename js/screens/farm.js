@@ -1,9 +1,9 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Kebun: panen bahan mentah tanpa bahan masukan. Biaya = 40% harga pasar. Slot = level Kebun.
-import { D } from '../data.js?v=21';
-import { T, fmt } from '../i18n.js?v=21';
-import { ic } from '../icons.js?v=21';
-import { G, now, dur, mm, busy, count } from '../state.js?v=21';
+import { D } from '../data.js?v=22';
+import { T, fmt } from '../i18n.js?v=22';
+import { ic } from '../icons.js?v=22';
+import { G, now, dur, mm, busy, count } from '../state.js?v=22';
 
 export const growCost = id => D.grow[id].batch * D.materials[id].price * 0.4;
 export const growSec = id => D.grow[id].time * 0.9 ** (G.S.b.farm - 1);

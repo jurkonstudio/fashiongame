@@ -71,3 +71,23 @@ export const XP = { active: 12, build: 36.5, up: 36 };   // bangunan aktif (prod
 export const xpNeed = lv => { if (lv <= 1) return 5; if (lv === 2) return 10; let a = 1, b = 1; for (let i = 2; i < lv; i++) [a, b] = [b, a + b]; return 10 * b; };   // XP untuk naik dari lv ke lv+1
 export const xpCum = lv => { let s = 0; for (let l = 1; l < lv; l++) s += xpNeed(l); return s; };   // total XP saat mencapai level lv
 export const levelFor = xp => { let l = 1; while (xp >= xpCum(l + 1)) l++; return l; };
+
+// ===== v22: logika ekonomi ala Sim Companies (semua angka bisa diubah di sini) =====
+// 1) Overhead admin: makin besar perusahaan, biaya operasional (gaji + sewa + listrik) ikut naik. COO menurunkannya.
+export const ADMIN = { free: 4, per: 0.03, max: 0.6 };   // gratis sampai total level bangunan = free; tiap level di atasnya +3%; maks +60%
+// 2) Fase ekonomi: diundi tiap PHASE_DAYS hari game (1 hari game = DAY_SEC detik nyata). dem = pengali permintaan ritel, mat = harga bahan, px = harga pasar/grosir/bursa
+export const PHASE_DAYS = 7;
+export const PHASES = { recession: { dem: 0.75, mat: 0.92, px: 0.85 }, normal: { dem: 1, mat: 1, px: 1 }, boom: { dem: 1.3, mat: 1.12, px: 1.1 } };
+export const PHASE_TRANS = { recession: { recession: 0.4, normal: 0.6, boom: 0 }, normal: { recession: 0.2, normal: 0.6, boom: 0.2 }, boom: { recession: 0, normal: 0.5, boom: 0.5 } };
+// 3) Kejenuhan pasar ritel: tiap unit terjual menambah n/depth; pesaing (NPC) ikut menambah; pulih x decay tiap jam; permintaan x (1 - max x kejenuhan)
+export const SAT = { depth: 40, max: 0.4, decay: 0.7, rival: 0.25 };
+// 4) Bursa (exchange) vs kontrak langsung. Harga acuan = base x qm(Q) x indeks bursa. Bursa: biaya 3% + ongkos kirim/unit. Kontrak: biaya 0%, ongkos kirim 50%, harga sedikit di bawah acuan.
+export const EXCH = { fee: 0.03, ship: 0.5, spread: 0.08, depth: 150, lvl: 2 };   // spread = selisih beli-jual; depth = unit yang menggeser indeks ~100%
+export const CONTRACT = { disc: 0.01, shipMul: 0.5 };
+// 5) Riset kualitas berbasis peluang (RNG). Gagal: SP kembali sebagian, uang & waktu hangus.
+export const QRC = { base: [0.9, 0.75, 0.6, 0.45], refund: 0.5 };
+// 6) Eksekutif (terbuka di level EXEC_LVL). Gaji per jam game, masa kerja acak (hari game), peluang dibajak per jam.
+export const EXEC_LVL = 15;
+export const EXEC = { coo: { hire: 4000, sal: 25, adm: 0.5 }, cfo: { hire: 4000, sal: 25, int: 0.5 }, cmo: { hire: 4000, sal: 25, dem: 0.08 }, cto: { hire: 4000, sal: 25, qr: 0.15 } };
+export const EXEC_LIFE = [40, 80];
+export const POACH = 0.004;

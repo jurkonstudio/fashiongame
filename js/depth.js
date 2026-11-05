@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. Kedalaman game v6: peristiwa pasar, kontrak, pemasaran, target level, peringkat.
-import { ic } from './icons.js?v=15';
-import { T, fmt } from './i18n.js?v=15';
-import { D, TAX, BTN } from './data.js?v=15';
-import { G, now, dur, mm, MOD, qm, day, toasts, matPrice, demand } from './state.js?v=15';
+import { ic } from './icons.js?v=16';
+import { T, fmt } from './i18n.js?v=16';
+import { D, TAX, BTN } from './data.js?v=16';
+import { G, now, dur, mm, MOD, qm, day, toasts, matPrice, demand } from './state.js?v=16';
 
 const EV = { strike:{ h:6, mat:{ leather:1.3, rubber:1.3 } }, sale:{ h:6, mat:{ fabric:.75, thread:.8 } }, viral:{ h:4, dem:1.4 }, slump:{ h:6, dem:.75 }, tariff:{ h:8, mat:{ leather:1.2, rubber:1.2, fabric:1.15 } } };
 const CAMP = { social:{ cost:60, x:1.15, h:4, rep:0 }, influ:{ cost:250, x:1.35, h:6, rep:3 }, board:{ cost:600, x:1.25, h:24, rep:8 } };
@@ -14,7 +14,7 @@ MOD.dem = () => { const d = G.S.dp; return (d.camp ? CAMP[d.camp.id].x : 1) * (d
 MOD.mat = m => { const e = G.S.dp.ev; return e && EV[e.id].mat && EV[e.id].mat[m] || 1; };
 
 const newContract = () => { const S = G.S, t = now(), id = pick(Object.keys(D.products).filter(k => D.products[k].lvl <= S.level)), p = D.products[id],
-    q = 1 + (Math.random() * (S.level > 2 ? 3 : 2) | 0), n = p.batch * (1 + (Math.random() * 3 | 0));
+    q = 1 + (Math.random() * (S.level > 3 ? 5 : S.level > 2 ? 4 : 3) | 0), n = p.batch * (1 + (Math.random() * 3 | 0));
   S.dp.ct.push({ p: id, n, q, pr: +(p.base * qm(q) * (1.1 + Math.random() * .3)).toFixed(2), end: t + hr(4 + Math.random() * 8) }); };
 
 export function tick() { const S = G.S, d = S.dp, t = now(), today = new Date(t).toISOString().slice(0, 10);

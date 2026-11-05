@@ -58,4 +58,7 @@ export const D = {
   research: { basic:{cost:500,time:1800,lvl:1} },
   goals1: { made:10, sold:10, research:'basic' }
 };
+// Sesi 1: kualitas & riset. Riset kualitas per produk (level 0-4), butuh Poin Sains (SP) + uang + waktu. Tiap level = +0.5 kualitas (maks Q5).
+export const QR = { max: 4, sp: [10, 30, 70, 150], mul: [10, 30, 80, 200], time: [1800, 3600, 7200, 14400], bonus: 0.5 };
+export const SCI = { office: 1.5, make: 2, sell: 0.1 };   // SP: per jam per level Kantor, per batch produksi, per unit terjual
 export const BTN = { login: 5, make: 10, sell: 10, plot: 500 };   // Kancing Emas: bonus login / produksi / penjualan, harga petak lahan

@@ -1,9 +1,9 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, WAGE, HIRE } from '../data.js?v=15';
-import { T, fmt } from '../i18n.js?v=15';
-import { ic } from '../icons.js?v=15';
-import * as depth from '../depth.js?v=15';
-import { G, now, dur, mm, busy, job, bMax, upCost, upSec } from '../state.js?v=15';
+import { D, WAGE, HIRE, QR } from '../data.js?v=16';
+import { T, fmt } from '../i18n.js?v=16';
+import { ic } from '../icons.js?v=16';
+import * as depth from '../depth.js?v=16';
+import { G, now, dur, mm, busy, job, bMax, upCost, upSec } from '../state.js?v=16';
 
 let sub = 'goal';
 const SUBS = [['goal', 'target', 't_goal'], ['workers', 'worker', 'workers'], ['research', 'research', 'research'], ['mkt', 'chart', 't_mkt'], ['build', 'office', 't_build']];
@@ -30,6 +30,13 @@ const panels = {
       <div class="mute row"><span>${T(b.fx)}</span></div>${job('up', id)}</div>`; }).join(''); }
 };
 
+const qres = () => { const S = G.S;
+  return `<div class="card"><div class="row"><span>${ic('research')}${T('sci')}</span><b>${Math.floor(S.sp || 0)} SP</b></div><div class="mute">${T('sci_hint')}</div></div>` +
+    Object.entries(D.products).filter(([, p]) => p.lvl <= S.level).map(([id, p]) => { const n = S.rq[id] || 0, top = n >= QR.max, sp = QR.sp[n], c = Math.round(p.base * QR.mul[n]), dis = busy('qr', id) || (S.sp || 0) < sp || S.money < c;
+      return `<div class="card"><div class="row"><span>${ic(p.icon)}${T(id)}</span><b class="gold">${'★'.repeat(n)}${'☆'.repeat(QR.max - n)}</b></div>
+      <div class="row mute"><span>${T('qbonus')} +${(n * QR.bonus).toFixed(1)} Q</span><span>${T('qcap')} Q${Math.min(5, 3 + n * QR.bonus).toFixed(1)}</span></div>` +
+      (top ? `<div class="mute">${T('max')}</div>` : `<div class="row"><span class="mute">${sp} SP · ${mm(dur(QR.time[n]))}</span><button class="b" data-a="qres:${id}" ${dis ? 'disabled' : ''}>${T('research')} · ${fmt(c)}</button></div>`) + job('qr', id) + `</div>`; }).join(''); };
+const research0 = panels.research; panels.research = () => qres() + research0();
 panels.goal = depth.goalPanel; panels.mkt = depth.mktPanel;
 export const view = () => `<div class="tabs">${SUBS.map(([k, i, l]) => `<button class="chip ${k === sub ? 'on' : ''}" data-a="sub:${k}">${ic(i)}<span>${T(l)}</span></button>`).join('')}</div>` + panels[sub]();
 
@@ -37,5 +44,7 @@ export const actions = {
   sub: k => { sub = k; },
   up: id => { const S = G.S; if (busy('up', id) || S.b[id] >= bMax() || S.money < upCost(id)) return; S.money -= upCost(id); S.jobs.push({ k: 'up', id, end: now() + dur(upSec(id)) }); },
   res: id => { const S = G.S, r = D.research[id]; if (busy('res', id) || S.research.includes(id) || S.money < r.cost) return; S.money -= r.cost; S.jobs.push({ k: 'res', id, end: now() + dur(r.time) }); },
+  qres: id => { const S = G.S, p = D.products[id], n = S.rq[id] || 0; if (!p || n >= QR.max || busy('qr', id)) return; const sp = QR.sp[n], c = Math.round(p.base * QR.mul[n]);
+    if ((S.sp || 0) < sp || S.money < c) return; S.sp -= sp; S.money -= c; S.rqSpent += c; S.jobs.push({ k: 'qr', id, end: now() + dur(QR.time[n]) }); },
   hire: k => { const S = G.S; if (S.money >= HIRE[k] && S.wk.length < S.b.office * 5) { S.money -= HIRE[k]; S.wk.push(+k); S.workers = S.wk.length; } }
 };

@@ -132,3 +132,9 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 ## Update v15 (sesi 4: halaman bangunan ala Sim Companies)
 - Ketuk Pabrik/Toko/Kebun/Gudang di peta membuka **halaman penuh** (js/screens/bp.js): gambar bangunan besar, tombol tutup & upgrade, statistik, riwayat hasil terakhir (kartu hijau, S.lg), lalu carousel barang besar (‹ ›) dengan bahan (merah bila kurang), waktu, dan satu tombol aksi besar (Produksi / Panen / Jual). Toko punya tab kanal + atur harga.
 - Panel bawah lama tetap dipakai untuk lahan terkunci/kosong. Riwayat (S.lg) dicatat otomatis di state.fx(). Cache ?v=15.
+
+## Update v16 (sesi 1 dari 4: kualitas ala Sim Companies)
+- Poin Sains (SP): +1.5/jam per level Kantor, +2 per batch produksi, +0.1 per unit terjual (data.js: `SCI`).
+- Riset kualitas per produk (Kantor > Riset): 4 bintang, tiap bintang +0.5 kualitas, butuh SP + uang + waktu (data.js: `QR`). Kualitas akhir = rata-rata kualitas bahan + bonus riset, maks Q5.
+- Harga acuan kini `0.6 + 0.2 x Q` (Q1 = 0.8x, Q2 = 1x, Q5 = 1.6x). Kontrak bisa meminta Q lebih tinggi.
+- Rencana: sesi 2 pasar penawaran/permintaan, sesi 3 nilai perusahaan lengkap, sesi 4 polesan & balancing.

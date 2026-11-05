@@ -1,24 +1,24 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=15';
-import { T, fmt, setLang, setCur } from './i18n.js?v=15';
-import { init, load, save, serverOffset, status } from './api.js?v=15';
-import { D } from './data.js?v=15';
-import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=15';
-import * as map from './screens/map.js?v=15';
-import * as market from './screens/market.js?v=15';
-import * as margin from './screens/margin.js?v=15';
-import * as factory from './screens/factory.js?v=15';
-import * as store from './screens/store.js?v=15';
-import * as farm from './screens/farm.js?v=15';
-import * as bp from './screens/bp.js?v=15';
-import * as office from './screens/office.js?v=15';
-import * as finance from './screens/finance.js?v=15';
-import * as depth from './depth.js?v=15';
-import * as warehouse from './screens/warehouse.js?v=15';
-import { GB } from './art.js?v=15';
-import * as item from './screens/item.js?v=15';
-import * as more from './screens/more.js?v=15';
-import * as profile from './screens/profile.js?v=15';
+import { ic } from './icons.js?v=16';
+import { T, fmt, setLang, setCur } from './i18n.js?v=16';
+import { init, load, save, serverOffset, status } from './api.js?v=16';
+import { D } from './data.js?v=16';
+import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=16';
+import * as map from './screens/map.js?v=16';
+import * as market from './screens/market.js?v=16';
+import * as margin from './screens/margin.js?v=16';
+import * as factory from './screens/factory.js?v=16';
+import * as store from './screens/store.js?v=16';
+import * as farm from './screens/farm.js?v=16';
+import * as bp from './screens/bp.js?v=16';
+import * as office from './screens/office.js?v=16';
+import * as finance from './screens/finance.js?v=16';
+import * as depth from './depth.js?v=16';
+import * as warehouse from './screens/warehouse.js?v=16';
+import { GB } from './art.js?v=16';
+import * as item from './screens/item.js?v=16';
+import * as more from './screens/more.js?v=16';
+import * as profile from './screens/profile.js?v=16';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, item, more, warehouse, market, margin, office, finance, profile };   // tambah layar baru di sini
@@ -68,6 +68,7 @@ document.addEventListener('click', e => {
   G.S = Object.assign(fresh(), (await load()) || {});   // migrasi save lama
   G.S.b.farm = G.S.b.farm || 0;
   for (const m in D.materials) G.S.mk.idx[m] = G.S.mk.idx[m] ?? 1;   // bahan mentah baru (migrasi save lama)
+  G.S.sp = G.S.sp || 0; G.S.rq = G.S.rq || {}; G.S.rqSpent = G.S.rqSpent || 0;   // migrasi v16
   if (G.S.wk.length !== G.S.workers) G.S.wk = Array(G.S.workers).fill(1);
   setLang(G.S.lang); setCur(G.S.cur);
   tick(); depth.tick(); render();

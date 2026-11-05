@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. Pencarian lokal: barang, bangunan, halaman, pemain (NPC peringkat).
-import { D } from '../data.js?v=25';
-import { T } from '../i18n.js?v=25';
-import { ic } from '../icons.js?v=25';
-import { rankList } from '../depth.js?v=25';
+import { D } from '../data.js?v=26';
+import { T } from '../i18n.js?v=26';
+import { ic } from '../icons.js?v=26';
+import { rankList } from '../depth.js?v=26';
 let q = '';
 const esc = x => String(x || '').replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]);
 const PAGES = [['prof', 'p_card'], ['goal', 'goal'], ['ct', 'contracts'], ['rank', 'rank'], ['ach', 'ach'], ['lib', 'lib'], ['enc', 'enc'], ['notes', 'notesm'], ['redeem', 'redeem'], ['margin', 'margin'], ['set', 'settings'], ['about', 'about']];

@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. Gudang ala Sim Companies: kategori + kartu stok 3 kolom (hanya yang dimiliki, 'Lihat semua' untuk semua) + analisis margin.
-import { D } from '../data.js?v=25';
-import { T, fmt } from '../i18n.js?v=25';
-import { ic } from '../icons.js?v=25';
-import { ART } from '../art.js?v=25';
-import { G, matPrice, whCap, whUsed } from '../state.js?v=25';
-import { subbar } from '../subbar.js?v=25';
-import * as margin from './margin.js?v=25';
+import { D } from '../data.js?v=26';
+import { T, fmt } from '../i18n.js?v=26';
+import { ic } from '../icons.js?v=26';
+import { ART } from '../art.js?v=26';
+import { G, matPrice, whCap, whUsed } from '../state.js?v=26';
+import { subbar } from '../subbar.js?v=26';
+import * as margin from './margin.js?v=26';
 
 let sub = 'stock', all = false;
 const GROUPS = [['cat_farm', () => ['cotton', 'hide', 'latex', 'dye']], ['cat_mat', () => ['thread', 'rubber', 'leather', 'fabric']], ['cat_prod', () => Object.keys(D.products)]];
@@ -24,6 +24,11 @@ export const view = () => { const S = G.S, used = whUsed(), cap = whCap(), pc = 
     if (!L.length) return ''; any = true;
     const link = first ? `<span class="wall" data-a="wall" role="button">${all ? '‹ ' : ''}${T('showall')}</span>` : ''; first = false;
     return `<div class="cath"><span class="cat">${T(cat)}</span>${link}</div><div class="wg">${L.map(([id, q, p, lock, q2]) => tile(id, q, p, lock, q2)).join('')}</div>`; }).join('');
-  const head = `<div class="card"><div class="row"><b>${ic('warehouse')}${used}/${cap}</b><span class="mute">${T('stockval')} ${fmt(val)}</span></div><div class="bar"><i style="width:${pc}%"></i></div><div class="row"><button class="b" data-a="go:xc">${ic('chart')} ${T('xc_t')}</button><button class="b" data-a="go:ct">${ic('cart')} ${T('contracts')}</button></div></div>`;
+  const ctReady = (S.dp.ct || []).map((c, i) => [c, i]).filter(([c]) => (S.stock[c.p] || 0) >= c.n && (S.sq[c.p] || 2) >= c.q).map(([c, i]) => `<div class="card"><div class="row"><span>${ic(D.products[c.p].icon)}${c.n}× ${T(c.p)} · Q≥${c.q}</span><button class="b" data-a="deliver:${i}">${T('deliver')} · ${fmt(c.n * c.pr)}</button></div></div>`).join('');
+  const head = `<div class="card"><div class="row"><b>${ic('warehouse')}${used}/${cap}</b><span class="mute">${T('stockval')} ${fmt(val)}</span></div><div class="bar"><i style="width:${pc}%"></i></div><div class="row"><button class="b" data-a="go:xc">${ic('chart')} ${T('xc_t')}</button><button class="b" data-a="go:ct">${ic('cart')} ${T('contracts')}</button><button class="b" data-a="csv">${T('csv')}</button></div></div>` + ctReady;
   return head + (any ? secs : `<div class="card mute">${T('whempty')}</div><div class="cath"><span></span><span class="wall" data-a="wall" role="button">${T('showall')}</span></div>`) + bar; };
-export const actions = { wsub: k => { sub = k; }, wall: () => { all = !all; } };
+const csv = () => { const S = G.S, r = [['type', 'id', 'name', 'qty', 'quality', 'unit_price', 'value']];
+  for (const [k, n] of Object.entries(S.stock)) if (D.products[k] && n > 0) { const p = S.price[k] || D.products[k].base; r.push(['product', k, T(k), n, (S.sq[k] || 0).toFixed(1), p.toFixed(2), (n * p).toFixed(2)]); }
+  for (const [k, n] of Object.entries(S.mat)) if (D.materials[k] && n >= 1) { const p = matPrice(k); r.push(['material', k, T(k), Math.floor(n), (S.mq[k] || 0).toFixed(1), p.toFixed(2), (Math.floor(n) * p).toFixed(2)]); }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([r.map(x => x.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n')], { type: 'text/csv' })); a.download = 'fashiongame-stock.csv'; document.body.appendChild(a); a.click(); a.remove(); };
+export const actions = { csv, wsub: k => { sub = k; }, wall: () => { all = !all; } };

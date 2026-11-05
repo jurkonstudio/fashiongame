@@ -1,15 +1,15 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import * as econ from '../econ.js?v=25';
-import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=25';
-import { T, fmt } from '../i18n.js?v=25';
-import { ic, icu } from '../icons.js?v=25';
-import { G, clk, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=25';
-import * as factory from './factory.js?v=25';
-import * as depth from '../depth.js?v=25';
-import * as store from './store.js?v=25';
-import * as farm from './farm.js?v=25';
-import * as bp from './bp.js?v=25';
-import * as cityMap from '../city.js?v=25';
+import * as econ from '../econ.js?v=26';
+import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=26';
+import { T, fmt } from '../i18n.js?v=26';
+import { ic, icu } from '../icons.js?v=26';
+import { G, clk, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=26';
+import * as factory from './factory.js?v=26';
+import * as depth from '../depth.js?v=26';
+import * as store from './store.js?v=26';
+import * as farm from './farm.js?v=26';
+import * as bp from './bp.js?v=26';
+import * as cityMap from '../city.js?v=26';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.

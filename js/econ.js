@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // v22: logika ekonomi ala Sim Companies: fase ekonomi, kejenuhan pasar, overhead admin, bursa/kontrak, eksekutif.
 // Memakai pola yang sama dengan depth.js (membungkus MOD) supaya state.js tetap kecil.
-import './depth.js?v=25';   // depth.js mengisi MOD.dem/MOD.mat lebih dulu; econ membungkusnya
-import { D, PHASES, PHASE_TRANS, PHASE_DAYS, SAT, EXCH, EXEC, EXEC_LVL, EXEC_LIFE, POACH, ADMIN, DAY_SEC, TIME_SCALE, WAGE, RENT_HOUR, POWER_HOUR, TAX, CASH, ORD, BOND, SCRAP_REFUND } from './data.js?v=25';
-import { T, fmt } from './i18n.js?v=25';
-import { ic } from './icons.js?v=25';
-import { G, MOD, now, dur, mm, day, pay, accrue, income, settle as payDue, toasts, xAct, adminRaw, adminPct, satTotal, satFactor, exchRef, whCap, whUsed, CH, unitCost, demand } from './state.js?v=25';
+import './depth.js?v=26';   // depth.js mengisi MOD.dem/MOD.mat lebih dulu; econ membungkusnya
+import { D, PHASES, PHASE_TRANS, PHASE_DAYS, SAT, EXCH, EXEC, EXEC_LVL, EXEC_LIFE, POACH, ADMIN, DAY_SEC, TIME_SCALE, WAGE, RENT_HOUR, POWER_HOUR, TAX, CASH, ORD, BOND, SCRAP_REFUND } from './data.js?v=26';
+import { T, fmt } from './i18n.js?v=26';
+import { ic } from './icons.js?v=26';
+import { G, MOD, now, dur, mm, day, pay, accrue, income, settle as payDue, toasts, xAct, adminRaw, adminPct, satTotal, satFactor, exchRef, whCap, whUsed, CH, unitCost, demand } from './state.js?v=26';
 
 const EXN = { coo: 'Bayu Anggara', cfo: 'Sinta Maheswari', cmo: 'Dimas Kurnia', cto: 'Laras Prameswari' };   // tokoh fiktif
 const ph = () => PHASES[(G.S.eco || {}).ph || 'normal'];
@@ -110,9 +110,10 @@ export const panel = () => { const S = G.S, E = S.eco || { ph: 'normal', wk: wee
       return `<div class="row"><span>${ic(p.icon)}${T(id)}</span><span class="mute">${Math.round(s * 100)}% · ×${satFactor(id).toFixed(2)}</span></div>${bar(s * 100)}`; }).join('')}<div class="mute">${T('sat_hint')}</div></div>`; };
 
 // --- Pasar > Barang Jadi: beli dari bursa (sisi ritel) ---
-export const xAsk = id => exchRef(id, 2) * (1 + EXCH.spread / 2);
+let xq = 2;   // filter kualitas bursa (Q1-Q7)
+export const xAsk = (id, q = xq) => exchRef(id, q) * (1 + EXCH.spread / 2);
 export const exchPanel = () => { const S = G.S, lock = S.level < EXCH.lvl, free = whCap() - whUsed();
-  return `<div class="card"><h2>${ic('chart')}${T('xc_t')}</h2><div class="mute">${T('xc_hint')}</div>${lock ? `<div class="mute">${ic('lock')}${T('need_exch')}</div>` : ''}<div class="row mute"><span>${T('xc_free')}</span><span>${free}</span></div></div>`
+  return `<div class="card"><h2>${ic('chart')}${T('xc_t')}</h2><div class="mute">${T('xc_hint')}</div>${lock ? `<div class="mute">${ic('lock')}${T('need_exch')}</div>` : ''}<div class="row mute"><span>${T('xc_free')}</span><span>${free}</span></div><div class=\"row\"><span>${T('quality')}</span><span><button class=\"b\" data-a=\"xq:-1\" ${xq <= 1 ? 'disabled' : ''}>−</button> <b>Q${xq}</b> <button class=\"b\" data-a=\"xq:1\" ${xq >= 7 ? 'disabled' : ''}>+</button></span></div></div>`
     + Object.entries(D.products).filter(([, p]) => p.lvl <= S.level).map(([id, p]) => { const a = xAsk(id), unit = a * (1 + EXCH.fee) + EXCH.ship, xi = ((S.eco || {}).xi || {})[id] ?? 1;
       return `<div class="card"><div class="row"><span>${ic(p.icon)}${T(id)}</span><b>${fmt(a)}</b></div><div class="row mute"><span>${T('xc_idx')} ${Math.round(xi * 100)}% · ${T('xc_all')} ${fmt(unit)}/${T('unit')}</span><span>${T('stock')} ${S.stock[id] || 0}</span></div>`
         + `<div class="row">${[10, 50].map(n => `<button class="b" data-a="xbuy:${id},${n}" ${lock || S.money < unit * n || free < n ? 'disabled' : ''}>${T('buy')} ${n}</button>`).join('')}</div></div>`; }).join(''); };
@@ -146,7 +147,12 @@ export const execsCard = () => { const S = G.S, t = now(), lock = S.level < EXEC
       return `<div class="row"><span>${T(r)} · ${EXN[r]}<br><small class="mute">${T('fxe_' + r)} · ${fmt(c.sal)}${T('perh')}</small></span>`
         + (on ? `<span class="mute">${mm(e.end - t)} <button class="b" data-a="xfire:${r}">${T('ex_fire')}</button></span>` : `<button class="b" data-a="xhire:${r}" ${lock || S.money < c.hire ? 'disabled' : ''}>${T('hire')} · ${fmt(c.hire)}</button>`) + `</div>`; }).join('') + `</div>`; };
 
+export const retailStats = () => { const S = G.S;
+  return `<div class="card"><h2>${ic('chart')}${T('st_t')}</h2><div class="row mute"><span>${T('st_dem')}</span><span>${Math.round(ph().dem * 100)}%</span></div>`
+    + Object.entries(D.products).filter(([, p]) => p.lvl <= S.level).map(([id, p]) => { const xi = ((S.eco || {}).xi || {})[id] ?? 1, s = satTotal(id);
+      return `<div class="row"><span>${ic(p.icon)}${T(id)}</span><span class="mute">Q${xq} ${fmt(exchRef(id, xq))} · ${T('xc_idx')} ${Math.round(xi * 100)}% · ${T('st_sat')} ${Math.round(s * 100)}%</span></div>`; }).join('') + `<div class="mute">${T('st_hint')}</div></div>`; };
 export const actions = {
+  xq: d => { xq = clamp(1, 7, xq + +d); },
   xhire: r => { const S = G.S, c = EXEC[r]; if (!c || S.level < EXEC_LVL || xAct(r) || S.money < c.hire) return;
     S.money -= c.hire; S.led.exec = (S.led.exec || 0) + c.hire; S.ex = S.ex || {};
     S.ex[r] = { st: now(), end: now() + dur(DAY_SEC * (EXEC_LIFE[0] + Math.random() * (EXEC_LIFE[1] - EXEC_LIFE[0]))) }; },
@@ -170,6 +176,6 @@ export const actions = {
     if (!D.products[id] || !(n > 0) || S.level < EXCH.lvl || D.products[id].lvl > S.level || whCap() - whUsed() < n) return;
     const a = xAsk(id), fee = n * (a * EXCH.fee + EXCH.ship), tot = n * a + fee; if (S.money < tot) return;
     S.money -= tot; S.led.mat += n * a; S.led.fee = (S.led.fee || 0) + fee;
-    const st = S.stock[id] || 0; S.sq[id] = ((S.sq[id] || 0) * st + 2 * n) / (st + n); S.stock[id] = st + n;   // barang bursa berkualitas Q2
+    const st = S.stock[id] || 0; S.sq[id] = ((S.sq[id] || 0) * st + xq * n) / (st + n); S.stock[id] = st + n;   // barang bursa berkualitas sesuai filter
     const E = S.eco; if (E) E.xi[id] = Math.min(1.4, (E.xi[id] ?? 1) * (1 + n / EXCH.depth)); }
 };

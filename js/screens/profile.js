@@ -1,13 +1,13 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Profil perusahaan: satu halaman panjang (gaya Sim Companies) dengan identitas FashionGame. Nama eksekutif adalah tokoh fiktif buatan sendiri.
-import { D, WAGE, SLOT_COST } from '../data.js?v=25';
-import { T, fmt } from '../i18n.js?v=25';
-import { ic } from '../icons.js?v=25';
-import { city, GB } from '../art.js?v=25';
-import { rankList } from '../depth.js?v=25';
-import * as econ from '../econ.js?v=25';
-import { ACH } from './more.js?v=25';
-import { G, now, clk, toasts, unitCost, factoryMult, adminPct } from '../state.js?v=25';
+import { D, WAGE, SLOT_COST } from '../data.js?v=26';
+import { T, fmt } from '../i18n.js?v=26';
+import { ic } from '../icons.js?v=26';
+import { city, GB } from '../art.js?v=26';
+import { rankList } from '../depth.js?v=26';
+import * as econ from '../econ.js?v=26';
+import { ACH } from './more.js?v=26';
+import { G, now, clk, toasts, unitCost, factoryMult, adminPct } from '../state.js?v=26';
 
 let ed = false;
 const EX = [['coo', 'Bayu Anggara'], ['cfo', 'Sinta Maheswari'], ['cmo', 'Dimas Kurnia'], ['cto', 'Laras Prameswari']];

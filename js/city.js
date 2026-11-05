@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Peta kota isometrik (gaya Sim Companies): 4x4 blok, jalan, mobil, siang/malam, geser & cubit untuk zoom.
 // 10 slot lahan game (S.land.slots) menempati 10 blok; 6 blok sisanya dekorasi (taman, runway, pepohonan).
-import { G, now, busy, mm } from './state.js?v=25';
+import { G, now, busy, mm } from './state.js?v=26';
 
 const N = 17, DX = 32, DY = 16, OX = 540, OY = 110;
 const SLOT_POS = [[1, 1], [2, 1], [1, 2], [2, 2], [0, 1], [3, 1], [1, 0], [2, 0], [1, 3], [2, 3]];   // indeks slot -> blok (bx,by)

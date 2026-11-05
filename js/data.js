@@ -101,3 +101,6 @@ export const ORD = { volMul: 4, rival: 1.25, max: 8 };
 export const BOND = { step: 5000, min: 0.005, max: 0.006, dayH: 24, waitMax: 12, waitMin: 2, cap: 20000, lvl: 2, sellback: 0.98 };
 // Runtuhkan bangunan: pengembalian sebagian dari total biaya bangun + upgrade
 export const SCRAP_REFUND = 0.3;
+
+// Kas di header tidak berkurang tiap detik: biaya berjalan (gaji, sewa, listrik, admin, eksekutif, bunga obligasi, pajak kas) ditampung di S.due dan dibayar saat ada progres (produksi/penjualan/kontrak selesai). false = perilaku lama.
+export const CASH_SETTLE = true;

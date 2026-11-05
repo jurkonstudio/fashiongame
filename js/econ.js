@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // v22: logika ekonomi ala Sim Companies: fase ekonomi, kejenuhan pasar, overhead admin, bursa/kontrak, eksekutif.
 // Memakai pola yang sama dengan depth.js (membungkus MOD) supaya state.js tetap kecil.
-import './depth.js?v=22';   // depth.js mengisi MOD.dem/MOD.mat lebih dulu; econ membungkusnya
-import { D, PHASES, PHASE_TRANS, PHASE_DAYS, SAT, EXCH, EXEC, EXEC_LVL, EXEC_LIFE, POACH, ADMIN, DAY_SEC, TIME_SCALE, WAGE, RENT_HOUR, POWER_HOUR, TAX, CASH, ORD, BOND, SCRAP_REFUND } from './data.js?v=22';
-import { T, fmt } from './i18n.js?v=22';
-import { ic } from './icons.js?v=22';
-import { G, MOD, now, dur, mm, day, pay, toasts, xAct, adminRaw, adminPct, satTotal, satFactor, exchRef, whCap, whUsed, CH, unitCost, demand } from './state.js?v=22';
+import './depth.js?v=24';   // depth.js mengisi MOD.dem/MOD.mat lebih dulu; econ membungkusnya
+import { D, PHASES, PHASE_TRANS, PHASE_DAYS, SAT, EXCH, EXEC, EXEC_LVL, EXEC_LIFE, POACH, ADMIN, DAY_SEC, TIME_SCALE, WAGE, RENT_HOUR, POWER_HOUR, TAX, CASH, ORD, BOND, SCRAP_REFUND } from './data.js?v=24';
+import { T, fmt } from './i18n.js?v=24';
+import { ic } from './icons.js?v=24';
+import { G, MOD, now, dur, mm, day, pay, accrue, income, settle as payDue, toasts, xAct, adminRaw, adminPct, satTotal, satFactor, exchRef, whCap, whUsed, CH, unitCost, demand } from './state.js?v=24';
 
 const EXN = { coo: 'Bayu Anggara', cfo: 'Sinta Maheswari', cmo: 'Dimas Kurnia', cto: 'Laras Prameswari' };   // tokoh fiktif
 const ph = () => PHASES[(G.S.eco || {}).ph || 'normal'];
@@ -42,8 +42,8 @@ export function tick() { const S = G.S; if (!S) return; const t = now();
   let k = 0; while (t - E.t >= dur(3600) && k++ < 48) { E.t += dur(3600); hourly(S, E); }
   if (t - E.t >= dur(3600)) E.t = t;
   const h = Math.max(0, (t - E.last) / 1000 * TIME_SCALE / 3600); E.last = t;   // gaji eksekutif per jam game
-  for (const r in S.ex) { const e = S.ex[r]; if (!e) continue; if (e.end <= t) { S.ex[r] = null; toast(`${T(r)} · ${T('ex_retire')}`); } else pay(EXEC[r].sal * h, 'exec'); }
-  const free = CASH.free * S.b.office; if (S.money > free) { const tx = (S.money - free) * CASH.rate * h * (1 - EXEC.cfo.cash * xAct('cfo')); S.money -= tx; S.led.ctax = (S.led.ctax || 0) + tx; }   // pajak kas menganggur
+  for (const r in S.ex) { const e = S.ex[r]; if (!e) continue; if (e.end <= t) { S.ex[r] = null; toast(`${T(r)} · ${T('ex_retire')}`); } else accrue(EXEC[r].sal * h, 'exec'); }
+  const free = CASH.free * S.b.office; if (S.money > free) { const tx = (S.money - free) * CASH.rate * h * (1 - EXEC.cfo.cash * xAct('cfo')); accrue(tx, 'ctax'); }   // pajak kas menganggur
   bondTick(S, t, h);
 }
 
@@ -54,7 +54,7 @@ export const banner = () => { const E = G.S.eco; if (!E) return ''; const left =
 // --- v23: order book bursa (jual dengan harga limit, antre dari termurah) ---
 const LAD = [0.97, 1, 1.03, 1.06, 1.1];
 const settle = (S, E, o, f) => { const rev = f * o.price, tx = rev * TAX, fee = rev * EXCH.fee + f * EXCH.ship;
-  S.money += rev - tx - fee; S.led.rev += rev; S.led.tax += tx; S.led.fee = (S.led.fee || 0) + fee; S.sold += f;
+  S.money += rev - tx - fee; S.led.rev += rev; S.led.tax += tx; S.led.fee = (S.led.fee || 0) + fee; S.sold += f; payDue();
   E.xi[o.id] = Math.max(0.6, (E.xi[o.id] ?? 1) * (1 - f / EXCH.depth)); };
 function fillOrders(S, E) { const O = S.ord || []; if (!O.length) return;
   for (const id of new Set(O.map(o => o.id))) {
@@ -73,8 +73,8 @@ export const bondsOut = () => bd().out.filter(b => b.sold).reduce((a, b) => a + 
 export const bondsInv = () => bd().inv.reduce((a, b) => a + b.nom, 0);
 const waitH = r => (BOND.waitMax - (r - BOND.min) / (BOND.max - BOND.min) * (BOND.waitMax - BOND.waitMin)) * (G.S.eco && G.S.eco.ph === 'recession' ? 1.5 : 1);
 function bondTick(S, t, h) { const B = bd();
-  for (const b of B.out) { if (!b.sold && b.at <= t) { b.sold = true; S.money += b.nom; toast(`${T('bd_sold')}: ${fmt(b.nom)}`); } if (b.sold) pay(b.nom * b.rate * h / BOND.dayH, 'bexp'); }
-  for (const b of B.inv) { const i = b.nom * b.rate * h / BOND.dayH; S.money += i; S.led.binc = (S.led.binc || 0) + i; } }
+  for (const b of B.out) { if (!b.sold && b.at <= t) { b.sold = true; S.money += b.nom; toast(`${T('bd_sold')}: ${fmt(b.nom)}`); } if (b.sold) accrue(b.nom * b.rate * h / BOND.dayH, 'bexp'); }
+  for (const b of B.inv) { income(b.nom * b.rate * h / BOND.dayH, 'binc'); } }
 
 // --- v23: kalkulator Ensiklopedia (laba bersih per jam menurut kualitas & harga, memakai fase & kejenuhan saat ini) ---
 const cal = { id: 'shoes', q: 2, pr: null };

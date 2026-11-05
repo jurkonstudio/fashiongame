@@ -19,3 +19,6 @@ export const L3 = {
     qchance:'Chance', qr_fail:'Research failed', execx:'Executive pay', ex_lock:'Executives unlock at level', ex_fire:'Fire', ex_poach:'was poached by a rival', ex_retire:'retired',
     fxe_coo:'Admin overhead −50%', fxe_cfo:'Idle-cash tax & loan interest −50%', fxe_cmo:'Retail sale time −10%', fxe_cto:'Research chance +15 pts' }
 };
+
+Object.assign(L3.id, { cash:'Kas', hd_bills:'Tagihan', hd_ct:'Kontrak', hd_ready:'siap', hd_next:'Selesai', hd_jobs:'Pekerjaan', hd_rank:'Peringkat', hd_mach:'Mesin rusak', hd_xp:'XP', hd_sync:'Sinkron', due_t:'Tagihan menunggu', due_h:'Gaji, sewa, listrik, admin, eksekutif, dan bunga obligasi dicatat terus, tetapi kas baru berkurang saat ada progres (produksi, penjualan, atau kontrak selesai).' });
+Object.assign(L3.en, { cash:'Cash', hd_bills:'Bills', hd_ct:'Contracts', hd_ready:'ready', hd_next:'Next done', hd_jobs:'Jobs', hd_rank:'Rank', hd_mach:'Machine broken', hd_xp:'XP', hd_sync:'Sync', due_t:'Pending bills', due_h:'Wages, rent, power, admin, executives and bond interest keep accruing, but cash only drops when progress happens (production, a sale or a contract completes).' });

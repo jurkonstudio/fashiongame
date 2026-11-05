@@ -1,26 +1,26 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=22';
-import { T, fmt, setLang, setCur } from './i18n.js?v=22';
-import { init, load, save, serverOffset, status } from './api.js?v=22';
-import { D, xpCum } from './data.js?v=22';
-import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=22';
-import * as map from './screens/map.js?v=22';
-import * as market from './screens/market.js?v=22';
-import * as margin from './screens/margin.js?v=22';
-import * as factory from './screens/factory.js?v=22';
-import * as store from './screens/store.js?v=22';
-import * as farm from './screens/farm.js?v=22';
-import * as bp from './screens/bp.js?v=22';
-import * as office from './screens/office.js?v=22';
-import * as finance from './screens/finance.js?v=22';
-import * as depth from './depth.js?v=22';
-import * as econ from './econ.js?v=22';
-import * as warehouse from './screens/warehouse.js?v=22';
-import { GB } from './art.js?v=22';
-import * as item from './screens/item.js?v=22';
-import * as more from './screens/more.js?v=22';
-import * as profile from './screens/profile.js?v=22';
-import * as settings from './screens/settings.js?v=22';
+import { ic } from './icons.js?v=24';
+import { T, fmt, setLang, setCur } from './i18n.js?v=24';
+import { init, load, save, serverOffset, status } from './api.js?v=24';
+import { D, xpCum } from './data.js?v=24';
+import { G, fresh, tick, setOffset, toasts, now, mm } from './state.js?v=24';
+import * as map from './screens/map.js?v=24';
+import * as market from './screens/market.js?v=24';
+import * as margin from './screens/margin.js?v=24';
+import * as factory from './screens/factory.js?v=24';
+import * as store from './screens/store.js?v=24';
+import * as farm from './screens/farm.js?v=24';
+import * as bp from './screens/bp.js?v=24';
+import * as office from './screens/office.js?v=24';
+import * as finance from './screens/finance.js?v=24';
+import * as depth from './depth.js?v=24';
+import * as econ from './econ.js?v=24';
+import * as warehouse from './screens/warehouse.js?v=24';
+import { GB } from './art.js?v=24';
+import * as item from './screens/item.js?v=24';
+import * as more from './screens/more.js?v=24';
+import * as profile from './screens/profile.js?v=24';
+import * as settings from './screens/settings.js?v=24';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, item, more, warehouse, market, margin, office, finance, profile, settings };   // tambah layar baru di sini
@@ -35,17 +35,47 @@ const actions = {
   tab: t => { tab = t; menu = false; map.actions.close(); },
   menu: () => { menu = !menu; },
   item: k => { menu = false; map.actions.close(); const [i, o] = k.split('@'); item.actions.pick(i, o); tab = 'item'; },
-  go: k => { menu = false; map.actions.close(); const g = { prof: ['profile', () => {}], set: ['settings', () => {}], enc: ['more', () => more.actions.msub2('enc')], notes: ['more', () => more.actions.msub2('notes')], redeem: ['more', () => more.actions.msub2('redeem')], margin: ['warehouse', () => warehouse.actions.wsub('margin')], ct: ['market', () => market.actions.msub('ct')], xc: ['market', () => market.actions.msub('xc')], rank: ['finance', () => finance.actions.fsub('rank')], goal: ['office', () => office.actions.sub('goal')], ach: ['more', () => more.actions.msub2('ach')], lib: ['more', () => more.actions.msub2('lib')], about: ['more', () => more.actions.msub2('about')] }[k]; tab = g[0]; g[1](); }
+  go: k => { menu = false; map.actions.close(); const g = { prof: ['profile', () => {}], set: ['settings', () => {}], enc: ['more', () => more.actions.msub2('enc')], notes: ['more', () => more.actions.msub2('notes')], redeem: ['more', () => more.actions.msub2('redeem')], margin: ['warehouse', () => warehouse.actions.wsub('margin')], ct: ['market', () => market.actions.msub('ct')], xc: ['market', () => market.actions.msub('xc')], rank: ['finance', () => finance.actions.fsub('rank')], eco: ['finance', () => finance.actions.fsub('eco')], bank: ['finance', () => finance.actions.fsub('bank')], goal: ['office', () => office.actions.sub('goal')], ach: ['more', () => more.actions.msub2('ach')], lib: ['more', () => more.actions.msub2('lib')], about: ['more', () => more.actions.msub2('about')] }[k]; tab = g[0]; g[1](); }
 };
 
 const setHTML = (el, h) => { if (el._h !== h) { el._h = h; el.innerHTML = h; } };   // render hanya jika berubah
 
 const lvlBar = depth.lvlBar;
+const esc = x => String(x || '').replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]);
+let lastMoney = null, gain = null;   // animasi "+kas" hanya muncul saat kas bertambah (ada progres)
+
+// Header gaya Sim Companies: baris 1 = menu, avatar+cincin XP, nama & bar XP, Kancing Emas, kas. Baris 2 = ikon dinamis (hanya muncul bila relevan).
+const chip = (a, ico, txt, cls = '') => `<button class="chp ${cls}" data-a="${a}">${ico}<span>${txt}</span></button>`;
+function hud() {
+  const S = G.S, t = now(), pr = depth.prog(), d = S.dp || {}, E = S.eco, jobs = S.jobs.filter(j => j.end > t);
+  if (lastMoney === null) lastMoney = S.money;
+  if (S.money > lastMoney + 0.005) gain = { v: S.money - lastMoney, t };   // kas naik = ada progres
+  lastMoney = S.money; if (gain && t - gain.t > 3500) gain = null;
+  const c = [];
+  if (S.cond < 0.35 && S.b.factory) c.push(chip('tab:map', ic('factory'), T('hd_mach'), 'bad'));
+  const ready = (d.ct || []).filter(k => (S.stock[k.p] || 0) >= k.n && (S.sq[k.p] || 2) >= k.q).length;
+  if ((d.ct || []).length) c.push(chip('go:ct', ic('cart'), `${T('hd_ct')} ${d.ct.length}${ready ? ' · ' + ready + ' ' + T('hd_ready') : ''}`, ready ? 'ok' : ''));
+  if (jobs.length) c.push(chip('tab:map', ic('timer'), `${T('hd_next')} ${mm(Math.min(...jobs.map(j => j.end)) - t)} · ${jobs.length}`));
+  if (d.ev) c.push(chip('tab:market', ic('chart'), `${T('ev_' + d.ev.id)} · ${mm(d.ev.end - t)}`, ['strike', 'tariff', 'slump'].includes(d.ev.id) ? 'bad' : 'ok'));
+  if (d.camp) c.push(chip('tab:market', ic('star'), `${T('camp_' + d.camp.id)} · ${mm(d.camp.end - t)}`, 'ok'));
+  if (E) c.push(chip('go:eco', ic('chart'), `${T('ph_' + E.ph)}`, E.ph === 'recession' ? 'bad' : E.ph === 'boom' ? 'ok' : ''));
+  if ((S.due || 0) > 0.005) c.push(chip('tab:finance', ic('money'), `${T('hd_bills')} ${fmt(S.due)}`, 'warn'));
+  if (S.loan > 0.005) c.push(chip('go:bank', ic('office'), `${T('loan')} ${fmt(S.loan)}`, 'bad'));
+  const rk = depth.rankList().findIndex(r => r[2] === 1) + 1;
+  c.push(chip('go:rank', ic('star'), `#${rk}`));
+  c.push(chip('go:prof', ic('worker'), `${S.workers}`));
+  c.push(`<span class="chp st ${status.mode === 'cloud' ? 'ok' : status.mode === 'error' ? 'bad' : ''}">● ${status.mode === 'cloud' ? 'Cloud' : status.mode === 'error' ? 'Offline' : status.mode === 'connecting' ? '…' : 'Local'}${status.mode === 'cloud' && !status.clock ? ' · clock?' : ''}</span>`);
+  return `<div class="hud1"><button class="hb" data-a="menu" aria-label="${T('menu')}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 6h18M3 12h18M3 18h18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></button>`
+    + `<button class="av ring" data-a="go:prof" aria-label="${T('profile')}" style="--p:${Math.round(pr.p * 360)}deg"><img class="logo" src="assets/logo.svg" alt=""><b class="lvb">${S.level}</b></button>`
+    + `<button class="who" data-a="go:goal"><span class="nm">${esc(S.name)}</span><span class="xb"><i style="width:${Math.round(pr.p * 100)}%"></i></span><small>Lv ${S.level} · ${Math.floor(pr.cur)}/${pr.need} ${T('hd_xp')}</small></button>`
+    + `<span class="sp"></span><button class="gbp" data-a="go:redeem" aria-label="${T('btn')}">${GB}<b>${Math.floor(S.btn)}</b></button>`
+    + `<button class="cash" data-a="tab:finance" aria-label="${T('cash')}"><small>${T('cash')}</small><b class="money">${fmt(S.money)}</b>${gain ? `<em class="gain">+${fmt(gain.v)}</em>` : ''}</button></div>`
+    + `<div class="hud2">${c.join('')}</div>`;
+}
 
 const DR = [['prof', 'p_card'], ['goal', 'goal'], ['ct', 'contracts'], ['rank', 'rank'], ['ach', 'ach'], ['lib', 'lib'], ['enc', 'enc'], ['notes', 'notesm'], ['redeem', 'redeem'], ['margin', 'margin'], ['set', 'settings'], ['about', 'about']];   // menu samping ala Sim Companies
 function render() {
-  const S = G.S, pr = depth.prog(), xp = Math.floor(pr.p * 100);
-  setHTML($('#hud'), `<div class="hud1"><button class="hb" data-a="menu" aria-label="${T('menu')}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 6h18M3 12h18M3 18h18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></button><button class="av" data-a="go:prof" aria-label="${T('profile')}"><img class="logo" src="assets/logo.svg" alt=""></button><span class="sp"></span><button data-a="go:rank" aria-label="${T('rank')}">${ic('star')}</button><span class="money">${fmt(S.money)}</span><span class="lvp">★ ${S.level}<small>${xp}%</small></span></div><div class="hud2"><span class="pill gb">${GB}${Math.floor(S.btn)}</span><span class="pill">${ic('star')} Lv${S.level}</span><span class="pill">${ic('worker')} ${S.workers}</span><span class="pill">${ic('timer')} ${S.jobs.length}</span><span class="pill ${status.mode === 'cloud' ? 'ok' : status.mode === 'error' ? 'bad' : ''}">● ${status.mode === 'cloud' ? 'Cloud' : status.mode === 'error' ? 'Offline' : status.mode === 'connecting' ? '…' : 'Local'}${status.mode === 'cloud' && !status.clock ? ' · clock?' : ''}</span></div>${depth.banner()}${econ.banner()}`);
+  setHTML($('#hud'), hud());
   setHTML($('#toast'), toasts.filter(x => now() - x.t < 6000).slice(-3).map(x => `<div>${x.txt}</div>`).join(''));
   const warn = status.mode === 'error' ? `<div class="card err"><b>Cloud unavailable, playing offline</b><div class="mute">${String(status.err).replace(/[<>&]/g, '')}</div></div>` : '';
   if (!document.activeElement?.dataset?.n) setHTML($('#view'), warn + (tab === 'settings' ? `<h2>${ic('office')}${T('settings')}</h2>` : '') + screens[tab].view());

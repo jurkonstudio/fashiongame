@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. Kedalaman game v6: peristiwa pasar, kontrak, pemasaran, target level, peringkat.
-import { ic } from './icons.js?v=22';
-import { T, fmt } from './i18n.js?v=22';
-import { D, TAX, BTN, XP, xpNeed, xpCum, levelFor } from './data.js?v=22';
-import { G, now, dur, mm, MOD, qm, day, toasts, matPrice, demand } from './state.js?v=22';
+import { ic } from './icons.js?v=24';
+import { T, fmt } from './i18n.js?v=24';
+import { D, TAX, BTN, XP, xpNeed, xpCum, levelFor } from './data.js?v=24';
+import { G, now, dur, mm, settle, MOD, qm, day, toasts, matPrice, demand } from './state.js?v=24';
 
 const EV = { strike:{ h:6, mat:{ leather:1.3, rubber:1.3 } }, sale:{ h:6, mat:{ fabric:.75, thread:.8 } }, viral:{ h:4, dem:1.4 }, slump:{ h:6, dem:.75 }, tariff:{ h:8, mat:{ leather:1.2, rubber:1.2, fabric:1.15 } } };
 const CAMP = { social:{ cost:60, x:1.15, h:4, rep:0 }, influ:{ cost:250, x:1.35, h:6, rep:3 }, board:{ cost:600, x:1.25, h:24, rep:8 } };
@@ -56,7 +56,7 @@ export const rankPanel = () => { const L = rankList();
 
 export const actions = {
   deliver: i => { const S = G.S, c = S.dp.ct[+i]; if (!c || (S.stock[c.p] || 0) < c.n || (S.sq[c.p] || 2) < c.q) return;
-    const rev = c.n * c.pr; S.stock[c.p] -= c.n; S.money += rev * (1 - TAX); S.led.rev += rev; S.led.tax += rev * TAX; S.sold += c.n; S.rep = Math.min(100, S.rep + c.n * .2); S.dp.ct.splice(+i, 1); S.dp.cdone = (S.dp.cdone || 0) + 1; },
+    const rev = c.n * c.pr; S.stock[c.p] -= c.n; S.money += rev * (1 - TAX); S.led.rev += rev; S.led.tax += rev * TAX; S.sold += c.n; S.rep = Math.min(100, S.rep + c.n * .2); S.dp.ct.splice(+i, 1); S.dp.cdone = (S.dp.cdone || 0) + 1; settle(); },
   camp: id => { const S = G.S, c = CAMP[id]; if (!c || S.dp.camp || S.money < c.cost) return; S.money -= c.cost; S.led.mkt = (S.led.mkt || 0) + c.cost; S.rep = Math.min(100, S.rep + c.rep); S.dp.camp = { id, end: now() + dur(c.h * 3600) }; }
 };
 

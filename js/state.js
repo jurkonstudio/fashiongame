@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=22';
-import { T, fmt } from './i18n.js?v=22';
-import { D, XP, BTN, QR, SCI, SUP, SEG, SEASONS, ADMIN, SAT, EXCH, CONTRACT, QRC, EXEC, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=22';
+import { ic } from './icons.js?v=24';
+import { T, fmt } from './i18n.js?v=24';
+import { D, XP, BTN, QR, SCI, SUP, SEG, SEASONS, ADMIN, SAT, EXCH, CONTRACT, QRC, EXEC, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, CASH_SETTLE, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=24';
 export const MOD = { dem: () => 1, mat: () => 1, px: () => 1 };   // diisi depth.js (peristiwa, pemasaran)
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 export const toasts = [];
@@ -12,7 +12,7 @@ export const now = () => Date.now() + OFF;     // semua timer pakai waktu server
 export const dur = sec => sec * 1000 / TIME_SCALE;
 export const fresh = () => ({ money: START_MONEY, level: 1, xp: 0, mat: {}, stock: {}, made: 0, sold: 0,
   b: { factory: 0, office: 1, store: 0, farm: 0 }, jobs: [], workers: 1, research: [], price: { shoes: 40 }, last: now(), lang: 'en',
-  mk: { t: now(), fx: 1, idx: { leather: 1, rubber: 1, thread: 1, fabric: 1, cotton: 1, hide: 1, latex: 1, dye: 1 } }, mc: {}, mq: {}, sq: {}, loan: 0,
+  mk: { t: now(), fx: 1, idx: { leather: 1, rubber: 1, thread: 1, fabric: 1, cotton: 1, hide: 1, latex: 1, dye: 1 } }, mc: {}, mq: {}, sq: {}, loan: 0, due: 0,
   led: { rev: 0, tax: 0, mat: 0, wage: 0, power: 0, rent: 0, int: 0, fee: 0, maint: 0 },
   sp: 0, rq: {}, rqSpent: 0, wk: [1], cond: 1, rep: 10, scrap: 0, t0: now(),
   land: { slots: Array.from({ length: SLOTS }, (_, i) => ({ own: i < 3, t: i === 0 ? 'office' : null })) }, btn: 0, name: 'My Fashion Co.', desc: '', notes: '', dp: { ev: null, evAt: 0, camp: null, ct: [], ctAt: 0 }, cur: 'usd', pref: { n1: 1, n2: 1, n3: 1 } });
@@ -54,6 +54,10 @@ export const count = k => G.S.jobs.filter(j => j.k === k).length;
 export const job = (k, id) => { const j = G.S.jobs.find(j => j.k === k && j.id === id); return j ? `<div class="mute">${ic('timer')}${mm(j.end - now())}</div>` : ''; };
 
 export const pay = (c, k) => { const S = G.S; if (S.money >= c) S.money -= c; else { S.loan += c - S.money; S.money = 0; } S.led[k] = (S.led[k] || 0) + c; };   // kurang kas -> jadi pinjaman
+export const accrue = (c, k) => { const S = G.S; if (!CASH_SETTLE) return pay(c, k); S.led[k] = (S.led[k] || 0) + c; S.due = (S.due || 0) + c; };   // biaya berjalan: dicatat di laporan, tapi kas baru berkurang saat settle
+export const income = (c, k) => { const S = G.S; if (!CASH_SETTLE) { S.money += c; } else S.due = (S.due || 0) - c; S.led[k] = (S.led[k] || 0) + c; };   // pemasukan berjalan (bunga obligasi): ikut ditampung
+export const settle = () => { const S = G.S, d = S.due || 0; if (!d) return; S.due = 0;   // progres terjadi -> lunasi tagihan bersih
+  if (d < 0) S.money -= d; else if (S.money >= d) S.money -= d; else { S.loan += d - S.money; S.money = 0; } };
 export const fx = o => { const S = G.S, t = now(); S.fx = (S.fx || []).filter(e => t - e.t < 30000); S.fx.push({ ...o, t }); (S.lg = S.lg || []).unshift({ ...o, t }); S.lg.length = Math.min(S.lg.length, 40); };
 const rnd = a => (Math.random() * 2 - 1) * a;
 function stepMarket() { const k = G.S.mk;
@@ -65,13 +69,14 @@ export function tick() {
   let n = 0; while (t - S.mk.t >= dur(3600)) { S.mk.t += dur(3600); if (n++ < 48) stepMarket(); }
   S.workers = S.wk.length;
   const w = S.b.factory ? S.wk.reduce((a, k) => a + WAGE[k], 0) * h : 0, rt = RENT_HOUR * Object.values(S.b).reduce((a, n) => a + n, 0) * h, pw = (count('make') ? POWER_HOUR : POWER_HOUR / 6) * S.b.factory * h;
-  pay(w, 'wage'); pay(rt, 'rent'); pay(pw, 'power'); pay((w + rt + pw) * adminPct(), 'adm');   // overhead admin (v22)
+  accrue(w, 'wage'); accrue(rt, 'rent'); accrue(pw, 'power'); accrue((w + rt + pw) * adminPct(), 'adm');   // overhead admin (v22)
   S.sp = (S.sp || 0) + SCI.office * S.b.office * h;
   const i = S.loan * LOAN_RATE * h * (1 - EXEC.cfo.int * xAct('cfo')); S.loan += i; S.led.int += i;
   // XP: 12/jam untuk tiap bangunan yang sedang bekerja (Pabrik: produksi, Toko: jual, Kebun: panen). Dihitung dari tumpang-tindih waktu job dengan selang tick, jadi tetap adil saat game ditinggal.
   for (const k of ['make', 'sell', 'grow']) { let ov = 0;
     for (const j of S.jobs) if (j.k === k) ov = Math.max(ov, Math.min(t, j.end) - Math.max(t0, j.st || t0));
     if (ov > 0) S.xp = (S.xp || 0) + XP.active * ov / 1000 * TIME_SCALE / 3600; }
+  const nJobs = S.jobs.length;
   S.jobs = S.jobs.filter(j => {
     if (j.end > t) return true;
     if (j.k === 'grow') { const o = S.mat[j.id] || 0, t2 = o + j.n;   // panen Kebun masuk stok bahan
@@ -98,6 +103,7 @@ export function tick() {
       else { const back = Math.round(QR.sp[n0] * QRC.refund); S.sp += back; toast(`${T('qr_fail')}: ${T(j.id)} · +${back} SP`); } }
     return false;
   });
+  if (S.jobs.length < nJobs) settle();   // ada pekerjaan selesai = progres
 }
 
 // --- Tahap B: kalender, pesaing, channel, gudang, mesin, cacat ---

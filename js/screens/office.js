@@ -1,9 +1,9 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, WAGE, HIRE, QR } from '../data.js?v=22';
-import { T, fmt } from '../i18n.js?v=22';
-import { ic } from '../icons.js?v=22';
-import * as depth from '../depth.js?v=22';
-import { G, now, dur, mm, busy, job, bMax, upCost, upSec, qrChance } from '../state.js?v=22';
+import { D, WAGE, HIRE, QR } from '../data.js?v=24';
+import { T, fmt } from '../i18n.js?v=24';
+import { ic } from '../icons.js?v=24';
+import * as depth from '../depth.js?v=24';
+import { G, now, dur, mm, busy, job, bMax, upCost, upSec, qrChance } from '../state.js?v=24';
 
 let sub = 'goal';
 const SUBS = [['goal', 'target', 't_goal'], ['workers', 'worker', 'workers'], ['research', 'research', 'research'], ['mkt', 'chart', 't_mkt'], ['build', 'office', 't_build']];

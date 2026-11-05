@@ -104,3 +104,5 @@ export const SCRAP_REFUND = 0.3;
 
 // Kas di header tidak berkurang tiap detik: biaya berjalan (gaji, sewa, listrik, admin, eksekutif, bunga obligasi, pajak kas) ditampung di S.due dan dibayar saat ada progres (produksi/penjualan/kontrak selesai). false = perilaku lama.
 export const CASH_SETTLE = true;
+// Tukar Kancing Emas -> uang: 1 ◉ = rate uang; batas harian dc = biaya slot etalase
+export const XCH = { rate: 50, day: 20, dc: 50 };

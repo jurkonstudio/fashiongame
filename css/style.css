@@ -297,3 +297,13 @@ input.srch{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px
 @media (prefers-reduced-motion:reduce){.ld-dots i{animation:none;opacity:.7}}
 #hud .nm.sk,#hud .money{min-width:40px}
 #nav button:disabled{opacity:.6}
+
+/* v28.1 — Obrolan lokal */
+.chat{display:grid;grid-template-columns:14% 1fr;gap:8px;min-height:50vh}
+.crail{display:flex;flex-direction:column;gap:6px}
+.crail button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.66rem;padding:6px 2px;border:0;border-radius:10px;background:transparent;color:var(--mute)}
+.crail button.on{background:rgba(232,70,124,.12);color:var(--hot)}
+.cmain{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cmsgs{flex:1;overflow:auto;max-height:50vh;padding:8px;word-break:break-word}
+.cm{padding:4px 0}.cm.me{text-align:right}
+.crow{display:flex;gap:6px}.crow .in{flex:1;min-width:0}

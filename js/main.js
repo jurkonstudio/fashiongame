@@ -130,11 +130,12 @@ function skeleton() {
   for (const m in D.materials) G.S.mk.idx[m] = G.S.mk.idx[m] ?? 1;   // bahan mentah baru (migrasi save lama)
   if (G.S.xp == null) G.S.xp = xpCum(G.S.level);   // migrasi: level lama -> XP setara
   G.S.inbox = G.S.inbox || [];   // migrasi v25
+  G.S.hist = G.S.hist || []; G.S.chat = G.S.chat || {};   // migrasi v28.1
   G.S.sp = G.S.sp || 0; G.S.rq = G.S.rq || {}; G.S.rqSpent = G.S.rqSpent || 0;   // migrasi v16
   if (G.S.wk.length !== G.S.workers) G.S.wk = Array(G.S.workers).fill(1);
   setLang(G.S.lang); setCur(G.S.cur); document.documentElement.lang = G.S.lang; boot.set(80);
   tick(); depth.tick(); econ.tick(); render();
-  setInterval(() => { tick(); depth.tick(); econ.tick(); render(); }, 1000);
+  setInterval(() => { tick(); depth.tick(); econ.tick(); finance.snap(); render(); }, 1000);
   setInterval(() => save(G.S), 5000);
   document.addEventListener('visibilitychange', () => document.hidden && save(G.S));
   boot.set(100); await boot.done();

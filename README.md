@@ -116,3 +116,9 @@ Semua kode, ikon SVG, ilustrasi peta, teks, dan nama tokoh adalah karya orisinal
 - Pabrik kini juga memproduksi **bahan baku** (data.js: `D.craft`). Bahan mentah baru: Kapas, Kulit mentah, Lateks, Pewarna (dibeli di Pasar). Resep: Benang = 10 Kapas; Karet = 5 Lateks; Kulit = 5 Kulit mentah + 1 Pewarna; Kain = 20 Benang + 4 Pewarna. Bahan hasil Pabrik masuk stok bahan dengan biaya rata-rata dan kualitas dari bahan sumber. Kekurangan bahan dibeli otomatis di Pasar.
 - Save lama kompatibel (indeks harga bahan mentah ditambahkan otomatis).
 - Rencana sesi berikutnya: (2) panel Pabrik bertab Produk/Bahan + seni bangunan fashion, (3) rantai bahan lebih dalam & bangunan baru, (4) polesan animasi + balancing.
+
+## Update v13 (sesi 2)
+- Panel Pabrik bertab Produk / Bahan (js/screens/factory.js, aksi `ft`).
+- Seni bangunan: gulungan kain warna-warni di atap Gudang, manekin bergaun pink di jendela Toko.
+- Peta ditaruh lebih ke tengah layar. Cache ?v=14.
+- Sesi 3 (rencana): rantai bahan lebih dalam + bangunan baru; sesi 4: animasi & balancing.

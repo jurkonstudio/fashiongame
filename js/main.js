@@ -1,22 +1,22 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=12';
-import { T, fmt, setLang, setCur } from './i18n.js?v=12';
-import { init, load, save, serverOffset, status } from './api.js?v=12';
-import { D } from './data.js?v=12';
-import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=12';
-import * as map from './screens/map.js?v=12';
-import * as market from './screens/market.js?v=12';
-import * as margin from './screens/margin.js?v=12';
-import * as factory from './screens/factory.js?v=12';
-import * as store from './screens/store.js?v=12';
-import * as office from './screens/office.js?v=12';
-import * as finance from './screens/finance.js?v=12';
-import * as depth from './depth.js?v=12';
-import * as warehouse from './screens/warehouse.js?v=12';
-import { GB } from './art.js?v=12';
-import * as item from './screens/item.js?v=12';
-import * as more from './screens/more.js?v=12';
-import * as profile from './screens/profile.js?v=12';
+import { ic } from './icons.js?v=14';
+import { T, fmt, setLang, setCur } from './i18n.js?v=14';
+import { init, load, save, serverOffset, status } from './api.js?v=14';
+import { D } from './data.js?v=14';
+import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=14';
+import * as map from './screens/map.js?v=14';
+import * as market from './screens/market.js?v=14';
+import * as margin from './screens/margin.js?v=14';
+import * as factory from './screens/factory.js?v=14';
+import * as store from './screens/store.js?v=14';
+import * as office from './screens/office.js?v=14';
+import * as finance from './screens/finance.js?v=14';
+import * as depth from './depth.js?v=14';
+import * as warehouse from './screens/warehouse.js?v=14';
+import { GB } from './art.js?v=14';
+import * as item from './screens/item.js?v=14';
+import * as more from './screens/more.js?v=14';
+import * as profile from './screens/profile.js?v=14';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, item, more, warehouse, market, margin, office, finance, profile };   // tambah layar baru di sini

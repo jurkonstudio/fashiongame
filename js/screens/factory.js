@@ -1,14 +1,15 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, SUP } from '../data.js?v=12';
-import { T, fmt } from '../i18n.js?v=12';
-import { ic } from '../icons.js?v=12';
-import { G, itemDef, now, dur, mm, unitCost, factoryMult, busy, count, shortfall, buyMat, useBatch, whCap, whUsed, defectRate, fixCost } from '../state.js?v=12';
+import { D, SUP } from '../data.js?v=14';
+import { T, fmt } from '../i18n.js?v=14';
+import { ic } from '../icons.js?v=14';
+import { G, itemDef, now, dur, mm, unitCost, factoryMult, busy, count, shortfall, buyMat, useBatch, whCap, whUsed, defectRate, fixCost } from '../state.js?v=14';
 
 const blocked = id => { const S = G.S;
   return busy('up', 'factory') || count('make') >= S.b.factory || S.cond <= 0.2 || (D.products[id] && whUsed() + D.products[id].batch > whCap()); };
 
 export const canMake = id => { const sf = shortfall(id); return !blocked(id) && G.S.money >= sf.cost; };
 
+let ftab = 'prod';
 export const view = () => {
   const S = G.S, fc = fixCost();
   return `<div class="card"><h2>${ic('factory')}${T('factory')} Lv${S.b.factory}</h2>
@@ -19,8 +20,8 @@ export const view = () => {
     <div class="row"><span>${T('warehouse')}</span><b class="${whUsed() >= whCap() ? 'neg' : ''}">${whUsed()}/${whCap()}</b></div>
     <div class="row mute"><span>${T('supplier')}</span><span>${T(G.sup)}</span></div>
     <div class="row mute"><span>${T('scrap')}</span><span>${S.scrap} ${T('unit')}</span></div></div>` +
-    Object.entries(D.products).concat([['_h']], Object.entries(D.craft)).map(([id, p]) => {
-      if (id === '_h') return `<div class="cat">${T('mats')}</div>`;
+    `<div class="tabs w">${[['prod', 'shirt', 'cat_prod'], ['mat', 'fabric', 'mats']].map(([k, i, l]) => `<button class="chip ${k === ftab ? 'on' : ''}" data-a="ft:${k}">${ic(i)}<span>${T(l)}</span></button>`).join('')}</div>` +
+    Object.entries(ftab === 'prod' ? D.products : D.craft).map(([id, p]) => {
       if (p.lvl > S.level) return `<div class="card mute">${ic('lock')} ${ic(p.icon)} ${T(id)} · ${T('locked')} ${p.lvl}</div>`;
       const sf = shortfall(id), ok = !blocked(id) && S.money >= sf.cost;
       return `<div class="card"><div class="row"><span>${ic(p.icon)}${T(id)} ×${p.batch} · ${mm(dur(p.time) * factoryMult())}</span>
@@ -32,6 +33,7 @@ export const view = () => {
 };
 
 export const actions = {
+  ft: k => { ftab = k; },
   fix: () => { const S = G.S, c = fixCost(); if (c <= 0 || S.money < c) return; S.money -= c; S.led.maint = (S.led.maint || 0) + c; S.cond = 1; },
   make: id => {
     const S = G.S, p = itemDef(id), sf = shortfall(id);

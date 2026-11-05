@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=12';
-import { T, fmt } from '../i18n.js?v=12';
-import { ic, icu } from '../icons.js?v=12';
-import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=12';
-import * as factory from './factory.js?v=12';
-import * as depth from '../depth.js?v=12';
-import * as store from './store.js?v=12';
+import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=14';
+import { T, fmt } from '../i18n.js?v=14';
+import { ic, icu } from '../icons.js?v=14';
+import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=14';
+import * as factory from './factory.js?v=14';
+import * as depth from '../depth.js?v=14';
+import * as store from './store.js?v=14';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -60,8 +60,9 @@ const bld = (t, lv, cx, cy) => {
   if (t === 'factory') { l += R(6, -16, 18, 16, c.a) + R(6, -11, 18, 1, '#fff') + R(6, -6, 18, 1, '#fff'); for (let k = 0; k < 3; k++) r += R(4 + k * 9, -h + 6, 6, 6, '#e8f4fb');
     roof = Array.from({ length: Math.min(lv, 3) }, (_, k) => `<rect x="${cx - 14 + k * 9}" y="${cy - h - 17 + k * 3}" width="6" height="15" fill="#7f868e"/><rect x="${cx - 14 + k * 9}" y="${cy - h - 17 + k * 3}" width="6" height="3" fill="${c.a}"/>`).join('')
       + (G.S.jobs.some(j => j.k === 'make') ? `<circle cx="${cx - 11}" cy="${cy - h - 26}" r="5" fill="#fff" opacity=".8"/><circle cx="${cx - 5}" cy="${cy - h - 35}" r="4" fill="#fff" opacity=".55"/>` : ''); }
-  if (t === 'store') { for (let k = 0; k < 4; k++) l += R(k * 8, -h + 5, 8, 9, k % 2 ? '#fffaf2' : '#e4572e'); l += R(5, -12, 22, 8, '#bfe3ee'); r += R(10, -13, 10, 13, c.a) + R(4, -h + 8, 6, 6, '#bfe3ee'); }
+  if (t === 'store') { for (let k = 0; k < 4; k++) l += R(k * 8, -h + 5, 8, 9, k % 2 ? '#fffaf2' : '#e4572e'); l += R(5, -12, 22, 8, '#bfe3ee') + `<circle cx="16" cy="-10.6" r="1.4" fill="#f6ead7"/><path d="M16 -9.2l-3.4 5.2h6.8z" fill="#e8467c"/>`; r += R(10, -13, 10, 13, c.a) + R(4, -h + 8, 6, 6, '#bfe3ee'); }
   if (t === 'warehouse') { l += R(6, -18, 20, 18, c.a); for (let k = 1; k < 5; k++) l += R(6, -18 + k * 3.6, 20, .8, '#fff'); r += R(5, -h + 5, 22, 4, c.l); }
+  if (t === 'warehouse') roof = [['#e8467c', -13], ['#5b8def', 0], ['#2ec4b6', 13]].map(([c, d]) => `<rect x="${cx + d - 6}" y="${cy - h - 7}" width="12" height="8" fill="${c}"/><ellipse cx="${cx + d}" cy="${cy - h + 1}" rx="6" ry="3" fill="${c}"/><ellipse cx="${cx + d}" cy="${cy - h - 7}" rx="6" ry="3" fill="#fff" opacity=".5"/><ellipse cx="${cx + d}" cy="${cy - h - 7}" rx="2" ry="1" fill="#0004"/>`).join('');   // gulungan kain di atap
   const sh = `<polygon filter="url(#sh)" points="${cx - a},${cy} ${cx},${cy + b} ${cx + a + 16 + h * .5},${cy + 5 + h * .12} ${cx + 22 + h * .5},${cy - b + 5}" fill="#1a0f2e" opacity=".42"/><ellipse cx="${cx}" cy="${cy + 6}" rx="${a + 2}" ry="${b - 1}" fill="#000" opacity=".3" filter="url(#sh)"/>`;
   return sh
     + `<polygon points="${cx - a},${cy} ${cx},${cy + b} ${cx},${cy + b - h} ${cx - a},${cy - h}" fill="${c.l}"/><polygon points="${cx},${cy + b} ${cx + a},${cy} ${cx + a},${cy - h} ${cx},${cy + b - h}" fill="${c.r}"/>`

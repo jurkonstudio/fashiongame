@@ -1,10 +1,10 @@
 // (c) 2026 FashionGame. Gudang: kartu stok bergambar per kategori + analisis margin.
-import { D } from '../data.js?v=18';
-import { T, fmt } from '../i18n.js?v=18';
-import { ic } from '../icons.js?v=18';
-import { ART } from '../art.js?v=18';
-import { G, matPrice, whCap, whUsed } from '../state.js?v=18';
-import * as margin from './margin.js?v=18';
+import { D } from '../data.js?v=19';
+import { T, fmt } from '../i18n.js?v=19';
+import { ic } from '../icons.js?v=19';
+import { ART } from '../art.js?v=19';
+import { G, matPrice, whCap, whUsed } from '../state.js?v=19';
+import * as margin from './margin.js?v=19';
 
 let sub = 'stock';
 const tile = (id, q, price, lock, go, q2) => `<div class="wt ${lock ? 'lock' : ''}" data-a="${go}">${ART[id]}<div class="p">${fmt(price)}</div><div class="q">${lock ? ic('lock') : q}</div><div class="n">${T(id)}${q2 ? `<small>${q2}</small>` : ''}</div></div>`;

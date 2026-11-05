@@ -1,24 +1,24 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=18';
-import { T, fmt, setLang, setCur } from './i18n.js?v=18';
-import { init, load, save, serverOffset, status } from './api.js?v=18';
-import { D } from './data.js?v=18';
-import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=18';
-import * as map from './screens/map.js?v=18';
-import * as market from './screens/market.js?v=18';
-import * as margin from './screens/margin.js?v=18';
-import * as factory from './screens/factory.js?v=18';
-import * as store from './screens/store.js?v=18';
-import * as farm from './screens/farm.js?v=18';
-import * as bp from './screens/bp.js?v=18';
-import * as office from './screens/office.js?v=18';
-import * as finance from './screens/finance.js?v=18';
-import * as depth from './depth.js?v=18';
-import * as warehouse from './screens/warehouse.js?v=18';
-import { GB } from './art.js?v=18';
-import * as item from './screens/item.js?v=18';
-import * as more from './screens/more.js?v=18';
-import * as profile from './screens/profile.js?v=18';
+import { ic } from './icons.js?v=19';
+import { T, fmt, setLang, setCur } from './i18n.js?v=19';
+import { init, load, save, serverOffset, status } from './api.js?v=19';
+import { D } from './data.js?v=19';
+import { G, fresh, tick, setOffset, toasts, now } from './state.js?v=19';
+import * as map from './screens/map.js?v=19';
+import * as market from './screens/market.js?v=19';
+import * as margin from './screens/margin.js?v=19';
+import * as factory from './screens/factory.js?v=19';
+import * as store from './screens/store.js?v=19';
+import * as farm from './screens/farm.js?v=19';
+import * as bp from './screens/bp.js?v=19';
+import * as office from './screens/office.js?v=19';
+import * as finance from './screens/finance.js?v=19';
+import * as depth from './depth.js?v=19';
+import * as warehouse from './screens/warehouse.js?v=19';
+import { GB } from './art.js?v=19';
+import * as item from './screens/item.js?v=19';
+import * as more from './screens/more.js?v=19';
+import * as profile from './screens/profile.js?v=19';
 
 // Peta = tindakan Pabrik & Toko (di dalam bangunan). Tab lain = layar teks/logika. Profil dibuka dari tombol di HUD.
 const screens = { map, item, more, warehouse, market, margin, office, finance, profile };   // tambah layar baru di sini
@@ -47,6 +47,7 @@ function render() {
   setHTML($('#toast'), toasts.filter(x => now() - x.t < 6000).slice(-3).map(x => `<div>${x.txt}</div>`).join(''));
   const warn = status.mode === 'error' ? `<div class="card err"><b>Cloud unavailable, playing offline</b><div class="mute">${String(status.err).replace(/[<>&]/g, '')}</div></div>` : '';
   if (!document.activeElement?.dataset?.n) setHTML($('#view'), warn + (tab === 'profile' ? `<h2>${ic('profile')}${T('profile')}</h2>` : '') + screens[tab].view());
+  const cv = $('#city'); if (cv) { cv.hidden = tab !== 'map'; if (tab === 'map') try { map.city(cv); } catch (e) { console.error(e); } }
   const sh = $('#sheet'), st = sh.querySelector('.shb, .bp')?.scrollTop || 0, sel = map.selected();
   if (!document.activeElement?.dataset?.in) setHTML(sh, tab === 'map' ? map.sheet() : '');
   const nb = sh.querySelector('.shb, .bp'); if (nb && sel === lastSel) nb.scrollTop = st;   // jaga posisi scroll panel saat refresh tiap detik

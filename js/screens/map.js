@@ -1,13 +1,14 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=18';
-import { T, fmt } from '../i18n.js?v=18';
-import { ic, icu } from '../icons.js?v=18';
-import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=18';
-import * as factory from './factory.js?v=18';
-import * as depth from '../depth.js?v=18';
-import * as store from './store.js?v=18';
-import * as farm from './farm.js?v=18';
-import * as bp from './bp.js?v=18';
+import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=19';
+import { T, fmt } from '../i18n.js?v=19';
+import { ic, icu } from '../icons.js?v=19';
+import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=19';
+import * as factory from './factory.js?v=19';
+import * as depth from '../depth.js?v=19';
+import * as store from './store.js?v=19';
+import * as farm from './farm.js?v=19';
+import * as bp from './bp.js?v=19';
+import * as cityMap from '../city.js?v=19';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -204,5 +205,6 @@ const gTile = (s, i) => { const S = G.S, tn = `<span class="gn">${i + 1}</span>`
       btn = a[2] === 'run' ? '' : `<button class="b ${a[2] === 'go' || a[2] === 'sell' ? 'go2' : ''}" data-a="${a[1]}" ${a[2] === 'off' ? 'disabled' : ''}>${a[0]}</button>`; } }
   const upb = up ? '' : `<button class="b sm" data-a="up:${t}" ${top || S.money < upCost(t) ? 'disabled' : ''}>${ic('upgrade')} ${top ? T('max') : fmt(upCost(t))}</button>`;
   return `<div class="card gt"><div class="gh" data-a="slot:${i}">${ic(IC[t])}<b>${T(t)} Lv${lv || 1}</b><span class="gm">›</span></div>${mid}${gfx(t)}<div class="gbtn">${btn}${upb}</div></div>`; };
+export const city = el => cityMap.mount(el, { chip, quick, fxOf });   // peta kota isometrik (#city), dipanggil dari main.js tiap render
 export const view = () => { const S = G.S;
   return guide() + inv() + `<div class="ggrid">${S.land.slots.map(gTile).join('')}</div>`; };

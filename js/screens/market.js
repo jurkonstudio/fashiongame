@@ -1,11 +1,11 @@
 // (c) 2026 FashionGame. Pasar/Bursa ala Sim Companies: ticker harga, kategori berisi ikon barang, 'Terakhir dilihat'. Ketuk barang -> halaman barang (penjual & pembeli NPC).
-import { D } from '../data.js?v=20';
-import { T, fmt } from '../i18n.js?v=20';
-import { ic } from '../icons.js?v=20';
-import { ART } from '../art.js?v=20';
-import * as depth from '../depth.js?v=20';
-import { subbar } from '../subbar.js?v=20';
-import { G, matPrice } from '../state.js?v=20';
+import { D } from '../data.js?v=21';
+import { T, fmt } from '../i18n.js?v=21';
+import { ic } from '../icons.js?v=21';
+import { ART } from '../art.js?v=21';
+import * as depth from '../depth.js?v=21';
+import { subbar } from '../subbar.js?v=21';
+import { G, matPrice } from '../state.js?v=21';
 
 const GROUPS = [['cat_farm', ['cotton', 'hide', 'latex', 'dye']], ['cat_mat', ['thread', 'rubber', 'leather', 'fabric']], ['cat_prod', Object.keys(D.products)]];
 const SUBS = [['ex', 'cart', 'exch'], ['ct', 'money', 'contracts']];

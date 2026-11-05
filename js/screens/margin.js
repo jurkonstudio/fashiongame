@@ -1,8 +1,8 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, TAX } from '../data.js?v=20';
-import { T, fmt } from '../i18n.js?v=20';
-import { ic } from '../icons.js?v=20';
-import { G, unitCost, demand, compPrice, bulkPrice, CH } from '../state.js?v=20';
+import { D, TAX } from '../data.js?v=21';
+import { T, fmt } from '../i18n.js?v=21';
+import { ic } from '../icons.js?v=21';
+import { G, unitCost, demand, compPrice, bulkPrice, CH } from '../state.js?v=21';
 
 // Layar teks/logika: margin per produk dan per channel (tanpa tombol aksi).
 export const view = () => { const S = G.S;

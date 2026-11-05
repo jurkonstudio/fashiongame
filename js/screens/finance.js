@@ -1,9 +1,9 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { LOAN_STEP, LOAN_RATE } from '../data.js?v=20';
-import { T, fmt } from '../i18n.js?v=20';
-import { ic } from '../icons.js?v=20';
-import * as depth from '../depth.js?v=20';
-import { G } from '../state.js?v=20';
+import { LOAN_STEP, LOAN_RATE } from '../data.js?v=21';
+import { T, fmt } from '../i18n.js?v=21';
+import { ic } from '../icons.js?v=21';
+import * as depth from '../depth.js?v=21';
+import { G } from '../state.js?v=21';
 
 let sub = 'report';
 const limit = () => 4000 * G.S.b.office;

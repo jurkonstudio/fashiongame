@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
 // Peta kota isometrik (gaya Sim Companies): 4x4 blok, jalan, mobil, siang/malam, geser & cubit untuk zoom.
 // 10 slot lahan game (S.land.slots) menempati 10 blok; 6 blok sisanya dekorasi (taman, runway, pepohonan).
-import { G, now, busy, mm } from './state.js?v=20';
+import { G, now, busy, mm } from './state.js?v=21';
 
 const N = 17, DX = 32, DY = 16, OX = 540, OY = 110;
 const SLOT_POS = [[1, 1], [2, 1], [1, 2], [2, 2], [0, 1], [3, 1], [1, 0], [2, 0], [1, 3], [2, 3]];   // indeks slot -> blok (bx,by)
@@ -177,7 +177,7 @@ function loop(t) {
 
 // ---- pasang ke elemen #city. ctx = { chip, quick, fxOf } dari map.js ----
 export function mount(el, ctx) {
-  const S = G.S, hr = new Date(now()).getHours(), night = hr >= 18 || hr < 5, sl = S.land.slots;
+  const S = G.S, hr = new Date(now()).getHours(), night = (S.pref || {}).map === 'night' || ((S.pref || {}).map !== 'day' && (hr >= 18 || hr < 5)), sl = S.land.slots;
   const key = [night ? 1 : 0, ...sl.map(s => (s.own ? 1 : 0) + (s.t || '-') + (S.b[s.t] || 0)), ...S.jobs.filter(j => j.k === 'up').map(j => j.id)].join('|');
   if (el._k !== key) {
     el._k = key; mood = night ? 'night' : 'day'; seed = 7;

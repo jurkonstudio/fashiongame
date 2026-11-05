@@ -1,7 +1,7 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { ic } from './icons.js?v=20';
-import { T, fmt } from './i18n.js?v=20';
-import { D, BTN, QR, SCI, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=20';
+import { ic } from './icons.js?v=21';
+import { T, fmt } from './i18n.js?v=21';
+import { D, BTN, QR, SCI, SUP, SEG, SEASONS, WAGE, DAY_SEC, WH_BASE, WH_PER, START_MONEY, SLOTS, WH_BLD, TIME_SCALE, SALE_HOURS, BASE_CAP, TAX, RENT_HOUR, POWER_HOUR, LOAN_RATE } from './data.js?v=21';
 export const MOD = { dem: () => 1, mat: () => 1 };   // diisi depth.js (peristiwa, pemasaran)
 export const G = { S: null, sup: 'std' };           // state aktif + supplier terpilih
 export const toasts = [];
@@ -109,3 +109,5 @@ export const whCap = () => WH_BASE + WH_PER * G.S.b.factory + WH_BLD * (G.S.b.wa
 export const whUsed = () => Object.values(G.S.stock).reduce((a, n) => a + n, 0) + G.S.jobs.filter(j => j.k === 'make' && D.products[j.id]).reduce((a, j) => a + j.n, 0);
 export const defectRate = q => Math.min(0.4, Math.max(0.01, 0.15 - 0.03 * G.S.wk.reduce((a, k) => a + k, 0) / G.S.wk.length - 0.02 * (q - 1) + (1 - G.S.cond) * 0.15));
 export const fixCost = () => Math.round(150 * G.S.b.factory * (1 - G.S.cond));
+
+export const clk = ms => new Date(ms).toLocaleTimeString((G.S.pref || {}).h24 ? 'en-GB' : 'en-US', { hour: 'numeric', minute: '2-digit', hour12: !(G.S.pref || {}).h24 });   // jam lokal, 12/24 jam sesuai Pengaturan

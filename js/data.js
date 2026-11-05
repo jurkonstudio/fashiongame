@@ -62,3 +62,6 @@ export const D = {
 export const QR = { max: 4, sp: [10, 30, 70, 150], mul: [10, 30, 80, 200], time: [1800, 3600, 7200, 14400], bonus: 0.5 };
 export const SCI = { office: 1.5, make: 2, sell: 0.1 };   // SP: per jam per level Kantor, per batch produksi, per unit terjual
 export const BTN = { login: 5, make: 10, sell: 10, plot: 500 };   // Kancing Emas: bonus login / produksi / penjualan, harga petak lahan
+
+// Kode tukar (menu Tukar kode). Hadiah Kancing Emas, sekali pakai per kode. Ubah/tambah sesuka hati.
+export const REDEEM = { WELCOME: { btn: 10 }, FASHION: { btn: 25 }, DESAINER: { btn: 50 } };

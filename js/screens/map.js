@@ -1,14 +1,14 @@
 // (c) 2026 FashionGame. All rights reserved. Original work; see /LICENSE.
-import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=20';
-import { T, fmt } from '../i18n.js?v=20';
-import { ic, icu } from '../icons.js?v=20';
-import { G, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=20';
-import * as factory from './factory.js?v=20';
-import * as depth from '../depth.js?v=20';
-import * as store from './store.js?v=20';
-import * as farm from './farm.js?v=20';
-import * as bp from './bp.js?v=20';
-import * as cityMap from '../city.js?v=20';
+import { D, BTN, SLOT_COST, NEW_B, BUILD_SEC } from '../data.js?v=21';
+import { T, fmt } from '../i18n.js?v=21';
+import { ic, icu } from '../icons.js?v=21';
+import { G, clk, itemDef, now, dur, mm, busy, job, bMax, upCost, upSec, whCap, whUsed, saleCap } from '../state.js?v=21';
+import * as factory from './factory.js?v=21';
+import * as depth from '../depth.js?v=21';
+import * as store from './store.js?v=21';
+import * as farm from './farm.js?v=21';
+import * as bp from './bp.js?v=21';
+import * as cityMap from '../city.js?v=21';
 
 // Peta isometrik: SATU petak lahan (4x3 sel). 10 sel = slot bangunan (dibeli lalu dibangun), 2 sel = dekorasi.
 // Kantor hanya pajangan (tidak bisa diketuk). Pabrik/Toko/Gudang di-upgrade dengan timer; tindakan Pabrik & Toko ada di dalam bangunan.
@@ -207,4 +207,10 @@ const gTile = (s, i) => { const S = G.S, tn = `<span class="gn">${i + 1}</span>`
   return `<div class="card gt"><div class="gh" data-a="slot:${i}">${ic(IC[t])}<b>${T(t)} Lv${lv || 1}</b><span class="gm">›</span></div>${mid}${gfx(t)}<div class="gbtn">${btn}${upb}</div></div>`; };
 export const city = el => cityMap.mount(el, { chip, quick, fxOf });   // peta kota isometrik (#city), dipanggil dari main.js tiap render
 // Halaman Peta = hanya peta (#city layar penuh). Grid bangunan & inventori sudah dipindah (Gudang / ketuk bangunan di peta). Hanya petunjuk langkah satu baris.
-export const view = () => { const g = guide(); return g ? `<div class="mapguide">${g}</div>` : ''; };
+const idleInfo = () => { const S = G.S, jk = { factory: 'make', store: 'sell', farm: 'grow' }; let idle = 0, next = Infinity, n = 0;
+  for (const s of S.land.slots) { if (!s.own || !jk[s.t]) continue; n++;
+    const up = S.jobs.find(j => j.k === 'up' && j.id === s.t), j = S.jobs.find(j => j.k === jk[s.t]);
+    if (up) next = Math.min(next, up.end); else if (j) next = Math.min(next, j.end); else idle++; }
+  return { idle, next, n }; };
+export const view = () => { const g = guide(), { idle, next, n } = idleInfo();
+  return (g ? `<div class="mapguide">${g}</div>` : '') + (n ? `<div class="mapidle">${T('idleb')}: ${idle}${next < Infinity ? `<br>${T('nextidle')}: ${clk(next)}` : ''}</div>` : ''); };
